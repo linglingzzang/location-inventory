@@ -51,7 +51,6 @@ h1{
   color:#667085;
 }
 
-/* 업로드 */
 .upload{
   background:#fff;
   border:1px solid #dfe4ec;
@@ -61,6 +60,7 @@ h1{
 }
 
 .drop{
+  display:block;
   border:2px dashed #b9c2d0;
   border-radius:14px;
   padding:25px;
@@ -95,19 +95,20 @@ input[type=file]{
   background:#fff;
   border:1px solid #e2e7ef;
   border-radius:14px;
-  padding:18px;
+  padding:17px 18px;
   margin:18px 0 12px;
 }
 
-.total-label{
+.label{
   font-size:12px;
   color:#7b8494;
   margin-bottom:7px;
 }
 
-.total-value{
-  font-size:26px;
+.value{
+  font-size:24px;
   font-weight:750;
+  letter-spacing:-.5px;
 }
 
 /* 층 카드 */
@@ -122,14 +123,14 @@ input[type=file]{
   background:#fff;
   border:1px solid #e2e7ef;
   border-radius:14px;
-  padding:18px;
+  padding:16px;
   cursor:pointer;
   transition:.15s;
 }
 
 .floor-card:hover{
-  border-color:#b8c0d9;
-  box-shadow:0 4px 14px rgba(20,30,55,.05);
+  border-color:#aeb7ff;
+  box-shadow:0 4px 14px rgba(80,90,180,.08);
 }
 
 .floor-card.active{
@@ -139,21 +140,16 @@ input[type=file]{
 
 .floor-title{
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
   font-size:15px;
   font-weight:750;
-  margin-bottom:16px;
+  margin-bottom:14px;
 }
 
 .arrow{
   font-size:18px;
   color:#667085;
-  transition:.15s;
-}
-
-.floor-card.active .arrow{
-  transform:rotate(180deg);
 }
 
 .floor-values{
@@ -162,20 +158,20 @@ input[type=file]{
   gap:10px;
 }
 
-.floor-value-box{
+.floor-box{
   background:#f7f9fc;
   border-radius:10px;
-  padding:12px;
+  padding:11px;
 }
 
-.floor-value-label{
+.floor-box .small{
   font-size:11px;
   color:#7b8494;
-  margin-bottom:6px;
+  margin-bottom:5px;
 }
 
-.floor-value{
-  font-size:20px;
+.floor-box .big{
+  font-size:21px;
   font-weight:750;
 }
 
@@ -248,7 +244,6 @@ th{
   border-bottom:1px solid #e5e9f0;
   cursor:pointer;
   white-space:nowrap;
-  z-index:2;
 }
 
 td{
@@ -274,6 +269,10 @@ td.num{
   background:#eef0ff;
   font-weight:700;
   font-size:12px;
+}
+
+.box-count{
+  font-weight:700;
 }
 
 .empty{
@@ -340,7 +339,7 @@ td.num{
   }
 
   .floor-cards{
-    grid-template-columns:1fr;
+    grid-template-columns:1fr 1fr;
   }
 
   h1{
@@ -354,7 +353,7 @@ td.num{
 
 <div class="wrap">
 
-  <!-- 헤더 -->
+  <!-- HEADER -->
   <div class="header">
 
     <div>
@@ -393,54 +392,37 @@ td.num{
   <!-- 전체 SKU -->
   <div class="total-card">
 
-    <div class="total-label">
+    <div class="label">
       전체 SKU 수
     </div>
 
-    <div class="total-value" id="count">
+    <div class="value" id="totalSku">
       0
     </div>
 
   </div>
 
 
-  <!-- 층별 카드 -->
+  <!-- 층 카드 -->
   <div class="floor-cards">
 
     <div class="floor-card" data-floor="4층">
 
       <div class="floor-title">
-
         <span>🏢 4층</span>
-
         <span class="arrow">▼</span>
-
       </div>
 
       <div class="floor-values">
 
-        <div class="floor-value-box">
-
-          <div class="floor-value-label">
-            SKU
-          </div>
-
-          <div class="floor-value" id="f4sku">
-            0
-          </div>
-
+        <div class="floor-box">
+          <div class="small">SKU</div>
+          <div class="big" id="sku4">0</div>
         </div>
 
-        <div class="floor-value-box">
-
-          <div class="floor-value-label">
-            PCS
-          </div>
-
-          <div class="floor-value" id="f4pcs">
-            0
-          </div>
-
+        <div class="floor-box">
+          <div class="small">PCS</div>
+          <div class="big" id="pcs4">0</div>
         </div>
 
       </div>
@@ -451,37 +433,20 @@ td.num{
     <div class="floor-card" data-floor="3-2층">
 
       <div class="floor-title">
-
         <span>🏢 3-2층</span>
-
         <span class="arrow">▼</span>
-
       </div>
 
       <div class="floor-values">
 
-        <div class="floor-value-box">
-
-          <div class="floor-value-label">
-            SKU
-          </div>
-
-          <div class="floor-value" id="f32sku">
-            0
-          </div>
-
+        <div class="floor-box">
+          <div class="small">SKU</div>
+          <div class="big" id="sku32">0</div>
         </div>
 
-        <div class="floor-value-box">
-
-          <div class="floor-value-label">
-            PCS
-          </div>
-
-          <div class="floor-value" id="f32pcs">
-            0
-          </div>
-
+        <div class="floor-box">
+          <div class="small">PCS</div>
+          <div class="big" id="pcs32">0</div>
         </div>
 
       </div>
@@ -492,37 +457,20 @@ td.num{
     <div class="floor-card" data-floor="3-1층">
 
       <div class="floor-title">
-
         <span>🏢 3-1층</span>
-
         <span class="arrow">▼</span>
-
       </div>
 
       <div class="floor-values">
 
-        <div class="floor-value-box">
-
-          <div class="floor-value-label">
-            SKU
-          </div>
-
-          <div class="floor-value" id="f31sku">
-            0
-          </div>
-
+        <div class="floor-box">
+          <div class="small">SKU</div>
+          <div class="big" id="sku31">0</div>
         </div>
 
-        <div class="floor-value-box">
-
-          <div class="floor-value-label">
-            PCS
-          </div>
-
-          <div class="floor-value" id="f31pcs">
-            0
-          </div>
-
+        <div class="floor-box">
+          <div class="small">PCS</div>
+          <div class="big" id="pcs31">0</div>
         </div>
 
       </div>
@@ -533,37 +481,20 @@ td.num{
     <div class="floor-card" data-floor="1-2층">
 
       <div class="floor-title">
-
         <span>🏢 1-2층</span>
-
         <span class="arrow">▼</span>
-
       </div>
 
       <div class="floor-values">
 
-        <div class="floor-value-box">
-
-          <div class="floor-value-label">
-            SKU
-          </div>
-
-          <div class="floor-value" id="f12sku">
-            0
-          </div>
-
+        <div class="floor-box">
+          <div class="small">SKU</div>
+          <div class="big" id="sku12">0</div>
         </div>
 
-        <div class="floor-value-box">
-
-          <div class="floor-value-label">
-            PCS
-          </div>
-
-          <div class="floor-value" id="f12pcs">
-            0
-          </div>
-
+        <div class="floor-box">
+          <div class="small">PCS</div>
+          <div class="big" id="pcs12">0</div>
         </div>
 
       </div>
@@ -613,7 +544,7 @@ td.num{
   </div>
 
 
-  <!-- 상세 테이블 -->
+  <!-- 테이블 -->
   <div class="tablebox">
 
     <table>
@@ -681,7 +612,7 @@ td.num{
   </div>
 
 
-  <!-- 계산 규칙 -->
+  <!-- 규칙 -->
   <details class="rule">
 
     <summary>
@@ -703,19 +634,19 @@ td.num{
       </div>
 
       <div>
-        Bypass + B/C/D + 휴지·화장지·키친타월·키친타올 → <b>3-1층</b>
+        B/C/D + 휴지·화장지·키친타월·키친타올 → <b>3-1층</b>
       </div>
 
       <div>
-        Bypass + B/C/D + 크리넥스·코디·다우니·테크·유한락스 → <b>3-1층</b>
+        B/C/D + 식품 + 음료 → <b>3-1층</b>
       </div>
 
       <div>
-        Bypass + B/C/D + 식품 + 음료 → <b>3-1층</b>
+        B/C/D + 크리넥스·코디·다우니·테크·유한락스 → <b>3-1층</b>
       </div>
 
       <div>
-        Bypass + B/C/D + 그 외 → <b>1-2층</b>
+        B/C/D + 그 외 → <b>1-2층</b>
       </div>
 
     </div>
@@ -737,17 +668,17 @@ const state = {
 
   filtered: [],
 
-  sortKey: "상품명",
+  sortKey: "적치층",
 
   asc: true,
 
-  activeFloor: ""
+  selectedFloor: ""
 
 };
 
 
 /* =========================================================
-   적치층 3-1층 상품명 키워드
+   적치층 키워드
 ========================================================= */
 
 const KEYWORDS_31 = [
@@ -756,7 +687,6 @@ const KEYWORDS_31 = [
   "화장지",
   "키친타월",
   "키친타올",
-
   "크리넥스",
   "코디",
   "다우니",
@@ -767,7 +697,7 @@ const KEYWORDS_31 = [
 
 
 /* =========================================================
-   기본 함수
+   문자열 정리
 ========================================================= */
 
 function norm(v){
@@ -795,7 +725,8 @@ function num(v){
   const n = Number(
     String(v)
       .replace(/,/g,"")
-      .replace(/\s/g,"")
+      .replace(/개/g,"")
+      .trim()
   );
 
   return Number.isFinite(n) ? n : 0;
@@ -805,114 +736,138 @@ function num(v){
 
 function includesAny(text, arr){
 
-  const t = norm(text);
+  const target = upper(text);
 
-  return arr.some(k => t.includes(k));
-
-}
-
-
-function fmt(v){
-
-  return Number(v || 0).toLocaleString("ko-KR");
+  return arr.some(k =>
+    target.includes(upper(k))
+  );
 
 }
 
 
 /* =========================================================
-   BOX수 표시
-   - 1 → 1
-   - 12 → 12
-   - 1.5 → 1.5
-   - 2.333 → 2.3
+   숫자 표시
+   정수 = 1
+   소수 = 1.5
 ========================================================= */
 
-function formatBoxCount(v){
+function fmtNumber(v){
 
   const n = Number(v || 0);
 
-  if(!Number.isFinite(n)){
-    return "0";
-  }
-
   if(Number.isInteger(n)){
+
     return n.toLocaleString("ko-KR");
-  }
-
-  return n.toFixed(1);
-}
-
-
-/* =========================================================
-   입수 컬럼 자동 찾기
-   RAW 파일 컬럼명이 조금 달라도 대응
-========================================================= */
-
-function getBoxIn(row){
-
-  const candidates = [
-
-    "BOX입수",
-    "BOX 입수",
-    "박스입수",
-    "박스 입수",
-    "입수",
-    "상품입수",
-    "상품 입수",
-    "BOX수량",
-    "BOX 수량"
-
-  ];
-
-  for(const key of candidates){
-
-    if(
-      Object.prototype.hasOwnProperty.call(row,key) &&
-      norm(row[key]) !== ""
-    ){
-
-      const value = num(row[key]);
-
-      if(value > 0){
-        return value;
-      }
-
-    }
 
   }
 
-  return 0;
+  return n.toLocaleString("ko-KR",{
+    minimumFractionDigits:1,
+    maximumFractionDigits:1
+  });
 
 }
 
 
 /* =========================================================
-   PCS 컬럼
-   사용자가 지정한 "위치재고(PCS)" 사용
+   컬럼명 자동 인식
 ========================================================= */
 
-function getPCS(row){
+function normalizeHeader(v){
 
-  const candidates = [
+  return String(v ?? "")
+    .replace(/\uFEFF/g,"")
+    .replace(/\s+/g,"")
+    .trim()
+    .toLowerCase();
 
-    "위치재고(PCS)",
-    "위치재고 (PCS)",
-    "위치재고",
-    "PCS"
+}
 
-  ];
 
-  for(const key of candidates){
+function findColumn(row, aliases){
 
-    if(Object.prototype.hasOwnProperty.call(row,key)){
+  const keys = Object.keys(row);
 
-      return num(row[key]);
+  for(const alias of aliases){
 
+    const target = normalizeHeader(alias);
+
+    const found = keys.find(k =>
+      normalizeHeader(k) === target
+    );
+
+    if(found){
+      return found;
     }
 
   }
 
-  return 0;
+  return null;
+
+}
+
+
+/* =========================================================
+   RAW 컬럼 매핑
+========================================================= */
+
+function getColumns(row){
+
+  return {
+
+    name: findColumn(row,[
+      "물류상품명",
+      "상품명"
+    ]),
+
+    id: findColumn(row,[
+      "물류상품ID",
+      "물류상품Id",
+      "상품코드"
+    ]),
+
+    barcode: findColumn(row,[
+      "상품바코드",
+      "바코드"
+    ]),
+
+    grade: findColumn(row,[
+      "물류상품등급",
+      "상품등급"
+    ]),
+
+    type: findColumn(row,[
+      "물류분류",
+      "물류분류명"
+    ]),
+
+    pcs: findColumn(row,[
+      "위치재고(PCS)",
+      "위치재고PCS",
+      "위치재고",
+      "존별 PCS수",
+      "PCS"
+    ]),
+
+    boxInput: findColumn(row,[
+      "BOX입수",
+      "BOX 입수",
+      "입수",
+      "박스입수",
+      "입수수량"
+    ]),
+
+    largeCategory: findColumn(row,[
+      "운영카테고리대분류명",
+      "운영카테고리 대분류명"
+    ]),
+
+    middleCategory: findColumn(row,[
+      "운영카테고리중분류명",
+      "운영카테고리 중분류명"
+    ])
+
+  };
 
 }
 
@@ -921,38 +876,42 @@ function getPCS(row){
    적치층 계산
 ========================================================= */
 
-function calcFloor(row){
+function calcFloor(row, col){
 
-  const type = norm(row["물류분류"]);
+  const type = col.type
+    ? norm(row[col.type])
+    : "";
 
-  const grade = upper(row["물류상품등급"]);
+  const grade = col.grade
+    ? upper(row[col.grade])
+    : "";
 
-  const name = norm(row["물류상품명"]);
+  const name = col.name
+    ? norm(row[col.name])
+    : "";
 
-  const bigCategory =
-    norm(row["운영카테고리대분류명"]);
+  const largeCategory = col.largeCategory
+    ? norm(row[col.largeCategory])
+    : "";
 
-  const middleCategory =
-    norm(row["운영카테고리중분류명"]);
+  const middleCategory = col.middleCategory
+    ? norm(row[col.middleCategory])
+    : "";
 
 
-  /* -------------------------------------------------------
-     1. DRY 일반
-  ------------------------------------------------------- */
+  /* -------------------------
+     DRY 일반
+  ------------------------- */
 
   if(type === "DRY 일반"){
 
-    if(
-      ["A","B","C","D"].includes(grade)
-    ){
+    if(["A","B","C","D"].includes(grade)){
 
       return "4층";
 
     }
 
-    if(
-      ["SA","SSA"].includes(grade)
-    ){
+    if(["SA","SSA"].includes(grade)){
 
       return "3-2층";
 
@@ -961,42 +920,39 @@ function calcFloor(row){
   }
 
 
-  /* -------------------------------------------------------
-     2. Bypass
-  ------------------------------------------------------- */
+  /* -------------------------
+     Bypass
+  ------------------------- */
 
   const bypass =
-    type === "DRY WCS Bypass" ||
-    type === "DRY WMS Bypass";
+
+    upper(type) === "DRY WCS BYPASS" ||
+
+    upper(type) === "DRY WMS BYPASS";
 
 
   if(bypass){
 
-    /* A / SA / SSA → 3-1층 */
+    /* A / SA / SSA */
 
-    if(
-      ["A","SA","SSA"].includes(grade)
-    ){
+    if(["A","SA","SSA"].includes(grade)){
 
       return "3-1층";
 
     }
 
 
-    /* -----------------------------------------------------
-       B / C / D
-    ----------------------------------------------------- */
+    /* B / C / D */
 
-    if(
-      ["B","C","D"].includes(grade)
-    ){
+    if(["B","C","D"].includes(grade)){
 
-      /* -----------------------------------------------
-         기존 상품명 기준 3-1층
-      ----------------------------------------------- */
+      /* -------------------------
+         식품 + 음료
+      ------------------------- */
 
       if(
-        includesAny(name,KEYWORDS_31)
+        norm(largeCategory) === "식품" &&
+        norm(middleCategory) === "음료"
       ){
 
         return "3-1층";
@@ -1004,26 +960,20 @@ function calcFloor(row){
       }
 
 
-      /* -----------------------------------------------
-         신규 조건
-         운영카테고리대분류명 = 식품
-         운영카테고리중분류명 = 음료
-         → 3-1층
-      ----------------------------------------------- */
+      /* -------------------------
+         상품명 키워드
+      ------------------------- */
 
-      if(
-        bigCategory === "식품" &&
-        middleCategory === "음료"
-      ){
+      if(includesAny(name,KEYWORDS_31)){
 
         return "3-1층";
 
       }
 
 
-      /* -----------------------------------------------
-         나머지 B/C/D → 1-2층
-      ----------------------------------------------- */
+      /* -------------------------
+         나머지
+      ------------------------- */
 
       return "1-2층";
 
@@ -1038,33 +988,54 @@ function calcFloor(row){
 
 
 /* =========================================================
-   SKU 기준 집계
-   - 물류상품ID 기준 중복 제거
-   - 같은 SKU가 여러 행이면 PCS 합산
-   ========================================================= */
+   RAW → SKU 집계
+
+   핵심:
+   물류상품ID가 같은 행은 하나의 SKU
+
+   PCS:
+   같은 상품의 여러 행 → 합산
+
+   입수:
+   상품별 입수값 사용
+
+========================================================= */
 
 function aggregate(raw){
+
+  if(!raw.length){
+
+    return [];
+
+  }
+
+
+  const col = getColumns(raw[0]);
+
 
   const map = new Map();
 
 
   for(const r of raw){
 
-    const id =
-      norm(r["물류상품ID"]);
+    const id = col.id
+      ? norm(r[col.id])
+      : "";
 
-    const barcode =
-      norm(r["상품바코드"]);
+    const barcode = col.barcode
+      ? norm(r[col.barcode])
+      : "";
 
-    const name =
-      norm(r["물류상품명"]);
+    const name = col.name
+      ? norm(r[col.name])
+      : "";
 
 
     /*
-      SKU 기준은 반드시 물류상품ID
+      물류상품ID가 가장 우선
 
-      만약 ID가 비어있는 데이터가 있을 경우에만
-      바코드 → 상품명 순으로 보조키 사용
+      ID가 없을 경우 바코드
+      그것도 없으면 상품명
     */
 
     const key =
@@ -1074,25 +1045,28 @@ function aggregate(raw){
 
 
     if(!key){
+
       continue;
+
     }
 
 
-    const floor =
-      calcFloor(r);
+    const floor = calcFloor(r,col);
 
 
-    const pcs =
-      getPCS(r);
+    /*
+      같은 ID라도 혹시 층이 다르게 계산되는 경우
+      층까지 구분
+    */
+
+    const mapKey = key + "||" + floor;
 
 
-    const boxIn =
-      getBoxIn(r);
+    if(!map.has(mapKey)){
 
+      map.set(mapKey,{
 
-    if(!map.has(key)){
-
-      map.set(key,{
+        적치층:floor,
 
         상품명:name,
 
@@ -1100,9 +1074,7 @@ function aggregate(raw){
 
         바코드:barcode,
 
-        적치층:floor,
-
-        입수:boxIn,
+        입수:0,
 
         PCS:0
 
@@ -1111,227 +1083,240 @@ function aggregate(raw){
     }
 
 
-    const x =
-      map.get(key);
+    const x = map.get(mapKey);
 
 
-    /*
-      같은 SKU가 여러 행으로 존재할 경우
-      위치재고(PCS)는 전부 합산
-    */
+    /* 상품명 */
 
-    x.PCS += pcs;
+    if(!x.상품명 && name){
+
+      x.상품명 = name;
+
+    }
 
 
-    /*
-      입수값이 첫 행에 없고
-      다른 중복 행에 있는 경우를 대비
-    */
+    /* 상품코드 */
 
-    if(
-      (!x.입수 || x.입수 === 0) &&
-      boxIn > 0
-    ){
+    if(!x.상품코드 && id){
 
-      x.입수 = boxIn;
+      x.상품코드 = id;
+
+    }
+
+
+    /* 바코드 */
+
+    if(!x.바코드 && barcode){
+
+      x.바코드 = barcode;
+
+    }
+
+
+    /* 입수 */
+
+    if(x.입수 === 0 && col.boxInput){
+
+      const input = num(r[col.boxInput]);
+
+      if(input > 0){
+
+        x.입수 = input;
+
+      }
+
+    }
+
+
+    /* PCS */
+
+    if(col.pcs){
+
+      x.PCS += num(r[col.pcs]);
 
     }
 
   }
 
 
-  const result = [];
-
+  /*
+    BOX수 계산
+  */
 
   for(const x of map.values()){
 
-    const boxCount =
-      x.입수 > 0
-        ? x.PCS / x.입수
-        : 0;
+    if(x.입수 > 0){
 
+      x.BOX수 = x.PCS / x.입수;
 
-    result.push({
+    }else{
 
-      상품명:x.상품명,
+      x.BOX수 = 0;
 
-      상품코드:x.상품코드,
-
-      바코드:x.바코드,
-
-      적치층:x.적치층,
-
-      입수:x.입수,
-
-      PCS:x.PCS,
-
-      BOX수:boxCount
-
-    });
+    }
 
   }
 
 
-  return result;
+  return [...map.values()];
 
 }
 
 
 /* =========================================================
-   층별 SKU / PCS 계산
-========================================================= */
+   층별 카드 계산
 
-function getFloorStats(floor){
-
-  const rows =
-    state.rows.filter(
-      x => x.적치층 === floor
-    );
-
-
-  return {
-
-    sku:rows.length,
-
-    pcs:rows.reduce(
-      (sum,x) => sum + Number(x.PCS || 0),
-      0
-    )
-
-  };
-
-}
-
-
-/* =========================================================
-   카드 업데이트
+   SKU = 물류상품ID 중복 제거 결과
+   PCS = 중복 행 합산
 ========================================================= */
 
 function updateCards(){
 
-  document.getElementById("count").textContent =
-    state.rows.length.toLocaleString();
+  const floors = {
+
+    "4층":{
+      sku:0,
+      pcs:0
+    },
+
+    "3-2층":{
+      sku:0,
+      pcs:0
+    },
+
+    "3-1층":{
+      sku:0,
+      pcs:0
+    },
+
+    "1-2층":{
+      sku:0,
+      pcs:0
+    }
+
+  };
 
 
-  const mapping = [
+  for(const r of state.rows){
 
-    ["4층","f4sku","f4pcs"],
+    if(!floors[r.적치층]){
 
-    ["3-2층","f32sku","f32pcs"],
+      continue;
 
-    ["3-1층","f31sku","f31pcs"],
-
-    ["1-2층","f12sku","f12pcs"]
-
-  ];
+    }
 
 
-  for(const [floor,skuId,pcsId] of mapping){
+    floors[r.적치층].sku += 1;
 
-    const stats =
-      getFloorStats(floor);
-
-
-    document.getElementById(skuId).textContent =
-      stats.sku.toLocaleString();
-
-
-    document.getElementById(pcsId).textContent =
-      stats.pcs.toLocaleString();
+    floors[r.적치층].pcs += r.PCS;
 
   }
+
+
+  document.getElementById("totalSku").textContent =
+    state.rows.length.toLocaleString("ko-KR");
+
+
+  document.getElementById("sku4").textContent =
+    floors["4층"].sku.toLocaleString("ko-KR");
+
+  document.getElementById("pcs4").textContent =
+    floors["4층"].pcs.toLocaleString("ko-KR");
+
+
+  document.getElementById("sku32").textContent =
+    floors["3-2층"].sku.toLocaleString("ko-KR");
+
+  document.getElementById("pcs32").textContent =
+    floors["3-2층"].pcs.toLocaleString("ko-KR");
+
+
+  document.getElementById("sku31").textContent =
+    floors["3-1층"].sku.toLocaleString("ko-KR");
+
+  document.getElementById("pcs31").textContent =
+    floors["3-1층"].pcs.toLocaleString("ko-KR");
+
+
+  document.getElementById("sku12").textContent =
+    floors["1-2층"].sku.toLocaleString("ko-KR");
+
+  document.getElementById("pcs12").textContent =
+    floors["1-2층"].pcs.toLocaleString("ko-KR");
 
 }
 
 
 /* =========================================================
-   테이블 렌더링
+   화면 렌더링
 ========================================================= */
 
 function render(){
 
-  const searchInput =
-    document.getElementById("search");
-
-  const floorFilter =
-    document.getElementById("floorFilter");
-
-
   const q =
-    norm(searchInput.value).toLowerCase();
+    norm(document.getElementById("search").value)
+      .toLowerCase();
 
 
   const floor =
-    floorFilter.value;
+    document.getElementById("floorFilter").value;
 
 
-  let rows =
-    state.rows.filter(r => {
+  let rows = state.rows.filter(r=>{
 
-      const text = [
+    const text = [
 
-        r.상품명,
+      r.상품명,
 
-        r.상품코드,
+      r.상품코드,
 
-        r.바코드
+      r.바코드
 
-      ]
+    ]
       .join(" ")
       .toLowerCase();
 
 
-      const searchMatch =
-        !q ||
-        text.includes(q);
+    return (
+
+      (!q || text.includes(q)) &&
+
+      (!floor || r.적치층 === floor)
+
+    );
+
+  });
 
 
-      const floorMatch =
-        !floor ||
-        r.적치층 === floor;
+  const key = state.sortKey;
 
 
-      return searchMatch && floorMatch;
+  rows.sort((a,b)=>{
 
-    });
+    const av = a[key];
 
-
-  /* 정렬 */
-
-  const key =
-    state.sortKey;
-
-
-  rows.sort((a,b) => {
-
-    const av =
-      a[key];
-
-    const bv =
-      b[key];
-
-
-    const an =
-      typeof av === "number";
-
-    const bn =
-      typeof bv === "number";
+    const bv = b[key];
 
 
     let c;
 
 
-    if(an && bn){
+    if(
+
+      typeof av === "number" &&
+
+      typeof bv === "number"
+
+    ){
 
       c = av - bv;
 
-    }
-    else{
+    }else{
 
       c =
-        String(av)
+        String(av ?? "")
           .localeCompare(
-            String(bv),
+            String(bv ?? ""),
             "ko",
             {
               numeric:true,
@@ -1342,15 +1327,12 @@ function render(){
     }
 
 
-    return state.asc
-      ? c
-      : -c;
+    return state.asc ? c : -c;
 
   });
 
 
-  state.filtered =
-    rows;
+  state.filtered = rows;
 
 
   const tb =
@@ -1386,44 +1368,43 @@ function render(){
   }
 
 
-  tb.innerHTML =
-    rows.map(r => `
+  tb.innerHTML = rows.map(r=>`
 
-      <tr>
+    <tr>
 
-        <td>
-          <span class="floor">
-            ${esc(r.적치층)}
-          </span>
-        </td>
+      <td>
+        <span class="floor">
+          ${esc(r.적치층)}
+        </span>
+      </td>
 
-        <td>
-          ${esc(r.상품명)}
-        </td>
+      <td>
+        ${esc(r.상품명)}
+      </td>
 
-        <td>
-          ${esc(r.상품코드)}
-        </td>
+      <td>
+        ${esc(r.상품코드)}
+      </td>
 
-        <td>
-          ${esc(r.바코드)}
-        </td>
+      <td>
+        ${esc(r.바코드)}
+      </td>
 
-        <td class="num">
-          ${fmt(r.입수)}
-        </td>
+      <td class="num">
+        ${r.입수 ? fmtNumber(r.입수) : "-"}
+      </td>
 
-        <td class="num">
-          ${fmt(r.PCS)}
-        </td>
+      <td class="num">
+        ${fmtNumber(r.PCS)}
+      </td>
 
-        <td class="num">
-          <b>${formatBoxCount(r.BOX수)}</b>
-        </td>
+      <td class="num box-count">
+        ${r.입수 ? fmtNumber(r.BOX수) : "-"}
+      </td>
 
-      </tr>
+    </tr>
 
-    `).join("");
+  `).join("");
 
 }
 
@@ -1437,7 +1418,7 @@ function esc(v){
   return String(v ?? "")
     .replace(
       /[&<>"']/g,
-      m => ({
+      m=>({
 
         "&":"&amp;",
         "<":"&lt;",
@@ -1476,17 +1457,20 @@ async function readFile(file){
       );
 
 
+    /*
+      첫 번째 시트 사용
+    */
+
     const ws =
-      wb.Sheets[
-        wb.SheetNames[0]
-      ];
+      wb.Sheets[wb.SheetNames[0]];
 
 
     const raw =
       XLSX.utils.sheet_to_json(
         ws,
         {
-          defval:""
+          defval:"",
+          raw:false
         }
       );
 
@@ -1494,112 +1478,131 @@ async function readFile(file){
     if(!raw.length){
 
       throw new Error(
-        "데이터가 없습니다."
-      );
-
-    }
-
-
-    /* 필수 컬럼 */
-
-    const required = [
-
-      "물류상품명",
-
-      "물류상품ID",
-
-      "상품바코드",
-
-      "물류상품등급",
-
-      "물류분류"
-
-    ];
-
-
-    const missing =
-      required.filter(
-        k => !(k in raw[0])
-      );
-
-
-    if(missing.length){
-
-      throw new Error(
-        "필수 컬럼이 없습니다: " +
-        missing.join(", ")
+        "엑셀에 데이터가 없습니다."
       );
 
     }
 
 
     /*
-      PCS 컬럼 확인
+      컬럼 자동 인식
     */
 
-    const hasPCS =
-      [
-        "위치재고(PCS)",
-        "위치재고 (PCS)",
-        "위치재고",
-        "PCS"
-      ]
-      .some(
-        k => k in raw[0]
-      );
+    const col =
+      getColumns(raw[0]);
 
 
-    if(!hasPCS){
+    /*
+      핵심 컬럼만 확인
+
+      카테고리는 없어도 업로드 가능
+      PCS/입수도 없어도 업로드 가능
+    */
+
+    const missing = [];
+
+
+    if(!col.name){
+
+      missing.push("물류상품명");
+
+    }
+
+
+    if(!col.id){
+
+      missing.push("물류상품ID");
+
+    }
+
+
+    if(!col.grade){
+
+      missing.push("물류상품등급");
+
+    }
+
+
+    if(!col.type){
+
+      missing.push("물류분류");
+
+    }
+
+
+    if(missing.length){
 
       throw new Error(
-        "PCS 컬럼을 찾을 수 없습니다. " +
-        "'위치재고(PCS)' 컬럼을 확인해주세요."
+
+        "필수 컬럼을 찾을 수 없습니다.\n\n" +
+
+        "필요한 컬럼:\n" +
+
+        missing.join(", ") +
+
+        "\n\n" +
+
+        "※ 컬럼명에 공백이 있어도 자동 인식합니다."
+
       );
 
     }
 
 
+    /*
+      데이터 집계
+    */
+
     state.rows =
       aggregate(raw);
 
 
-    state.activeFloor =
-      "";
+    if(!state.rows.length){
 
+      throw new Error(
+        "상품 데이터를 찾지 못했습니다."
+      );
 
-    document
-      .querySelectorAll(".floor-card")
-      .forEach(card => {
-
-        card.classList.remove("active");
-
-      });
+    }
 
 
     updateCards();
 
 
+    state.selectedFloor = "";
+
+
+    document
+      .querySelectorAll(".floor-card")
+      .forEach(card=>{
+        card.classList.remove("active");
+      });
+
+
+    document.getElementById("floorFilter").value =
+      "";
+
+
     document.getElementById("status").textContent =
 
-      `${file.name} · 원본 ${raw.length.toLocaleString()}행 → SKU ${state.rows.length.toLocaleString()}개`;
+      `${file.name} · 원본 ${raw.length.toLocaleString("ko-KR")}행 → SKU ${state.rows.length.toLocaleString("ko-KR")}개`;
 
 
     render();
 
-  }
-
-  catch(err){
+  }catch(err){
 
     console.error(err);
 
-    alert(
-      err.message ||
-      "파일을 읽는 중 오류가 발생했습니다."
-    );
-
 
     document.getElementById("status").textContent =
-      "RAW 파일을 업로드해주세요.";
+      "파일을 읽지 못했습니다.";
+
+
+    alert(
+      "파일을 읽는 중 오류가 발생했습니다.\n\n" +
+      err.message
+    );
 
   }
 
@@ -1607,19 +1610,16 @@ async function readFile(file){
 
 
 /* =========================================================
-   파일 업로드
+   파일 선택
 ========================================================= */
 
 document
   .getElementById("file")
   .addEventListener(
     "change",
-    e => {
+    e=>{
 
-      if(
-        e.target.files &&
-        e.target.files[0]
-      ){
+      if(e.target.files[0]){
 
         readFile(
           e.target.files[0]
@@ -1632,7 +1632,7 @@ document
 
 
 /* =========================================================
-   드래그 & 드롭
+   드래그 앤 드롭
 ========================================================= */
 
 const drop =
@@ -1641,7 +1641,7 @@ const drop =
 
 drop.addEventListener(
   "dragover",
-  e => {
+  e=>{
 
     e.preventDefault();
 
@@ -1653,7 +1653,7 @@ drop.addEventListener(
 
 drop.addEventListener(
   "dragleave",
-  () => {
+  ()=>{
 
     drop.classList.remove("drag");
 
@@ -1663,7 +1663,7 @@ drop.addEventListener(
 
 drop.addEventListener(
   "drop",
-  e => {
+  e=>{
 
     e.preventDefault();
 
@@ -1704,59 +1704,78 @@ document
   .getElementById("floorFilter")
   .addEventListener(
     "change",
-    render
+    ()=>{
+
+      const floor =
+        document.getElementById("floorFilter").value;
+
+
+      state.selectedFloor = floor;
+
+
+      document
+        .querySelectorAll(".floor-card")
+        .forEach(card=>{
+
+          card.classList.toggle(
+            "active",
+            card.dataset.floor === floor
+          );
+
+        });
+
+
+      render();
+
+    }
   );
 
 
 /* =========================================================
    층 카드 클릭
-   → 해당 층 상세 리스트
 ========================================================= */
 
 document
   .querySelectorAll(".floor-card")
-  .forEach(card => {
+  .forEach(card=>{
 
     card.addEventListener(
       "click",
-      () => {
+      ()=>{
 
         const floor =
           card.dataset.floor;
 
 
-        const filter =
-          document.getElementById("floorFilter");
-
-
         /*
-          같은 층을 다시 누르면
-          전체로 돌아감
+          같은 층을 다시 클릭하면 전체로 복귀
         */
 
-        if(state.activeFloor === floor){
+        if(
+          state.selectedFloor === floor
+        ){
 
-          state.activeFloor = "";
+          state.selectedFloor = "";
 
-          filter.value = "";
+          document
+            .getElementById("floorFilter")
+            .value = "";
 
           card.classList.remove("active");
 
-        }
+        }else{
 
-        else{
+          state.selectedFloor = floor;
 
-          state.activeFloor = floor;
-
-          filter.value = floor;
+          document
+            .getElementById("floorFilter")
+            .value = floor;
 
 
           document
             .querySelectorAll(".floor-card")
-            .forEach(c => {
-
+            .forEach(c=>{
               c.classList.remove("active");
-
             });
 
 
@@ -1766,21 +1785,6 @@ document
 
 
         render();
-
-
-        /*
-          상세 테이블 위치로 살짝 이동
-        */
-
-        document
-          .querySelector(".tablebox")
-          .scrollIntoView({
-
-            behavior:"smooth",
-
-            block:"start"
-
-          });
 
       }
     );
@@ -1794,32 +1798,26 @@ document
 
 document
   .querySelectorAll("th[data-key]")
-  .forEach(th => {
+  .forEach(th=>{
 
     th.addEventListener(
       "click",
-      () => {
+      ()=>{
 
         const k =
           th.dataset.key;
 
 
-        if(
-          state.sortKey === k
-        ){
+        if(state.sortKey === k){
 
           state.asc =
             !state.asc;
 
-        }
+        }else{
 
-        else{
+          state.sortKey = k;
 
-          state.sortKey =
-            k;
-
-          state.asc =
-            true;
+          state.asc = true;
 
         }
 
@@ -1833,18 +1831,16 @@ document
 
 
 /* =========================================================
-   CSV / 엑셀 다운로드
+   CSV 다운로드
 ========================================================= */
 
 document
   .getElementById("download")
   .addEventListener(
     "click",
-    () => {
+    ()=>{
 
-      if(
-        !state.filtered.length
-      ){
+      if(!state.filtered.length){
 
         alert(
           "다운로드할 데이터가 없습니다."
@@ -1855,8 +1851,8 @@ document
       }
 
 
-      const data =
-        state.filtered.map(r => ({
+      const exportData =
+        state.filtered.map(r=>({
 
           "적치층":
             r.적치층,
@@ -1877,16 +1873,14 @@ document
             r.PCS,
 
           "BOX수":
-            Number(
-              r.BOX수 || 0
-            )
+            r.BOX수
 
         }));
 
 
       const ws =
         XLSX.utils.json_to_sheet(
-          data
+          exportData
         );
 
 
@@ -1908,6 +1902,7 @@ document
 
     }
   );
+
 
 </script>
 

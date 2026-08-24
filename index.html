@@ -3,156 +3,576 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>위치별 재고현황</title>
+
+<title>입고팀 업무 대시보드</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
+
+/* =========================================================
+   기본
+========================================================= */
+
 *{
   box-sizing:border-box;
 }
 
+html,
 body{
   margin:0;
-  background:#f5f7fb;
-  color:#172033;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif;
+  width:100%;
+  min-height:100%;
 }
 
-.wrap{
-  max-width:1500px;
-  margin:0 auto;
-  padding:28px;
+body{
+  background:#eef1f6;
+  color:#1c1c1e;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Noto Sans KR",
+    Arial,
+    sans-serif;
 }
 
-.header{
+
+/* =========================================================
+   전체 앱
+========================================================= */
+
+.app{
+  min-height:100vh;
   display:flex;
+  padding:22px;
+  gap:18px;
+}
+
+
+/* =========================================================
+   좌측 사이드바
+========================================================= */
+
+.sidebar{
+  width:305px;
+  flex:0 0 305px;
+
+  background:rgba(255,255,255,.92);
+  border:1px solid #dfe3ea;
+  border-radius:24px;
+
+  box-shadow:
+    0 10px 30px rgba(30,40,70,.08);
+
+  padding:22px;
+
+  display:flex;
+  flex-direction:column;
+
+  position:sticky;
+  top:22px;
+
+  height:calc(100vh - 44px);
+  min-height:650px;
+}
+
+
+/* =========================================================
+   좌측 상단 브랜드
+========================================================= */
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:4px 3px 20px;
+}
+
+.brand-icon{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:#f0f2ff;
+  font-size:22px;
+}
+
+.brand-text{
+  min-width:0;
+}
+
+.brand-title{
+  font-size:17px;
+  font-weight:800;
+  letter-spacing:-.5px;
+}
+
+.brand-sub{
+  margin-top:3px;
+  font-size:11px;
+  color:#8b8f98;
+}
+
+
+/* =========================================================
+   현재 날짜 / 시간
+========================================================= */
+
+.clock-card{
+  background:#f6f7fb;
+  border-radius:18px;
+  padding:17px 16px;
+  margin-bottom:18px;
+}
+
+.clock-date{
+  font-size:13px;
+  color:#6d7280;
+  font-weight:600;
+}
+
+.clock-time{
+  margin-top:5px;
+  font-size:31px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-1.5px;
+  font-variant-numeric:tabular-nums;
+}
+
+.clock-status{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-top:11px;
+
+  font-size:11px;
+  color:#777d89;
+}
+
+.clock-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#34c759;
+}
+
+
+/* =========================================================
+   섹션 제목
+========================================================= */
+
+.side-section-title{
+  display:flex;
+  align-items:center;
   justify-content:space-between;
-  align-items:flex-end;
-  gap:20px;
-  margin-bottom:22px;
+
+  margin:4px 3px 10px;
+
+  font-size:12px;
+  color:#8b8f98;
+  font-weight:700;
 }
 
-h1{
-  margin:0;
-  font-size:30px;
-  letter-spacing:-1.2px;
+.side-section-title span{
+  font-size:11px;
+  font-weight:500;
+  color:#a1a5ad;
 }
 
-.sub{
-  margin-top:7px;
-  color:#667085;
+
+/* =========================================================
+   근태 카드
+========================================================= */
+
+.attendance-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.attendance-card{
+  background:#f7f8fa;
+  border-radius:15px;
+  padding:11px;
+
+  border:1px solid transparent;
+
+  transition:.15s;
+}
+
+.attendance-card:hover{
+  border-color:#d8dce5;
+  background:#f3f5f8;
+}
+
+.attendance-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.employee{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+
+.employee-avatar{
+  width:32px;
+  height:32px;
+  flex:0 0 32px;
+
+  border-radius:10px;
+
+  background:#e8ebf2;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
   font-size:14px;
 }
 
-.status{
-  font-size:12px;
-  color:#667085;
+.employee-name{
+  width:100px;
+
+  border:0;
+  outline:none;
+  background:transparent;
+
+  font-size:13px;
+  font-weight:700;
+  color:#252832;
 }
+
+.attendance-select{
+  border:0;
+  outline:none;
+
+  background:#fff;
+
+  border-radius:9px;
+
+  padding:6px 7px;
+
+  font-size:11px;
+  color:#4e5563;
+
+  cursor:pointer;
+}
+
+
+/* =========================================================
+   근태 상태별 표시
+========================================================= */
+
+.attendance-card[data-status="근무"] .employee-avatar{
+  background:#e8f7ed;
+}
+
+.attendance-card[data-status="연차"] .employee-avatar{
+  background:#fff0f0;
+}
+
+.attendance-card[data-status="반차"] .employee-avatar{
+  background:#fff5dc;
+}
+
+.attendance-card[data-status="휴무"] .employee-avatar{
+  background:#eceef2;
+}
+
+.attendance-card[data-status="외근"] .employee-avatar{
+  background:#eaf2ff;
+}
+
+
+/* =========================================================
+   근무자 요약
+========================================================= */
+
+.attendance-summary{
+  margin-top:10px;
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.attendance-summary-item{
+  background:#f7f8fa;
+  border-radius:12px;
+  padding:10px 11px;
+}
+
+.attendance-summary-label{
+  font-size:10px;
+  color:#8a8f99;
+}
+
+.attendance-summary-number{
+  margin-top:3px;
+  font-size:17px;
+  font-weight:800;
+}
+
+
+/* =========================================================
+   좌측 하단
+========================================================= */
+
+.sidebar-footer{
+  margin-top:auto;
+  padding-top:18px;
+}
+
+.footer-box{
+  background:#f7f8fa;
+  border-radius:15px;
+  padding:12px 13px;
+}
+
+.footer-title{
+  font-size:11px;
+  color:#8b8f98;
+}
+
+.footer-text{
+  margin-top:4px;
+  font-size:12px;
+  color:#555b66;
+  line-height:1.5;
+}
+
+
+/* =========================================================
+   우측 메인
+========================================================= */
+
+.main{
+  min-width:0;
+  flex:1;
+}
+
+
+/* =========================================================
+   상단 헤더
+========================================================= */
+
+.main-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+
+  gap:20px;
+
+  padding:8px 5px 18px;
+}
+
+.main-title{
+  margin:0;
+
+  font-size:28px;
+  font-weight:800;
+
+  letter-spacing:-1.2px;
+}
+
+.main-sub{
+  margin-top:6px;
+
+  font-size:13px;
+  color:#777d88;
+}
+
+.main-status{
+  font-size:11px;
+  color:#8b909a;
+}
+
+
+/* =========================================================
+   업로드
+========================================================= */
 
 .upload{
   background:#fff;
-  border:1px solid #dfe4ec;
-  border-radius:16px;
-  padding:18px;
-  box-shadow:0 5px 18px rgba(20,30,55,.05);
+
+  border:1px solid #dfe3ea;
+
+  border-radius:20px;
+
+  padding:14px;
+
+  box-shadow:
+    0 8px 25px rgba(30,40,70,.05);
 }
 
 .drop{
   display:block;
-  border:2px dashed #b9c2d0;
-  border-radius:14px;
-  padding:25px;
+
+  border:1.5px dashed #b8bfcc;
+
+  border-radius:16px;
+
+  padding:22px;
+
   text-align:center;
+
   cursor:pointer;
+
   transition:.15s;
 }
 
 .drop:hover,
 .drop.drag{
-  border-color:#5b67e8;
-  background:#f7f8ff;
+  border-color:#6875f5;
+  background:#f8f8ff;
 }
 
 .drop strong{
   display:block;
-  font-size:16px;
+
+  font-size:15px;
   margin-bottom:5px;
 }
 
 .drop span{
-  font-size:13px;
-  color:#7b8494;
+  font-size:12px;
+  color:#8a909b;
 }
 
 input[type=file]{
   display:none;
 }
 
-/* 전체 SKU */
+
+/* =========================================================
+   오류
+========================================================= */
+
+.error-box{
+  margin-top:10px;
+
+  padding:11px 13px;
+
+  border-radius:11px;
+
+  background:#fff1f1;
+
+  color:#b42318;
+
+  font-size:12px;
+
+  display:none;
+}
+
+
+/* =========================================================
+   전체 SKU
+========================================================= */
+
 .total-card{
+  margin-top:14px;
+
   background:#fff;
-  border:1px solid #e2e7ef;
-  border-radius:14px;
-  padding:18px;
-  margin:18px 0 12px;
+
+  border:1px solid #dfe3ea;
+
+  border-radius:20px;
+
+  padding:18px 20px;
+
+  box-shadow:
+    0 8px 25px rgba(30,40,70,.04);
 }
 
 .label{
-  font-size:12px;
-  color:#7b8494;
-  margin-bottom:7px;
+  font-size:11px;
+  color:#8b909a;
+  margin-bottom:5px;
 }
 
 .value{
-  font-size:24px;
-  font-weight:750;
-  letter-spacing:-.5px;
+  font-size:29px;
+  font-weight:800;
+  letter-spacing:-1px;
 }
 
-/* 층 카드 */
+
+/* =========================================================
+   층별 카드
+========================================================= */
+
 .floor-cards{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-  margin-bottom:18px;
+
+  grid-template-columns:
+    repeat(4, minmax(0,1fr));
+
+  gap:10px;
+
+  margin-top:14px;
 }
 
 .floor-card{
   background:#fff;
-  border:1px solid #e2e7ef;
-  border-radius:14px;
-  padding:18px;
+
+  border:1px solid #dfe3ea;
+
+  border-radius:18px;
+
+  padding:15px;
+
   cursor:pointer;
+
   transition:.15s;
+
+  box-shadow:
+    0 6px 20px rgba(30,40,70,.035);
 }
 
 .floor-card:hover{
-  border-color:#9da8ff;
-  box-shadow:0 5px 18px rgba(20,30,55,.06);
+  border-color:#b9c1ff;
+  transform:translateY(-1px);
 }
 
 .floor-card.active{
   border-color:#6875f5;
-  box-shadow:0 0 0 1px #6875f5;
+
+  box-shadow:
+    0 0 0 1px #6875f5,
+    0 7px 22px rgba(104,117,245,.12);
+
   background:#fbfbff;
 }
 
 .floor-head{
   display:flex;
+
   justify-content:space-between;
   align-items:center;
-  margin-bottom:16px;
+
+  margin-bottom:12px;
 }
 
 .floor-title{
-  font-size:16px;
+  font-size:14px;
   font-weight:750;
 }
 
 .arrow{
-  font-size:20px;
-  color:#667085;
+  font-size:16px;
+  color:#777e89;
+
   transition:.15s;
 }
 
@@ -162,42 +582,61 @@ input[type=file]{
 
 .floor-values{
   display:grid;
+
   grid-template-columns:1fr 1fr;
-  gap:10px;
+
+  gap:7px;
 }
 
 .floor-value{
-  background:#f7f9fc;
-  border-radius:10px;
-  padding:12px;
+  background:#f6f7fa;
+
+  border-radius:11px;
+
+  padding:9px 10px;
 }
 
 .floor-value .label{
-  margin-bottom:5px;
+  margin-bottom:3px;
 }
 
 .floor-value .number{
-  font-size:21px;
-  font-weight:750;
+  font-size:18px;
+  font-weight:800;
 }
 
-/* 검색 */
+
+/* =========================================================
+   검색 영역
+========================================================= */
+
 .toolbar{
   display:flex;
-  gap:10px;
+
+  gap:8px;
+
   align-items:center;
+
   flex-wrap:wrap;
-  margin:18px 0 12px;
+
+  margin:14px 0 10px;
 }
 
 .search{
   flex:1;
-  min-width:260px;
-  border:1px solid #d8dee8;
-  border-radius:10px;
+
+  min-width:220px;
+
+  border:1px solid #d8dde6;
+
+  border-radius:12px;
+
   padding:11px 13px;
-  font-size:14px;
+
+  font-size:13px;
+
   background:#fff;
+
   outline:none;
 }
 
@@ -207,56 +646,85 @@ input[type=file]{
 
 .select,
 .btn{
-  border:1px solid #d8dee8;
-  border-radius:10px;
-  padding:10px 12px;
-  background:#fff;
-  font-size:13px;
-  color:#344054;
-}
+  border:1px solid #d8dde6;
 
-.btn{
+  border-radius:12px;
+
+  padding:10px 12px;
+
+  background:#fff;
+
+  font-size:12px;
+
+  color:#414754;
+
   cursor:pointer;
 }
 
-.btn:hover{
+.btn:hover,
+.select:hover{
   background:#f8f9fb;
 }
 
-/* 테이블 */
+
+/* =========================================================
+   테이블
+========================================================= */
+
 .tablebox{
   background:#fff;
-  border:1px solid #e1e6ee;
-  border-radius:16px;
+
+  border:1px solid #dfe3ea;
+
+  border-radius:18px;
+
   overflow:auto;
-  box-shadow:0 5px 18px rgba(20,30,55,.04);
+
+  box-shadow:
+    0 7px 22px rgba(30,40,70,.04);
 }
 
 table{
   width:100%;
+
   border-collapse:collapse;
-  min-width:1100px;
+
+  min-width:1000px;
 }
 
 th{
   position:sticky;
+
   top:0;
-  background:#f8fafc;
-  color:#667085;
-  font-size:12px;
+
+  background:#f7f8fa;
+
+  color:#727884;
+
+  font-size:11px;
+
   font-weight:700;
+
   text-align:left;
-  padding:13px 15px;
-  border-bottom:1px solid #e5e9f0;
+
+  padding:12px 14px;
+
+  border-bottom:1px solid #e5e8ee;
+
   cursor:pointer;
+
   white-space:nowrap;
+
   z-index:2;
 }
 
 td{
-  padding:13px 15px;
+  padding:12px 14px;
+
   border-bottom:1px solid #edf0f4;
-  font-size:13px;
+
+  font-size:12px;
+
   white-space:nowrap;
 }
 
@@ -266,254 +734,492 @@ tbody tr:hover{
 
 td.num{
   text-align:right;
+
   font-variant-numeric:tabular-nums;
 }
 
 .floor{
   display:inline-flex;
-  padding:5px 9px;
-  border-radius:8px;
+
+  padding:5px 8px;
+
+  border-radius:7px;
+
   background:#eef0ff;
+
   color:#3542a5;
+
   font-weight:700;
-  font-size:12px;
+
+  font-size:11px;
 }
 
 .box-num{
   font-weight:700;
 }
 
+
+/* =========================================================
+   빈 화면
+========================================================= */
+
 .empty{
-  padding:65px 20px;
+  padding:55px 20px;
+
   text-align:center;
-  color:#7b8494;
+
+  color:#8a909b;
 }
 
 .empty strong{
   display:block;
-  color:#344054;
-  margin-bottom:7px;
+
+  color:#414754;
+
+  margin-bottom:6px;
 }
 
-/* 규칙 */
+
+/* =========================================================
+   규칙
+========================================================= */
+
 .rule{
-  margin-top:14px;
+  margin-top:10px;
+
   background:#fff;
-  border:1px solid #e1e6ee;
-  border-radius:14px;
-  padding:15px 17px;
+
+  border:1px solid #dfe3ea;
+
+  border-radius:16px;
+
+  padding:13px 15px;
 }
 
 .rule summary{
   cursor:pointer;
+
   font-weight:700;
-  font-size:13px;
+
+  font-size:12px;
 }
 
 .rulegrid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:8px;
-  margin-top:12px;
-  font-size:12px;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:7px;
+
+  margin-top:10px;
+
+  font-size:11px;
+
   color:#596273;
 }
 
 .rulegrid div{
-  padding:9px 11px;
-  background:#f8fafc;
+  padding:9px 10px;
+
+  background:#f7f8fa;
+
   border-radius:8px;
 }
 
-/* 오류 */
-.error-box{
-  margin-top:12px;
-  padding:12px 14px;
-  border-radius:10px;
-  background:#fff1f1;
-  color:#b42318;
-  font-size:13px;
-  display:none;
-}
 
-/* 모바일 */
-@media(max-width:900px){
+/* =========================================================
+   반응형
+========================================================= */
+
+@media(max-width:1100px){
+
+  .app{
+    padding:14px;
+  }
+
+  .sidebar{
+    width:270px;
+    flex-basis:270px;
+  }
 
   .floor-cards{
     grid-template-columns:repeat(2,1fr);
   }
 
-  .header{
+}
+
+@media(max-width:800px){
+
+  .app{
     display:block;
   }
 
-  .header .status{
-    margin-top:10px;
+  .sidebar{
+    position:relative;
+
+    top:auto;
+
+    width:100%;
+
+    height:auto;
+
+    min-height:auto;
+
+    margin-bottom:14px;
   }
+
+  .attendance-list{
+    display:grid;
+
+    grid-template-columns:
+      repeat(3,1fr);
+  }
+
+  .sidebar-footer{
+    margin-top:14px;
+  }
+
 }
 
-@media(max-width:520px){
+@media(max-width:600px){
 
-  .wrap{
+  .app{
+    padding:9px;
+  }
+
+  .sidebar{
+    border-radius:18px;
     padding:15px;
+  }
+
+  .attendance-list{
+    grid-template-columns:1fr;
   }
 
   .floor-cards{
     grid-template-columns:1fr 1fr;
   }
 
-  h1{
-    font-size:24px;
+  .main-title{
+    font-size:23px;
   }
+
+  .main-header{
+    display:block;
+  }
+
+  .main-status{
+    margin-top:8px;
+  }
+
 }
+
+
+/* =========================================================
+   스크롤바
+========================================================= */
+
+::-webkit-scrollbar{
+  width:7px;
+  height:7px;
+}
+
+::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+::-webkit-scrollbar-thumb{
+  background:#c8cdd6;
+  border-radius:10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background:#aeb4bf;
+}
+
 </style>
 </head>
 
 
 <body>
 
-<div class="wrap">
+<div class="app">
 
-  <div class="header">
 
-    <div>
-      <h1>📦 위치별 재고현황</h1>
-      <div class="sub">
-        미적치 상품 RAW를 업로드하면 적치층과 재고현황을 자동 계산합니다.
+  <!-- =====================================================
+       LEFT SIDEBAR
+  ====================================================== -->
+
+  <aside class="sidebar">
+
+
+    <!-- 브랜드 -->
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        📦
       </div>
+
+      <div class="brand-text">
+
+        <div class="brand-title">
+          입고팀 업무현황
+        </div>
+
+        <div class="brand-sub">
+          INBOUND TEAM
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="status" id="status">
-      RAW 파일을 업로드해주세요.
-    </div>
 
-  </div>
+    <!-- 날짜 / 시간 -->
 
+    <div class="clock-card">
 
-  <!-- 업로드 -->
-  <div class="upload">
-
-    <label class="drop" id="drop">
-
-      <input
-        id="file"
-        type="file"
-        accept=".xlsx,.xls,.csv"
+      <div
+        class="clock-date"
+        id="clockDate"
       >
+        2026년 8월 24일 월요일
+      </div>
 
-      <strong>RAW 파일 업로드</strong>
+      <div
+        class="clock-time"
+        id="clockTime"
+      >
+        00:00:00
+      </div>
+
+      <div class="clock-status">
+
+        <span class="clock-dot"></span>
+
+        현재 시간 기준
+
+      </div>
+
+    </div>
+
+
+    <!-- 근태 -->
+
+    <div class="side-section-title">
+
+      <div>
+        👥 금일 입고팀 근태
+      </div>
 
       <span>
-        엑셀 파일을 클릭하거나 이 영역으로 드래그하세요.
+        수기 입력
       </span>
 
-    </label>
-
-    <div class="error-box" id="errorBox"></div>
-
-  </div>
-
-
-  <!-- 전체 SKU -->
-  <div class="total-card">
-
-    <div class="label">
-      전체 SKU 수
-    </div>
-
-    <div class="value" id="count">
-      0
-    </div>
-
-  </div>
-
-
-  <!-- 층별 카드 -->
-  <div class="floor-cards">
-
-    <div class="floor-card" data-floor="4층">
-
-      <div class="floor-head">
-
-        <div class="floor-title">
-          🏢 4층
-        </div>
-
-        <div class="arrow">
-          ▼
-        </div>
-
-      </div>
-
-      <div class="floor-values">
-
-        <div class="floor-value">
-
-          <div class="label">
-            SKU
-          </div>
-
-          <div class="number" id="sku4">
-            0
-          </div>
-
-        </div>
-
-        <div class="floor-value">
-
-          <div class="label">
-            PCS
-          </div>
-
-          <div class="number" id="pcs4">
-            0
-          </div>
-
-        </div>
-
-      </div>
-
     </div>
 
 
-    <div class="floor-card" data-floor="3-2층">
+    <div
+      class="attendance-list"
+      id="attendanceList"
+    >
 
-      <div class="floor-head">
 
-        <div class="floor-title">
-          🏢 3-2층
-        </div>
+      <!-- 직원 1 -->
 
-        <div class="arrow">
-          ▼
+      <div
+        class="attendance-card"
+        data-index="0"
+        data-status="근무"
+      >
+
+        <div class="attendance-top">
+
+          <div class="employee">
+
+            <div class="employee-avatar">
+              👤
+            </div>
+
+            <input
+              class="employee-name"
+              value="입고팀 1"
+              placeholder="이름 입력"
+            >
+
+          </div>
+
+          <select class="attendance-select">
+
+            <option value="근무">
+              근무
+            </option>
+
+            <option value="연차">
+              연차
+            </option>
+
+            <option value="반차">
+              반차
+            </option>
+
+            <option value="휴무">
+              휴무
+            </option>
+
+            <option value="외근">
+              외근
+            </option>
+
+          </select>
+
         </div>
 
       </div>
 
-      <div class="floor-values">
 
-        <div class="floor-value">
+      <!-- 직원 2 -->
 
-          <div class="label">
-            SKU
+      <div
+        class="attendance-card"
+        data-index="1"
+        data-status="근무"
+      >
+
+        <div class="attendance-top">
+
+          <div class="employee">
+
+            <div class="employee-avatar">
+              👤
+            </div>
+
+            <input
+              class="employee-name"
+              value="입고팀 2"
+              placeholder="이름 입력"
+            >
+
           </div>
 
-          <div class="number" id="sku32">
-            0
-          </div>
+          <select class="attendance-select">
+
+            <option value="근무">
+              근무
+            </option>
+
+            <option value="연차">
+              연차
+            </option>
+
+            <option value="반차">
+              반차
+            </option>
+
+            <option value="휴무">
+              휴무
+            </option>
+
+            <option value="외근">
+              외근
+            </option>
+
+          </select>
 
         </div>
 
-        <div class="floor-value">
+      </div>
 
-          <div class="label">
-            PCS
+
+      <!-- 직원 3 -->
+
+      <div
+        class="attendance-card"
+        data-index="2"
+        data-status="근무"
+      >
+
+        <div class="attendance-top">
+
+          <div class="employee">
+
+            <div class="employee-avatar">
+              👤
+            </div>
+
+            <input
+              class="employee-name"
+              value="입고팀 3"
+              placeholder="이름 입력"
+            >
+
           </div>
 
-          <div class="number" id="pcs32">
-            0
-          </div>
+          <select class="attendance-select">
 
+            <option value="근무">
+              근무
+            </option>
+
+            <option value="연차">
+              연차
+            </option>
+
+            <option value="반차">
+              반차
+            </option>
+
+            <option value="휴무">
+              휴무
+            </option>
+
+            <option value="외근">
+              외근
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+    <!-- 근무자 요약 -->
+
+    <div class="attendance-summary">
+
+      <div class="attendance-summary-item">
+
+        <div class="attendance-summary-label">
+          오늘 근무
+        </div>
+
+        <div
+          class="attendance-summary-number"
+          id="workingCount"
+        >
+          3명
+        </div>
+
+      </div>
+
+
+      <div class="attendance-summary-item">
+
+        <div class="attendance-summary-label">
+          부재
+        </div>
+
+        <div
+          class="attendance-summary-number"
+          id="absentCount"
+        >
+          0명
         </div>
 
       </div>
@@ -521,250 +1227,531 @@ td.num{
     </div>
 
 
-    <div class="floor-card" data-floor="3-1층">
+    <!-- 좌측 하단 -->
 
-      <div class="floor-head">
+    <div class="sidebar-footer">
 
-        <div class="floor-title">
-          🏢 3-1층
+      <div class="footer-box">
+
+        <div class="footer-title">
+          📌 사용 안내
         </div>
 
-        <div class="arrow">
-          ▼
+        <div class="footer-text">
+          이름과 근태를 클릭해서 수정할 수 있습니다.
+          입력값은 이 기기에 자동 저장됩니다.
         </div>
 
       </div>
 
-      <div class="floor-values">
+    </div>
 
-        <div class="floor-value">
 
-          <div class="label">
-            SKU
+  </aside>
+
+
+
+  <!-- =====================================================
+       RIGHT MAIN
+  ====================================================== -->
+
+  <main class="main">
+
+
+    <!-- 헤더 -->
+
+    <div class="main-header">
+
+      <div>
+
+        <h1 class="main-title">
+          위치별 재고현황
+        </h1>
+
+        <div class="main-sub">
+          미적치 상품 RAW를 업로드하면
+          적치층과 재고현황을 자동 계산합니다.
+        </div>
+
+      </div>
+
+      <div
+        class="main-status"
+        id="status"
+      >
+        RAW 파일을 업로드해주세요.
+      </div>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         RAW 업로드
+    ==================================================== -->
+
+    <div class="upload">
+
+      <label
+        class="drop"
+        id="drop"
+      >
+
+        <input
+          id="file"
+          type="file"
+          accept=".xlsx,.xls,.csv"
+        >
+
+        <strong>
+          📄 RAW 파일 업로드
+        </strong>
+
+        <span>
+          엑셀 파일을 클릭하거나 이 영역으로 드래그하세요.
+        </span>
+
+      </label>
+
+      <div
+        class="error-box"
+        id="errorBox"
+      ></div>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         전체 SKU
+    ==================================================== -->
+
+    <div class="total-card">
+
+      <div class="label">
+        전체 SKU 수
+      </div>
+
+      <div
+        class="value"
+        id="count"
+      >
+        0
+      </div>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         층별 카드
+    ==================================================== -->
+
+    <div class="floor-cards">
+
+
+      <!-- 4층 -->
+
+      <div
+        class="floor-card"
+        data-floor="4층"
+      >
+
+        <div class="floor-head">
+
+          <div class="floor-title">
+            🏢 4층
           </div>
 
-          <div class="number" id="sku31">
-            0
+          <div class="arrow">
+            ▼
           </div>
 
         </div>
 
-        <div class="floor-value">
+        <div class="floor-values">
 
           <div class="floor-value">
 
-          <div class="label">
-            PCS
-          </div>
-
-          <div class="number" id="pcs31">
-            0
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="floor-card" data-floor="1-2층">
-
-      <div class="floor-head">
-
-        <div class="floor-title">
-          🏢 1-2층
-        </div>
-
-        <div class="arrow">
-          ▼
-        </div>
-
-      </div>
-
-      <div class="floor-values">
-
-        <div class="floor-value">
-
-          <div class="label">
-            SKU
-          </div>
-
-          <div class="number" id="sku12">
-            0
-          </div>
-
-        </div>
-
-        <div class="floor-value">
-
-          <div class="label">
-            PCS
-          </div>
-
-          <div class="number" id="pcs12">
-            0
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- 검색 -->
-  <div class="toolbar">
-
-    <input
-      class="search"
-      id="search"
-      placeholder="상품명 / 상품코드 / 바코드 검색"
-    >
-
-    <select class="select" id="floorFilter">
-
-      <option value="">
-        전체 적치층
-      </option>
-
-      <option value="4층">
-        4층
-      </option>
-
-      <option value="3-2층">
-        3-2층
-      </option>
-
-      <option value="3-1층">
-        3-1층
-      </option>
-
-      <option value="1-2층">
-        1-2층
-      </option>
-
-    </select>
-
-    <button class="btn" id="download">
-      현재 결과 CSV 다운로드
-    </button>
-
-  </div>
-
-
-  <!-- 상세 테이블 -->
-  <div class="tablebox">
-
-    <table>
-
-      <thead>
-
-        <tr>
-
-          <th data-key="적치층">
-            적치층 ↕
-          </th>
-
-          <th data-key="상품명">
-            상품명 ↕
-          </th>
-
-          <th data-key="상품코드">
-            상품코드 ↕
-          </th>
-
-          <th data-key="바코드">
-            바코드 ↕
-          </th>
-
-          <th data-key="입수">
-            입수 ↕
-          </th>
-
-          <th data-key="PCS">
-            PCS ↕
-          </th>
-
-          <th data-key="BOX수">
-            BOX수 ↕
-          </th>
-
-        </tr>
-
-      </thead>
-
-      <tbody id="tbody">
-
-        <tr>
-
-          <td colspan="7">
-
-            <div class="empty">
-
-              <strong>
-                아직 데이터가 없습니다.
-              </strong>
-
-              RAW 엑셀 파일을 업로드해주세요.
-
+            <div class="label">
+              SKU
             </div>
 
-          </td>
+            <div
+              class="number"
+              id="sku4"
+            >
+              0
+            </div>
 
-        </tr>
+          </div>
 
-      </tbody>
+          <div class="floor-value">
 
-    </table>
+            <div class="label">
+              PCS
+            </div>
 
-  </div>
+            <div
+              class="number"
+              id="pcs4"
+            >
+              0
+            </div>
 
+          </div>
 
-  <!-- 계산 규칙 -->
-  <details class="rule">
+        </div>
 
-    <summary>
-      적치층 계산 규칙 보기
-    </summary>
-
-    <div class="rulegrid">
-
-      <div>
-        DRY 일반 + A/B/C/D → <b>4층</b>
       </div>
 
-      <div>
-        DRY 일반 + SA/SSA → <b>3-2층</b>
+
+
+      <!-- 3-2층 -->
+
+      <div
+        class="floor-card"
+        data-floor="3-2층"
+      >
+
+        <div class="floor-head">
+
+          <div class="floor-title">
+            🏢 3-2층
+          </div>
+
+          <div class="arrow">
+            ▼
+          </div>
+
+        </div>
+
+        <div class="floor-values">
+
+          <div class="floor-value">
+
+            <div class="label">
+              SKU
+            </div>
+
+            <div
+              class="number"
+              id="sku32"
+            >
+              0
+            </div>
+
+          </div>
+
+          <div class="floor-value">
+
+            <div class="label">
+              PCS
+            </div>
+
+            <div
+              class="number"
+              id="pcs32"
+            >
+              0
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div>
-        DRY WCS/WMS Bypass + A/SA/SSA → <b>3-1층</b>
+
+
+      <!-- 3-1층 -->
+
+      <div
+        class="floor-card"
+        data-floor="3-1층"
+      >
+
+        <div class="floor-head">
+
+          <div class="floor-title">
+            🏢 3-1층
+          </div>
+
+          <div class="arrow">
+            ▼
+          </div>
+
+        </div>
+
+        <div class="floor-values">
+
+          <div class="floor-value">
+
+            <div class="label">
+              SKU
+            </div>
+
+            <div
+              class="number"
+              id="sku31"
+            >
+              0
+            </div>
+
+          </div>
+
+          <div class="floor-value">
+
+            <div class="label">
+              PCS
+            </div>
+
+            <div
+              class="number"
+              id="pcs31"
+            >
+              0
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div>
-        B/C/D + 휴지·화장지·키친타월·키친타올 → <b>3-1층</b>
+
+
+      <!-- 1-2층 -->
+
+      <div
+        class="floor-card"
+        data-floor="1-2층"
+      >
+
+        <div class="floor-head">
+
+          <div class="floor-title">
+            🏢 1-2층
+          </div>
+
+          <div class="arrow">
+            ▼
+          </div>
+
+        </div>
+
+        <div class="floor-values">
+
+          <div class="floor-value">
+
+            <div class="label">
+              SKU
+            </div>
+
+            <div
+              class="number"
+              id="sku12"
+            >
+              0
+            </div>
+
+          </div>
+
+          <div class="floor-value">
+
+            <div class="label">
+              PCS
+            </div>
+
+            <div
+              class="number"
+              id="pcs12"
+            >
+              0
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div>
-        B/C/D + 식품 + 음료 → <b>3-1층</b>
-      </div>
-
-      <div>
-        B/C/D + 크리넥스·코디·다우니·테크·유한락스 → <b>3-1층</b>
-      </div>
-
-      <div>
-        B/C/D + 그 외 → <b>1-2층</b>
-      </div>
 
     </div>
 
-  </details>
+
+
+    <!-- ===================================================
+         검색
+    ==================================================== -->
+
+    <div class="toolbar">
+
+      <input
+        class="search"
+        id="search"
+        placeholder="상품명 / 상품코드 / 바코드 검색"
+      >
+
+      <select
+        class="select"
+        id="floorFilter"
+      >
+
+        <option value="">
+          전체 적치층
+        </option>
+
+        <option value="4층">
+          4층
+        </option>
+
+        <option value="3-2층">
+          3-2층
+        </option>
+
+        <option value="3-1층">
+          3-1층
+        </option>
+
+        <option value="1-2층">
+          1-2층
+        </option>
+
+      </select>
+
+      <button
+        class="btn"
+        id="download"
+      >
+        현재 결과 다운로드
+      </button>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         상세 테이블
+    ==================================================== -->
+
+    <div class="tablebox">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th data-key="적치층">
+              적치층 ↕
+            </th>
+
+            <th data-key="상품명">
+              상품명 ↕
+            </th>
+
+            <th data-key="상품코드">
+              상품코드 ↕
+            </th>
+
+            <th data-key="바코드">
+              바코드 ↕
+            </th>
+
+            <th data-key="입수">
+              입수 ↕
+            </th>
+
+            <th data-key="PCS">
+              PCS ↕
+            </th>
+
+            <th data-key="BOX수">
+              BOX수 ↕
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="tbody">
+
+          <tr>
+
+            <td colspan="7">
+
+              <div class="empty">
+
+                <strong>
+                  아직 데이터가 없습니다.
+                </strong>
+
+                RAW 엑셀 파일을 업로드해주세요.
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         계산 규칙
+    ==================================================== -->
+
+    <details class="rule">
+
+      <summary>
+        적치층 계산 규칙 보기
+      </summary>
+
+      <div class="rulegrid">
+
+        <div>
+          DRY 일반 + A/B/C/D → <b>4층</b>
+        </div>
+
+        <div>
+          DRY 일반 + SA/SSA → <b>3-2층</b>
+        </div>
+
+        <div>
+          DRY WCS/WMS Bypass + A/SA/SSA → <b>3-1층</b>
+        </div>
+
+        <div>
+          B/C/D + 휴지·화장지·키친타월·키친타올 → <b>3-1층</b>
+        </div>
+
+        <div>
+          B/C/D + 식품 + 음료 → <b>3-1층</b>
+        </div>
+
+        <div>
+          B/C/D + 크리넥스·코디·다우니·테크·유한락스 → <b>3-1층</b>
+        </div>
+
+        <div>
+          B/C/D + 그 외 → <b>1-2층</b>
+        </div>
+
+      </div>
+
+    </details>
+
+
+  </main>
 
 </div>
+
 
 
 <script>
@@ -788,6 +1775,278 @@ const state = {
 };
 
 
+
+/* =========================================================
+   근태 저장
+========================================================= */
+
+const ATTENDANCE_KEY =
+  "inbound_team_attendance_v1";
+
+
+function loadAttendance(){
+
+  try{
+
+    const saved =
+      JSON.parse(
+        localStorage.getItem(
+          ATTENDANCE_KEY
+        )
+      );
+
+    if(
+      !Array.isArray(saved) ||
+      saved.length !== 3
+    ){
+
+      return;
+
+    }
+
+    const cards =
+      document.querySelectorAll(
+        ".attendance-card"
+      );
+
+    cards.forEach((card,index)=>{
+
+      const data =
+        saved[index];
+
+      if(!data){
+        return;
+      }
+
+      const nameInput =
+        card.querySelector(
+          ".employee-name"
+        );
+
+      const select =
+        card.querySelector(
+          ".attendance-select"
+        );
+
+      if(data.name){
+        nameInput.value =
+          data.name;
+      }
+
+      if(data.status){
+
+        select.value =
+          data.status;
+
+        card.dataset.status =
+          data.status;
+
+      }
+
+    });
+
+  }catch(e){
+
+    console.warn(
+      "근태 저장값을 불러오지 못했습니다.",
+      e
+    );
+
+  }
+
+}
+
+
+function saveAttendance(){
+
+  const cards =
+    document.querySelectorAll(
+      ".attendance-card"
+    );
+
+  const data =
+    [...cards].map(card => ({
+
+      name:
+        card.querySelector(
+          ".employee-name"
+        ).value.trim(),
+
+      status:
+        card.querySelector(
+          ".attendance-select"
+        ).value
+
+    }));
+
+  localStorage.setItem(
+    ATTENDANCE_KEY,
+    JSON.stringify(data)
+  );
+
+  updateAttendanceSummary();
+
+}
+
+
+function updateAttendanceSummary(){
+
+  const cards =
+    document.querySelectorAll(
+      ".attendance-card"
+    );
+
+  let working = 0;
+  let absent = 0;
+
+  cards.forEach(card => {
+
+    const status =
+      card.querySelector(
+        ".attendance-select"
+      ).value;
+
+    if(
+      status === "근무" ||
+      status === "외근"
+    ){
+
+      working++;
+
+    }else{
+
+      absent++;
+
+    }
+
+  });
+
+  document.getElementById(
+    "workingCount"
+  ).textContent =
+    working + "명";
+
+  document.getElementById(
+    "absentCount"
+  ).textContent =
+    absent + "명";
+
+}
+
+
+
+/* =========================================================
+   근태 이벤트
+========================================================= */
+
+document
+  .querySelectorAll(".attendance-card")
+  .forEach(card => {
+
+    const select =
+      card.querySelector(
+        ".attendance-select"
+      );
+
+    const nameInput =
+      card.querySelector(
+        ".employee-name"
+      );
+
+
+    select.addEventListener(
+      "change",
+      () => {
+
+        card.dataset.status =
+          select.value;
+
+        saveAttendance();
+
+      }
+    );
+
+
+    nameInput.addEventListener(
+      "input",
+      () => {
+
+        saveAttendance();
+
+      }
+    );
+
+  });
+
+
+
+/* =========================================================
+   현재 날짜 / 시간
+========================================================= */
+
+function updateClock(){
+
+  const now =
+    new Date();
+
+  const year =
+    now.getFullYear();
+
+  const month =
+    now.getMonth() + 1;
+
+  const date =
+    now.getDate();
+
+  const weekdays = [
+    "일요일",
+    "월요일",
+    "화요일",
+    "수요일",
+    "목요일",
+    "금요일",
+    "토요일"
+  ];
+
+  const weekday =
+    weekdays[now.getDay()];
+
+  const hh =
+    String(now.getHours())
+      .padStart(2,"0");
+
+  const mm =
+    String(now.getMinutes())
+      .padStart(2,"0");
+
+  const ss =
+    String(now.getSeconds())
+      .padStart(2,"0");
+
+
+  document.getElementById(
+    "clockDate"
+  ).textContent =
+    `${year}년 ${month}월 ${date}일 ${weekday}`;
+
+
+  document.getElementById(
+    "clockTime"
+  ).textContent =
+    `${hh}:${mm}:${ss}`;
+
+}
+
+
+updateClock();
+
+setInterval(
+  updateClock,
+  1000
+);
+
+
+
 /* =========================================================
    키워드
 ========================================================= */
@@ -795,17 +2054,25 @@ const state = {
 const KEYWORDS_31 = [
 
   "휴지",
+
   "화장지",
+
   "키친타월",
+
   "키친타올",
 
   "크리넥스",
+
   "코디",
+
   "다우니",
+
   "테크",
+
   "유한락스"
 
 ];
+
 
 
 /* =========================================================
@@ -815,7 +2082,7 @@ const KEYWORDS_31 = [
 function norm(v){
 
   return String(v ?? "")
-    .replace(/^\uFEFF/, "")
+    .replace(/^\uFEFF/,"")
     .replace(/\r/g,"")
     .replace(/\n/g,"")
     .replace(/\t/g,"")
@@ -834,33 +2101,48 @@ function upper(v){
 
 function num(v){
 
-  if(v === null || v === undefined || v === ""){
+  if(
+    v === null ||
+    v === undefined ||
+    v === ""
+  ){
+
     return 0;
+
   }
 
-  const n = Number(
-    String(v)
-      .replace(/,/g,"")
-      .replace(/[^0-9.-]/g,"")
+  const n =
+    Number(
+      String(v)
+        .replace(/,/g,"")
+        .replace(/[^0-9.-]/g,"")
+    );
+
+  return Number.isFinite(n)
+    ? n
+    : 0;
+
+}
+
+
+function includesAny(text,arr){
+
+  const t =
+    upper(text);
+
+  return arr.some(
+    k =>
+      t.includes(
+        upper(k)
+      )
   );
 
-  return Number.isFinite(n) ? n : 0;
-
 }
 
-
-function includesAny(text, arr){
-
-  const t = upper(text);
-
-  return arr.some(k => t.includes(upper(k)));
-
-}
 
 
 /* =========================================================
    컬럼명 정규화
-   공백 / 줄바꿈 / BOM 등 제거
 ========================================================= */
 
 function normalizeHeader(v){
@@ -875,41 +2157,55 @@ function normalizeHeader(v){
 }
 
 
+
 /* =========================================================
    실제 RAW 컬럼 찾기
 ========================================================= */
 
-function findColumn(headers, candidates){
+function findColumn(headers,candidates){
 
   const normalized = {};
 
   headers.forEach(h => {
 
-    normalized[normalizeHeader(h)] = h;
+    normalized[
+      normalizeHeader(h)
+    ] = h;
 
   });
 
 
-  for(const candidate of candidates){
+  for(
+    const candidate of candidates
+  ){
 
-    const key = normalizeHeader(candidate);
+    const key =
+      normalizeHeader(candidate);
 
-    if(normalized[key]){
+    if(
+      normalized[key]
+    ){
+
       return normalized[key];
+
     }
 
   }
 
 
-  /* 부분 일치까지 허용 */
+  for(
+    const h of headers
+  ){
 
-  for(const h of headers){
+    const nh =
+      normalizeHeader(h);
 
-    const nh = normalizeHeader(h);
+    for(
+      const candidate of candidates
+    ){
 
-    for(const candidate of candidates){
-
-      const nc = normalizeHeader(candidate);
+      const nc =
+        normalizeHeader(candidate);
 
       if(
         nh.includes(nc) ||
@@ -930,96 +2226,109 @@ function findColumn(headers, candidates){
 }
 
 
+
 /* =========================================================
    RAW 컬럼 자동 매핑
 ========================================================= */
 
 function detectColumns(raw){
 
-  const headers = Object.keys(raw[0] || {});
+  const headers =
+    Object.keys(
+      raw[0] || {}
+    );
 
 
   const columns = {
 
-    상품명: findColumn(
-      headers,
-      [
-        "물류상품명",
-        "상품명",
-        "물류 상품명"
-      ]
-    ),
+    상품명:
+      findColumn(
+        headers,
+        [
+          "물류상품명",
+          "상품명",
+          "물류 상품명"
+        ]
+      ),
 
-    상품코드: findColumn(
-      headers,
-      [
-        "물류상품ID",
-        "물류상품 Id",
-        "상품코드",
-        "물류상품코드"
-      ]
-    ),
+    상품코드:
+      findColumn(
+        headers,
+        [
+          "물류상품ID",
+          "물류상품 Id",
+          "상품코드",
+          "물류상품코드"
+        ]
+      ),
 
-    바코드: findColumn(
-      headers,
-      [
-        "상품바코드",
-        "바코드"
-      ]
-    ),
+    바코드:
+      findColumn(
+        headers,
+        [
+          "상품바코드",
+          "바코드"
+        ]
+      ),
 
-    등급: findColumn(
-      headers,
-      [
-        "물류상품등급",
-        "물류 상품 등급",
-        "상품등급"
-      ]
-    ),
+    등급:
+      findColumn(
+        headers,
+        [
+          "물류상품등급",
+          "물류 상품 등급",
+          "상품등급"
+        ]
+      ),
 
-    분류: findColumn(
-      headers,
-      [
-        "물류분류",
-        "물류 분류"
-      ]
-    ),
+    분류:
+      findColumn(
+        headers,
+        [
+          "물류분류",
+          "물류 분류"
+        ]
+      ),
 
-    대분류: findColumn(
-      headers,
-      [
-        "운영카테고리대분류명",
-        "운영 카테고리 대분류명"
-      ]
-    ),
+    대분류:
+      findColumn(
+        headers,
+        [
+          "운영카테고리대분류명",
+          "운영 카테고리 대분류명"
+        ]
+      ),
 
-    중분류: findColumn(
-      headers,
-      [
-        "운영카테고리중분류명",
-        "운영 카테고리 중분류명"
-      ]
-    ),
+    중분류:
+      findColumn(
+        headers,
+        [
+          "운영카테고리중분류명",
+          "운영 카테고리 중분류명"
+        ]
+      ),
 
-    입수: findColumn(
-      headers,
-      [
-        "BOX입수",
-        "BOX 입수",
-        "입수",
-        "박스입수"
-      ]
-    ),
+    입수:
+      findColumn(
+        headers,
+        [
+          "BOX입수",
+          "BOX 입수",
+          "입수",
+          "박스입수"
+        ]
+      ),
 
-    PCS: findColumn(
-      headers,
-      [
-        "위치재고(PCS)",
-        "위치재고PCS",
-        "위치재고",
-        "PCS"
-      ]
-    )
+    PCS:
+      findColumn(
+        headers,
+        [
+          "위치재고(PCS)",
+          "위치재고PCS",
+          "위치재고",
+          "PCS"
+        ]
+      )
 
   };
 
@@ -1029,44 +2338,63 @@ function detectColumns(raw){
 }
 
 
+
 /* =========================================================
    적치층 계산
 ========================================================= */
 
-function calcFloor(row, col){
+function calcFloor(row,col){
 
   const type =
-    norm(row[col.분류]);
+    norm(
+      row[col.분류]
+    );
 
   const grade =
-    upper(row[col.등급]);
+    upper(
+      row[col.등급]
+    );
 
   const name =
-    norm(row[col.상품명]);
+    norm(
+      row[col.상품명]
+    );
 
   const largeCategory =
-    norm(row[col.대분류]);
+    norm(
+      row[col.대분류]
+    );
 
   const middleCategory =
-    norm(row[col.중분류]);
+    norm(
+      row[col.중분류]
+    );
 
 
   /* -----------------------------------------
      DRY 일반
   ----------------------------------------- */
 
-  if(type === "DRY 일반"){
+  if(
+    type === "DRY 일반"
+  ){
 
     if(
-      ["A","B","C","D"].includes(grade)
+      ["A","B","C","D"]
+        .includes(grade)
     ){
+
       return "4층";
+
     }
 
     if(
-      ["SA","SSA"].includes(grade)
+      ["SA","SSA"]
+        .includes(grade)
     ){
+
       return "3-2층";
+
     }
 
   }
@@ -1078,6 +2406,7 @@ function calcFloor(row, col){
 
   const bypass =
     type === "DRY WCS Bypass" ||
+    type === "DRY WmS Bypass" ||
     type === "DRY WMS Bypass";
 
 
@@ -1086,7 +2415,8 @@ function calcFloor(row, col){
     /* A / SA / SSA */
 
     if(
-      ["A","SA","SSA"].includes(grade)
+      ["A","SA","SSA"]
+        .includes(grade)
     ){
 
       return "3-1층";
@@ -1097,7 +2427,8 @@ function calcFloor(row, col){
     /* B / C / D */
 
     if(
-      ["B","C","D"].includes(grade)
+      ["B","C","D"]
+        .includes(grade)
     ){
 
       /* 식품 + 음료 */
@@ -1115,7 +2446,10 @@ function calcFloor(row, col){
       /* 특정 상품명 */
 
       if(
-        includesAny(name, KEYWORDS_31)
+        includesAny(
+          name,
+          KEYWORDS_31
+        )
       ){
 
         return "3-1층";
@@ -1137,6 +2471,7 @@ function calcFloor(row, col){
 }
 
 
+
 /* =========================================================
    숫자 표시
 ========================================================= */
@@ -1149,28 +2484,33 @@ function fmt(v){
 }
 
 
-/* =========================================================
-   BOX수 표시
 
-   1.0 → 1
-   2.0 → 2
-   1.5 → 1.5
+/* =========================================================
+   BOX수
 ========================================================= */
 
 function formatBox(v){
 
-  const n = Number(v || 0);
+  const n =
+    Number(v || 0);
 
-  if(!Number.isFinite(n)){
+  if(
+    !Number.isFinite(n)
+  ){
+
     return "0";
+
   }
 
 
   if(
-    Math.abs(n - Math.round(n)) < 0.000001
+    Math.abs(
+      n - Math.round(n)
+    ) < 0.000001
   ){
 
-    return Math.round(n).toLocaleString("ko-KR");
+    return Math.round(n)
+      .toLocaleString("ko-KR");
 
   }
 
@@ -1186,84 +2526,109 @@ function formatBox(v){
 }
 
 
+
 /* =========================================================
    RAW → 상품별 집계
-
-   핵심:
-   물류상품ID + 적치층 기준으로 중복 제거
-
-   PCS는 같은 상품이 여러 행이면 합산
-
-   입수는 상품 기준 최초 유효값 사용
 ========================================================= */
 
-function aggregate(raw, col){
+function aggregate(raw,col){
 
-  const map = new Map();
+  const map =
+    new Map();
 
 
-  for(const r of raw){
+  for(
+    const r of raw
+  ){
 
     const id =
-      norm(r[col.상품코드]);
+      norm(
+        r[col.상품코드]
+      );
 
     const barcode =
-      norm(r[col.바코드]);
+      norm(
+        r[col.바코드]
+      );
 
     const name =
-      norm(r[col.상품명]);
+      norm(
+        r[col.상품명]
+      );
 
 
-    if(!id && !barcode && !name){
+    if(
+      !id &&
+      !barcode &&
+      !name
+    ){
+
       continue;
+
     }
 
 
     const floor =
-      calcFloor(r,col);
+      calcFloor(
+        r,
+        col
+      );
 
-
-    /*
-      같은 상품이 여러 행에 존재할 수 있으므로
-      상품ID + 층을 기준으로 집계
-    */
 
     const baseKey =
       id ||
       barcode ||
       name;
 
+
     const key =
-      baseKey + "||" + floor;
+      baseKey +
+      "||" +
+      floor;
 
 
     const pcs =
-      num(r[col.PCS]);
-
+      num(
+        r[col.PCS]
+      );
 
     const input =
-      num(r[col.입수]);
+      num(
+        r[col.입수]
+      );
 
 
-    if(!map.has(key)){
+    if(
+      !map.has(key)
+    ){
 
-      map.set(key,{
+      map.set(
+        key,
+        {
 
-        적치층:floor,
+          적치층:
+            floor,
 
-        상품명:name,
+          상품명:
+            name,
 
-        상품코드:id,
+          상품코드:
+            id,
 
-        바코드:barcode,
+          바코드:
+            barcode,
 
-        입수:input,
+          입수:
+            input,
 
-        PCS:pcs,
+          PCS:
+            pcs,
 
-        SKU_ID:baseKey
+          SKU_ID:
+            baseKey
 
-      });
+        }
+      );
 
     }else{
 
@@ -1271,24 +2636,17 @@ function aggregate(raw, col){
         map.get(key);
 
 
-      /*
-        PCS 합산
-      */
-
       x.PCS += pcs;
 
 
-      /*
-        최초 행에 입수가 없었다면
-        다음 행의 입수 사용
-      */
-
       if(
-        (!x.입수 || x.입수 === 0) &&
+        (!x.입수 ||
+          x.입수 === 0) &&
         input > 0
       ){
 
-        x.입수 = input;
+        x.입수 =
+          input;
 
       }
 
@@ -1301,20 +2659,22 @@ function aggregate(raw, col){
     [...map.values()];
 
 
-  /*
-    BOX수 계산
-  */
+  for(
+    const x of result
+  ){
 
-  for(const x of result){
-
-    if(x.입수 > 0){
+    if(
+      x.입수 > 0
+    ){
 
       x.BOX수 =
-        x.PCS / x.입수;
+        x.PCS /
+        x.입수;
 
     }else{
 
-      x.BOX수 = 0;
+      x.BOX수 =
+        0;
 
     }
 
@@ -1326,33 +2686,40 @@ function aggregate(raw, col){
 }
 
 
+
 /* =========================================================
-   층별 SKU / PCS 계산
+   층별 카드 업데이트
 ========================================================= */
 
 function updateCards(){
 
   const floors = [
+
     ["4층","sku4","pcs4"],
+
     ["3-2층","sku32","pcs32"],
+
     ["3-1층","sku31","pcs31"],
+
     ["1-2층","sku12","pcs12"]
+
   ];
 
 
-  for(const [floor,skuId,pcsId] of floors){
+  for(
+    const [
+      floor,
+      skuId,
+      pcsId
+    ] of floors
+  ){
 
     const rows =
       state.rows.filter(
-        x => x.적치층 === floor
+        x =>
+          x.적치층 === floor
       );
 
-
-    /*
-      이미 상품ID + 층 기준으로
-      중복 제거되어 있기 때문에
-      row 개수가 SKU 수
-    */
 
     const skuCount =
       rows.length;
@@ -1360,28 +2727,35 @@ function updateCards(){
 
     const pcsTotal =
       rows.reduce(
-        (sum,x) => sum + x.PCS,
+        (sum,x) =>
+          sum + x.PCS,
         0
       );
 
 
-    document.getElementById(skuId)
+    document
+      .getElementById(skuId)
       .textContent =
       fmt(skuCount);
 
 
-    document.getElementById(pcsId)
+    document
+      .getElementById(pcsId)
       .textContent =
       fmt(pcsTotal);
 
   }
 
 
-  document.getElementById("count")
+  document
+    .getElementById("count")
     .textContent =
-    fmt(state.rows.length);
+    fmt(
+      state.rows.length
+    );
 
 }
+
 
 
 /* =========================================================
@@ -1391,15 +2765,20 @@ function updateCards(){
 function render(){
 
   const searchInput =
-    document.getElementById("search");
+    document.getElementById(
+      "search"
+    );
 
   const floorFilter =
-    document.getElementById("floorFilter");
+    document.getElementById(
+      "floorFilter"
+    );
 
 
   const q =
-    norm(searchInput.value)
-      .toLowerCase();
+    norm(
+      searchInput.value
+    ).toLowerCase();
 
 
   const floor =
@@ -1407,71 +2786,82 @@ function render(){
 
 
   let rows =
-    state.rows.filter(r => {
+    state.rows.filter(
+      r => {
 
-      const text = [
+        const text = [
 
-        r.상품명,
-        r.상품코드,
-        r.바코드
+          r.상품명,
 
-      ]
-      .join(" ")
-      .toLowerCase();
+          r.상품코드,
 
+          r.바코드
 
-      return (
-
-        (!q || text.includes(q)) &&
-
-        (!floor || r.적치층 === floor)
-
-      );
-
-    });
+        ]
+        .join(" ")
+        .toLowerCase();
 
 
-  /* 정렬 */
+        return (
+
+          (!q ||
+            text.includes(q)) &&
+
+          (!floor ||
+            r.적치층 === floor)
+
+        );
+
+      }
+    );
+
 
   const key =
     state.sortKey;
 
 
-  rows.sort((a,b) => {
+  rows.sort(
+    (a,b) => {
 
-    const av = a[key];
-    const bv = b[key];
+      const av =
+        a[key];
+
+      const bv =
+        b[key];
+
+      let c;
 
 
-    let c;
+      if(
+        typeof av === "number" &&
+        typeof bv === "number"
+      ){
+
+        c =
+          av - bv;
+
+      }else{
+
+        c =
+          String(av ?? "")
+            .localeCompare(
+              String(bv ?? ""),
+              "ko",
+              {
+                numeric:true,
+                sensitivity:"base"
+              }
+            );
+
+      }
 
 
-    if(
-      typeof av === "number" &&
-      typeof bv === "number"
-    ){
-
-      c = av - bv;
-
-    }else{
-
-      c =
-        String(av ?? "")
-          .localeCompare(
-            String(bv ?? ""),
-            "ko",
-            {
-              numeric:true,
-              sensitivity:"base"
-            }
-          );
+      return state.asc
+        ? c
+        : -c;
 
     }
-
-
-    return state.asc ? c : -c;
-
-  });
+  );
 
 
   state.filtered =
@@ -1479,10 +2869,14 @@ function render(){
 
 
   const tb =
-    document.getElementById("tbody");
+    document.getElementById(
+      "tbody"
+    );
 
 
-  if(!rows.length){
+  if(
+    !rows.length
+  ){
 
     tb.innerHTML = `
 
@@ -1496,7 +2890,8 @@ function render(){
               검색 결과가 없습니다.
             </strong>
 
-            조건을 변경하거나 RAW 파일을 확인해주세요.
+            조건을 변경하거나
+            RAW 파일을 확인해주세요.
 
           </div>
 
@@ -1512,45 +2907,50 @@ function render(){
 
 
   tb.innerHTML =
-    rows.map(r => `
+    rows.map(
+      r => `
 
-      <tr>
+        <tr>
 
-        <td>
-          <span class="floor">
-            ${esc(r.적치층)}
-          </span>
-        </td>
+          <td>
 
-        <td>
-          ${esc(r.상품명)}
-        </td>
+            <span class="floor">
+              ${esc(r.적치층)}
+            </span>
 
-        <td>
-          ${esc(r.상품코드)}
-        </td>
+          </td>
 
-        <td>
-          ${esc(r.바코드)}
-        </td>
+          <td>
+            ${esc(r.상품명)}
+          </td>
 
-        <td class="num">
-          ${fmt(r.입수)}
-        </td>
+          <td>
+            ${esc(r.상품코드)}
+          </td>
 
-        <td class="num">
-          ${fmt(r.PCS)}
-        </td>
+          <td>
+            ${esc(r.바코드)}
+          </td>
 
-        <td class="num box-num">
-          ${formatBox(r.BOX수)}
-        </td>
+          <td class="num">
+            ${fmt(r.입수)}
+          </td>
 
-      </tr>
+          <td class="num">
+            ${fmt(r.PCS)}
+          </td>
 
-    `).join("");
+          <td class="num box-num">
+            ${formatBox(r.BOX수)}
+          </td>
+
+        </tr>
+
+      `
+    ).join("");
 
 }
+
 
 
 /* =========================================================
@@ -1562,33 +2962,39 @@ function esc(v){
   return String(v ?? "")
     .replace(
       /[&<>"']/g,
-      m => ({
+      m =>
+        ({
 
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#039;"
+          "&":"&amp;",
 
-      }[m])
+          "<":"&lt;",
+
+          ">":"&gt;",
+
+          '"':"&quot;",
+
+          "'":"&#039;"
+
+        }[m])
     );
 
 }
 
 
+
 /* =========================================================
-   오류 표시
+   오류
 ========================================================= */
 
 function showError(message){
 
   const box =
-    document.getElementById("errorBox");
-
+    document.getElementById(
+      "errorBox"
+    );
 
   box.style.display =
     "block";
-
 
   box.textContent =
     message;
@@ -1599,17 +3005,18 @@ function showError(message){
 function hideError(){
 
   const box =
-    document.getElementById("errorBox");
-
+    document.getElementById(
+      "errorBox"
+    );
 
   box.style.display =
     "none";
-
 
   box.textContent =
     "";
 
 }
+
 
 
 /* =========================================================
@@ -1621,8 +3028,9 @@ async function readFile(file){
   hideError();
 
 
-  document.getElementById("status")
-    .textContent =
+  document.getElementById(
+    "status"
+  ).textContent =
     "파일을 읽는 중입니다...";
 
 
@@ -1670,7 +3078,9 @@ async function readFile(file){
       );
 
 
-    if(!raw.length){
+    if(
+      !raw.length
+    ){
 
       throw new Error(
         "데이터가 없습니다."
@@ -1678,10 +3088,6 @@ async function readFile(file){
 
     }
 
-
-    /*
-      컬럼 자동 탐색
-    */
 
     const col =
       detectColumns(raw);
@@ -1691,31 +3097,39 @@ async function readFile(file){
 
 
     if(!col.상품명)
-      missing.push("물류상품명");
+      missing.push(
+        "물류상품명"
+      );
 
     if(!col.상품코드)
-      missing.push("물류상품ID");
+      missing.push(
+        "물류상품ID"
+      );
 
     if(!col.등급)
-      missing.push("물류상품등급");
+      missing.push(
+        "물류상품등급"
+      );
 
     if(!col.분류)
-      missing.push("물류분류");
-
-
-    /*
-      PCS는 위치재고(PCS)가 없더라도
-      PCS 컬럼이 있으면 사용
-    */
+      missing.push(
+        "물류분류"
+      );
 
     if(!col.PCS)
-      missing.push("위치재고(PCS)");
+      missing.push(
+        "위치재고(PCS)"
+      );
 
 
-    if(missing.length){
+    if(
+      missing.length
+    ){
 
       const headers =
-        Object.keys(raw[0] || {});
+        Object.keys(
+          raw[0] || {}
+        );
 
 
       throw new Error(
@@ -1734,16 +3148,12 @@ async function readFile(file){
 
         "\n\n" +
 
-        "※ 컬럼명에 공백이 있어도 자동으로 인식하도록 되어 있습니다."
+        "※ 컬럼명에 공백이 있어도 자동으로 인식합니다."
 
       );
 
     }
 
-
-    /*
-      실제 데이터 집계
-    */
 
     state.rows =
       aggregate(
@@ -1755,12 +3165,9 @@ async function readFile(file){
     updateCards();
 
 
-    /*
-      업로드 상태
-    */
-
-    document.getElementById("status")
-      .textContent =
+    document.getElementById(
+      "status"
+    ).textContent =
 
       `${file.name} · 원본 ${fmt(raw.length)}행 → SKU ${fmt(state.rows.length)}개`;
 
@@ -1773,8 +3180,9 @@ async function readFile(file){
     console.error(err);
 
 
-    document.getElementById("status")
-      .textContent =
+    document.getElementById(
+      "status"
+    ).textContent =
       "파일 읽기 오류";
 
 
@@ -1794,6 +3202,7 @@ async function readFile(file){
 }
 
 
+
 /* =========================================================
    파일 선택
 ========================================================= */
@@ -1807,7 +3216,6 @@ document
       const file =
         e.target.files[0];
 
-
       if(file){
 
         readFile(file);
@@ -1818,12 +3226,15 @@ document
   );
 
 
+
 /* =========================================================
-   드래그앤드롭
+   드래그 앤 드롭
 ========================================================= */
 
 const drop =
-  document.getElementById("drop");
+  document.getElementById(
+    "drop"
+  );
 
 
 drop.addEventListener(
@@ -1832,7 +3243,9 @@ drop.addEventListener(
 
     e.preventDefault();
 
-    drop.classList.add("drag");
+    drop.classList.add(
+      "drag"
+    );
 
   }
 );
@@ -1842,7 +3255,9 @@ drop.addEventListener(
   "dragleave",
   () => {
 
-    drop.classList.remove("drag");
+    drop.classList.remove(
+      "drag"
+    );
 
   }
 );
@@ -1854,7 +3269,9 @@ drop.addEventListener(
 
     e.preventDefault();
 
-    drop.classList.remove("drag");
+    drop.classList.remove(
+      "drag"
+    );
 
 
     const file =
@@ -1871,6 +3288,7 @@ drop.addEventListener(
 );
 
 
+
 /* =========================================================
    검색
 ========================================================= */
@@ -1881,6 +3299,7 @@ document
     "input",
     render
   );
+
 
 
 /* =========================================================
@@ -1894,7 +3313,9 @@ document
     () => {
 
       const floor =
-        document.getElementById("floorFilter").value;
+        document.getElementById(
+          "floorFilter"
+        ).value;
 
 
       state.selectedFloor =
@@ -1902,15 +3323,19 @@ document
 
 
       document
-        .querySelectorAll(".floor-card")
-        .forEach(card => {
+        .querySelectorAll(
+          ".floor-card"
+        )
+        .forEach(
+          card => {
 
-          card.classList.toggle(
-            "active",
-            card.dataset.floor === floor
-          );
+            card.classList.toggle(
+              "active",
+              card.dataset.floor === floor
+            );
 
-        });
+          }
+        );
 
 
       render();
@@ -1919,92 +3344,105 @@ document
   );
 
 
+
 /* =========================================================
    층 카드 클릭
 ========================================================= */
 
 document
-  .querySelectorAll(".floor-card")
-  .forEach(card => {
+  .querySelectorAll(
+    ".floor-card"
+  )
+  .forEach(
+    card => {
 
-    card.addEventListener(
-      "click",
-      () => {
+      card.addEventListener(
+        "click",
+        () => {
 
-        const floor =
-          card.dataset.floor;
-
-
-        const select =
-          document.getElementById("floorFilter");
-
-
-        /*
-          같은 층을 다시 누르면 전체로
-        */
-
-        if(
-          state.selectedFloor === floor
-        ){
-
-          state.selectedFloor =
-            "";
-
-          select.value =
-            "";
-
-          card.classList.remove(
-            "active"
-          );
-
-        }else{
-
-          state.selectedFloor =
-            floor;
-
-          select.value =
-            floor;
+          const floor =
+            card.dataset.floor;
 
 
-          document
-            .querySelectorAll(".floor-card")
-            .forEach(c => {
+          const select =
+            document.getElementById(
+              "floorFilter"
+            );
 
-              c.classList.remove(
-                "active"
+
+          if(
+            state.selectedFloor === floor
+          ){
+
+            state.selectedFloor =
+              "";
+
+            select.value =
+              "";
+
+            card.classList.remove(
+              "active"
+            );
+
+          }else{
+
+            state.selectedFloor =
+              floor;
+
+            select.value =
+              floor;
+
+
+            document
+              .querySelectorAll(
+                ".floor-card"
+              )
+              .forEach(
+                c => {
+
+                  c.classList.remove(
+                    "active"
+                  );
+
+                }
               );
 
-            });
+
+            card.classList.add(
+              "active"
+            );
+
+          }
 
 
-          card.classList.add(
-            "active"
+          render();
+
+
+          setTimeout(
+            () => {
+
+              document
+                .querySelector(
+                  ".tablebox"
+                )
+                .scrollIntoView({
+
+                  behavior:"smooth",
+
+                  block:"start"
+
+                });
+
+            },
+            100
           );
 
         }
+      );
 
+    }
+  );
 
-        render();
-
-        /*
-          상세 리스트 위치로 자연스럽게 이동
-        */
-
-        setTimeout(() => {
-
-          document
-            .querySelector(".tablebox")
-            .scrollIntoView({
-              behavior:"smooth",
-              block:"start"
-            });
-
-        },100);
-
-      }
-    );
-
-  });
 
 
 /* =========================================================
@@ -2012,41 +3450,46 @@ document
 ========================================================= */
 
 document
-  .querySelectorAll("th[data-key]")
-  .forEach(th => {
+  .querySelectorAll(
+    "th[data-key]"
+  )
+  .forEach(
+    th => {
 
-    th.addEventListener(
-      "click",
-      () => {
+      th.addEventListener(
+        "click",
+        () => {
 
-        const key =
-          th.dataset.key;
+          const key =
+            th.dataset.key;
 
 
-        if(
-          state.sortKey === key
-        ){
+          if(
+            state.sortKey === key
+          ){
 
-          state.asc =
-            !state.asc;
+            state.asc =
+              !state.asc;
 
-        }else{
+          }else{
 
-          state.sortKey =
-            key;
+            state.sortKey =
+              key;
 
-          state.asc =
-            true;
+            state.asc =
+              true;
+
+          }
+
+
+          render();
 
         }
+      );
 
+    }
+  );
 
-        render();
-
-      }
-    );
-
-  });
 
 
 /* =========================================================
@@ -2054,7 +3497,9 @@ document
 ========================================================= */
 
 document
-  .getElementById("download")
+  .getElementById(
+    "download"
+  )
   .addEventListener(
     "click",
     () => {
@@ -2073,30 +3518,32 @@ document
 
 
       const data =
-        state.filtered.map(r => ({
+        state.filtered.map(
+          r => ({
 
-          "적치층":
-            r.적치층,
+            "적치층":
+              r.적치층,
 
-          "상품명":
-            r.상품명,
+            "상품명":
+              r.상품명,
 
-          "상품코드":
-            r.상품코드,
+            "상품코드":
+              r.상품코드,
 
-          "바코드":
-            r.바코드,
+            "바코드":
+              r.바코드,
 
-          "입수":
-            r.입수,
+            "입수":
+              r.입수,
 
-          "PCS":
-            r.PCS,
+            "PCS":
+              r.PCS,
 
-          "BOX수":
-            r.BOX수
+            "BOX수":
+              r.BOX수
 
-        }));
+          })
+        );
 
 
       const ws =
@@ -2123,6 +3570,16 @@ document
 
     }
   );
+
+
+
+/* =========================================================
+   초기화
+========================================================= */
+
+loadAttendance();
+
+updateAttendanceSummary();
 
 </script>
 

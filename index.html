@@ -8,26 +8,15 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
-/* =========================================================
-   기본
-========================================================= */
-
 *{
   box-sizing:border-box;
 }
 
-html,
-body{
+html,body{
   margin:0;
   width:100%;
   height:100%;
-}
-
-body{
   overflow:hidden;
-  background:
-    radial-gradient(circle at 50% 20%, #eef3fb 0%, #dce3ee 45%, #c9d1df 100%);
-  color:#172033;
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -35,455 +24,308 @@ body{
     "Noto Sans KR",
     Arial,
     sans-serif;
+  color:#172033;
 }
 
+body{
+  background:
+    radial-gradient(circle at 50% 20%, #eef3fb 0%, #d9e1ed 55%, #c8d2df 100%);
+}
 
 /* =========================================================
-   아이패드 본체
+   아이패드 외곽
 ========================================================= */
-
-.ipad-wrap{
-  width:min(1500px, 94vw, calc(90vh * 1.3333));
-  aspect-ratio:4 / 3;
-  margin:auto;
-  position:relative;
-  top:50%;
-  transform:translateY(-50%);
-}
 
 .ipad{
-  position:absolute;
-  inset:0;
+  position:relative;
+  width:min(96vw, 1700px);
+  height:min(94vh, 1000px);
+  margin:3vh auto 0;
 
-  background:
-    linear-gradient(145deg,#202124,#080808 45%,#171717);
+  background:#090a0c;
 
-  border-radius:58px;
+  border-radius:48px;
+
+  padding:17px;
 
   box-shadow:
-    0 35px 80px rgba(0,0,0,.35),
-    0 10px 30px rgba(0,0,0,.25),
-    inset 0 0 0 2px #333,
-    inset 0 0 0 5px #050505;
+    0 35px 70px rgba(0,0,0,.35),
+    0 8px 20px rgba(0,0,0,.28),
+    inset 0 0 0 2px #34373b;
 
-  padding:24px;
-
-  overflow:visible;
+  transition:.3s ease;
 }
 
+/* 우측 버튼 */
 
-/* =========================================================
-   아이패드 베젤
-========================================================= */
+.ipad::before{
+  content:"";
+  position:absolute;
+
+  right:-8px;
+  top:28%;
+
+  width:8px;
+  height:75px;
+
+  background:#1b1c1e;
+
+  border-radius:0 5px 5px 0;
+
+  box-shadow:
+    0 95px 0 #1b1c1e,
+    0 190px 0 #1b1c1e;
+
+  z-index:10;
+}
+
+/* 화면 */
 
 .screen{
   position:relative;
+
   width:100%;
   height:100%;
 
   overflow:hidden;
 
-  border-radius:38px;
+  border-radius:34px;
 
-  background:#f4f6fa;
+  background:#f5f7fb;
 
   box-shadow:
-    inset 0 0 0 2px #050505,
-    inset 0 0 15px rgba(0,0,0,.25);
+    inset 0 0 0 1px rgba(255,255,255,.35);
 }
 
-
-/* =========================================================
-   전면 카메라
-========================================================= */
+/* 상단 카메라 */
 
 .camera{
   position:absolute;
-  top:8px;
+
+  top:7px;
   left:50%;
+
   transform:translateX(-50%);
 
-  width:8px;
-  height:8px;
+  width:9px;
+  height:9px;
 
   border-radius:50%;
 
-  background:
-    radial-gradient(circle at 35% 30%,#4b6680,#050505 70%);
-
-  z-index:999;
-}
-
-
-/* =========================================================
-   우측 물리 버튼
-========================================================= */
-
-.side-buttons{
-  position:absolute;
-  right:-9px;
-  top:115px;
-
-  width:10px;
-
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-
-  z-index:1000;
-}
-
-.side-button{
-  width:10px;
-  border-radius:0 5px 5px 0;
-
-  background:
-    linear-gradient(90deg,#070707,#353535,#090909);
+  background:#101214;
 
   box-shadow:
-    2px 2px 4px rgba(0,0,0,.5);
-}
+    inset 0 0 0 2px #22262a,
+    0 0 3px rgba(0,0,0,.7);
 
-.volume-up,
-.volume-down{
-  height:48px;
+  z-index:100;
 }
-
-.power{
-  height:65px;
-  margin-top:20px;
-}
-
 
 /* =========================================================
-   앱 공통
+   공통 화면
 ========================================================= */
 
-.app{
-  display:none;
+.view{
   position:absolute;
   inset:0;
 
-  background:#f4f6fa;
+  display:none;
 
   overflow:auto;
+
+  background:#f5f7fb;
 }
 
-.app.active{
+.view.active{
   display:block;
 }
 
+/* 홈 화면 */
+
+#homeView{
+  overflow:hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fafc 0%,
+      #edf2f8 48%,
+      #e4ebf4 100%
+    );
+}
 
 /* =========================================================
-   홈 화면
+   홈 레이아웃
 ========================================================= */
 
 .home{
-  position:absolute;
-  inset:0;
+  width:100%;
+  height:100%;
 
-  display:block;
+  padding:34px 30px 110px;
 
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,.35),
-      rgba(255,255,255,0)
-    ),
-    radial-gradient(
-      circle at 80% 15%,
-      rgba(126,168,255,.8),
-      transparent 38%
-    ),
-    radial-gradient(
-      circle at 15% 80%,
-      rgba(178,132,255,.6),
-      transparent 35%
-    ),
-    linear-gradient(
-      135deg,
-      #607da9,
-      #8b9ec4 45%,
-      #4c638d
-    );
+  display:grid;
 
-  overflow:hidden;
+  grid-template-columns:250px 1fr;
+
+  gap:30px;
 }
 
+/* 좌측 패널 */
 
-/* 배경 장식 */
-
-.home::before{
-  content:"";
-  position:absolute;
-
-  width:700px;
-  height:700px;
-
-  border-radius:50%;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,.18),
-      rgba(255,255,255,0)
-    );
-
-  right:-250px;
-  top:-300px;
-
-  filter:blur(3px);
-}
-
-.home::after{
-  content:"";
-  position:absolute;
-
-  width:500px;
-  height:500px;
-
-  border-radius:50%;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,.15),
-      rgba(255,255,255,0)
-    );
-
-  left:-220px;
-  bottom:-280px;
-}
-
-
-/* =========================================================
-   홈 상단
-========================================================= */
-
-.home-top{
-  position:absolute;
-  left:30px;
-  right:30px;
-  top:24px;
-
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-
-  z-index:5;
-}
-
-.home-title{
-  color:white;
-  text-shadow:0 2px 8px rgba(0,0,0,.2);
-}
-
-.home-title strong{
-  display:block;
-  font-size:20px;
-  font-weight:800;
-}
-
-.home-title span{
-  display:block;
-  margin-top:3px;
-  font-size:11px;
-  opacity:.8;
-}
-
-.home-top-right{
-  color:white;
-  text-align:right;
-}
-
-.home-top-right .time{
-  font-size:15px;
-  font-weight:700;
-}
-
-.home-top-right .weather-mini{
-  margin-top:4px;
-  font-size:11px;
-  opacity:.85;
-}
-
-
-/* =========================================================
-   좌측 위젯
-========================================================= */
-
-.home-widget{
-  position:absolute;
-
-  left:28px;
-  top:88px;
-
-  width:280px;
-
-  z-index:10;
-
+.home-sidebar{
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:15px;
+
+  min-width:0;
 }
 
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
 
-/* 날짜 시간 */
+  padding:4px 8px 10px;
+}
 
-.clock-widget{
-  padding:18px;
+.brand-icon{
+  width:40px;
+  height:40px;
 
-  border-radius:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
-  background:rgba(255,255,255,.88);
+  border-radius:12px;
 
-  backdrop-filter:blur(20px);
+  background:#eef2ff;
+
+  font-size:23px;
+}
+
+.brand-title{
+  font-weight:800;
+  font-size:18px;
+  letter-spacing:-.5px;
+}
+
+.brand-sub{
+  margin-top:2px;
+  font-size:10px;
+  color:#7b8494;
+  letter-spacing:.5px;
+}
+
+/* 위젯 공통 */
+
+.widget{
+  background:rgba(255,255,255,.92);
+
+  border:1px solid #e0e6ef;
+
+  border-radius:20px;
+
+  padding:17px;
 
   box-shadow:
-    0 10px 30px rgba(0,0,0,.12);
+    0 8px 24px rgba(40,55,80,.06);
 
-  border:1px solid rgba(255,255,255,.7);
+  backdrop-filter:blur(10px);
 }
 
-.date-text{
-  color:#64748b;
+/* 시간 */
+
+.clock-date{
+  color:#657188;
   font-size:12px;
-  font-weight:600;
+  margin-bottom:4px;
 }
 
-.big-time{
-  margin-top:3px;
-
-  color:#111827;
-
-  font-size:31px;
+.clock-time{
+  font-size:29px;
   font-weight:800;
   letter-spacing:-1px;
-
-  font-variant-numeric:tabular-nums;
+  line-height:1.15;
 }
 
-.current-dot{
-  margin-top:5px;
+.live{
+  margin-top:7px;
 
+  color:#7b8494;
   font-size:10px;
-  color:#64748b;
+
+  display:flex;
+  align-items:center;
+  gap:5px;
 }
 
-.current-dot::before{
-  content:"";
-  display:inline-block;
-
+.live-dot{
   width:6px;
   height:6px;
-
-  margin-right:5px;
-
   border-radius:50%;
-
-  background:#22c55e;
+  background:#34c759;
 }
 
-
-/* 일정 */
-
-.schedule-widget{
-  padding:14px;
-
-  border-radius:22px;
-
-  background:rgba(255,255,255,.88);
-
-  backdrop-filter:blur(20px);
-
-  box-shadow:0 10px 30px rgba(0,0,0,.1);
-}
+/* 위젯 제목 */
 
 .widget-title{
   display:flex;
   justify-content:space-between;
   align-items:center;
 
-  margin-bottom:10px;
+  margin-bottom:11px;
 
   font-size:12px;
   font-weight:800;
 }
 
-.widget-title button{
-  border:0;
-  background:none;
-
-  color:#667085;
-
-  cursor:pointer;
-
+.widget-title span:last-child{
+  color:#929bad;
   font-size:10px;
+  font-weight:500;
 }
+
+/* 일정 */
 
 .schedule-list{
   display:flex;
+  flex-direction:column;
   gap:7px;
 
-  overflow-x:auto;
-  padding-bottom:2px;
+  max-height:125px;
+  overflow:auto;
 }
 
-.schedule-item{
-  flex:0 0 92px;
+.schedule-item-small{
+  display:flex;
+  align-items:center;
+  gap:8px;
 
-  padding:10px;
+  padding:8px;
 
-  border-radius:15px;
+  border-radius:10px;
 
-  background:#f4f6fa;
-
-  border:1px solid #e8ebf1;
-}
-
-.schedule-item .schedule-time{
-  font-size:10px;
-  font-weight:800;
-  color:#5264db;
-}
-
-.schedule-item .schedule-text{
-  margin-top:5px;
+  background:#f7f9fc;
 
   font-size:11px;
-  line-height:1.35;
-  font-weight:700;
-
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
 
-.no-schedule{
-  padding:10px;
+.schedule-time-small{
+  color:#5965d8;
+  font-weight:800;
+  min-width:35px;
+}
 
-  width:100%;
-
+.schedule-empty{
+  padding:15px 5px;
   text-align:center;
 
+  color:#9aa3b3;
   font-size:11px;
-  color:#98a2b3;
 }
-
 
 /* 날씨 */
-
-.weather-widget{
-  padding:15px;
-
-  border-radius:22px;
-
-  background:rgba(255,255,255,.88);
-
-  backdrop-filter:blur(20px);
-
-  box-shadow:0 10px 30px rgba(0,0,0,.1);
-}
 
 .weather-main{
   display:flex;
@@ -492,39 +334,32 @@ body{
 }
 
 .weather-icon{
-  font-size:30px;
+  font-size:35px;
 }
 
 .weather-temp{
-  font-size:25px;
+  font-size:27px;
   font-weight:800;
 }
 
-.weather-info{
-  font-size:10px;
-  color:#667085;
+.weather-desc{
+  margin-top:2px;
+  font-size:11px;
+  color:#737e91;
 }
 
 .weather-location{
-  margin-top:7px;
-
+  margin-top:9px;
+  color:#8993a5;
   font-size:10px;
-  color:#667085;
 }
-
 
 /* 근태 */
 
-.attendance-widget{
-  padding:14px;
-
-  border-radius:22px;
-
-  background:rgba(255,255,255,.88);
-
-  backdrop-filter:blur(20px);
-
-  box-shadow:0 10px 30px rgba(0,0,0,.1);
+.attendance-list{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
 }
 
 .attendance-row{
@@ -532,341 +367,515 @@ body{
   align-items:center;
   justify-content:space-between;
 
-  padding:7px 0;
+  padding:7px 8px;
 
-  border-bottom:1px solid #edf0f5;
-}
+  border-radius:10px;
 
-.attendance-row:last-child{
-  border-bottom:0;
+  background:#f7f9fc;
 }
 
 .person{
   display:flex;
   align-items:center;
-  gap:7px;
+  gap:8px;
 
   font-size:11px;
   font-weight:700;
 }
 
 .person-icon{
-  width:24px;
-  height:24px;
+  width:23px;
+  height:23px;
+
+  border-radius:50%;
+
+  background:#eeeaff;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  border-radius:8px;
-
-  background:#eef1ff;
+  font-size:12px;
 }
 
-.status-select{
-  border:1px solid #e4e7ec;
-  border-radius:8px;
-
+.attendance-select{
+  border:1px solid #dce2ea;
   background:#fff;
+
+  border-radius:8px;
 
   padding:5px 7px;
 
   font-size:10px;
+  color:#4d5668;
   outline:none;
 }
 
+.attendance-summary{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  gap:7px;
+
+  margin-top:8px;
+}
+
+.summary-box{
+  background:#f3f6fa;
+  border-radius:10px;
+  padding:9px;
+
+  text-align:center;
+}
+
+.summary-box .small{
+  color:#929bad;
+  font-size:9px;
+}
+
+.summary-box strong{
+  display:block;
+  margin-top:2px;
+  font-size:15px;
+}
 
 /* =========================================================
    홈 중앙
 ========================================================= */
 
-.home-center{
-  position:absolute;
-
-  left:330px;
-  right:30px;
-
-  top:90px;
-  bottom:115px;
+.home-main{
+  min-width:0;
 
   display:flex;
-  align-items:center;
-  justify-content:center;
-
-  z-index:3;
+  flex-direction:column;
+  justify-content:space-between;
 }
 
-.center-message{
-  color:white;
-
-  text-align:center;
-
-  text-shadow:0 3px 15px rgba(0,0,0,.25);
+.home-main-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
 }
 
-.center-message .emoji{
-  font-size:60px;
+.home-title{
+  font-size:28px;
+  font-weight:850;
+  letter-spacing:-1.2px;
 }
 
-.center-message h2{
-  margin:10px 0 5px;
-
-  font-size:26px;
-  letter-spacing:-1px;
-}
-
-.center-message p{
-  margin:0;
-
+.home-subtitle{
+  margin-top:5px;
   font-size:12px;
-  opacity:.8;
+  color:#778298;
 }
 
+/* 중앙 배경 */
+
+.wallpaper{
+  position:absolute;
+  inset:0;
+
+  pointer-events:none;
+
+  background:
+    radial-gradient(
+      circle at 72% 35%,
+      rgba(126,145,255,.15),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 35% 75%,
+      rgba(119,208,187,.12),
+      transparent 30%
+    );
+}
 
 /* =========================================================
-   앱 Dock
+   Dock
 ========================================================= */
 
 .dock{
   position:absolute;
 
+  bottom:19px;
   left:50%;
-  bottom:22px;
 
   transform:translateX(-50%);
 
+  z-index:50;
+
   display:flex;
-  gap:14px;
+  align-items:flex-end;
+  gap:10px;
 
-  padding:12px 16px;
+  padding:10px 12px;
 
-  border-radius:24px;
+  border-radius:22px;
 
-  background:rgba(255,255,255,.3);
+  background:rgba(255,255,255,.86);
 
-  backdrop-filter:blur(25px);
-
-  border:1px solid rgba(255,255,255,.4);
+  border:1px solid rgba(210,216,227,.95);
 
   box-shadow:
-    0 12px 35px rgba(0,0,0,.18);
+    0 10px 35px rgba(40,50,70,.16);
 
-  z-index:50;
+  backdrop-filter:blur(20px);
+
+  transition:.2s;
+}
+
+.dock.hidden{
+  display:none;
 }
 
 .app-icon{
-  width:65px;
-  height:65px;
+  width:62px;
+  height:62px;
 
-  border-radius:17px;
+  border:0;
+
+  border-radius:16px;
+
+  cursor:pointer;
 
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
 
-  border:0;
-
-  cursor:pointer;
-
-  color:white;
+  color:#fff;
 
   box-shadow:
-    0 5px 12px rgba(0,0,0,.22);
+    0 4px 8px rgba(0,0,0,.15);
 
-  transition:.15s;
+  transition:
+    transform .15s,
+    box-shadow .15s;
 }
 
 .app-icon:hover{
-  transform:translateY(-7px) scale(1.05);
+  transform:translateY(-6px) scale(1.04);
+
+  box-shadow:
+    0 10px 18px rgba(0,0,0,.2);
 }
 
 .app-icon:active{
-  transform:scale(.95);
+  transform:scale(.96);
 }
 
-.app-icon .icon{
-  font-size:28px;
+.app-icon .emoji{
+  font-size:25px;
   line-height:1;
 }
 
-.app-icon .name{
-  margin-top:4px;
+.app-icon .label{
+  margin-top:5px;
+
+  color:#fff;
 
   font-size:8px;
   font-weight:700;
 
-  text-shadow:0 1px 3px rgba(0,0,0,.4);
+  line-height:1.05;
+
+  text-align:center;
 }
 
-.icon-inventory{
-  background:linear-gradient(145deg,#f3a55b,#d9793f);
+.app-inventory{
+  background:linear-gradient(145deg,#ef934d,#d76c32);
 }
 
-.icon-sheet{
-  background:linear-gradient(145deg,#49bd7c,#1c8c58);
+.app-sheet{
+  background:linear-gradient(145deg,#35bd7b,#168e59);
 }
 
-.icon-calendar{
-  background:linear-gradient(145deg,#ff7676,#df4141);
+.app-calendar{
+  background:linear-gradient(145deg,#ff6d73,#df414d);
 }
 
-.icon-memo{
-  background:linear-gradient(145deg,#ffd96a,#e7a927);
+.app-memo{
+  background:linear-gradient(145deg,#ffc84f,#eaa723);
 }
 
-.icon-workers{
-  background:linear-gradient(145deg,#7e9af7,#5066c9);
+.app-staff{
+  background:linear-gradient(145deg,#6588ed,#4261c8);
 }
 
-.icon-more{
-  background:linear-gradient(145deg,#a9b0bd,#747c89);
+.app-unknown{
+  background:linear-gradient(145deg,#9da4ad,#727985);
 }
-
 
 /* =========================================================
-   앱 상단
+   앱 화면 공통
 ========================================================= */
 
-.app-header{
-  height:58px;
+.app-view{
+  padding:25px 30px 30px;
 
-  padding:0 18px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  background:rgba(255,255,255,.92);
-
-  border-bottom:1px solid #e5e7eb;
-
-  position:sticky;
-  top:0;
-
-  z-index:20;
+  overflow:auto;
 }
 
-.app-header-left{
+.app-header{
+  height:48px;
+
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:12px;
+
+  margin-bottom:17px;
 }
 
 .home-btn{
-  width:34px;
-  height:34px;
+  width:38px;
+  height:38px;
 
   border:0;
-  border-radius:11px;
 
-  background:#eef1f7;
+  border-radius:12px;
+
+  background:#eef2f7;
 
   cursor:pointer;
 
-  font-size:16px;
+  font-size:18px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  flex-shrink:0;
+}
+
+.home-btn:hover{
+  background:#e3e8f0;
 }
 
 .app-header-title{
-  font-size:16px;
+  font-size:20px;
   font-weight:800;
 }
 
 .app-header-sub{
-  margin-top:2px;
-
-  font-size:9px;
-  color:#98a2b3;
+  color:#8791a2;
+  font-size:11px;
 }
-
-.app-content{
-  padding:18px;
-}
-
 
 /* =========================================================
-   공통 카드
+   재고 앱
 ========================================================= */
 
-.card{
+.inventory-wrap{
+  max-width:1600px;
+  margin:auto;
+}
+
+.inventory-upload{
   background:#fff;
-
-  border:1px solid #e2e7ef;
-
-  border-radius:16px;
+  border:1px solid #dfe4ec;
+  border-radius:18px;
+  padding:16px;
 
   box-shadow:0 5px 18px rgba(20,30,55,.05);
 }
 
-
-/* =========================================================
-   Google Sheet
-========================================================= */
-
-.sheet-wrap{
-  height:calc(100% - 58px);
-
-  display:flex;
-  flex-direction:column;
-
-  padding:18px;
+.inventory-drop{
+  display:block;
+  border:2px dashed #b9c2d0;
+  border-radius:14px;
+  padding:22px;
+  text-align:center;
+  cursor:pointer;
 }
 
-.sheet-top{
+.inventory-drop:hover{
+  border-color:#5b67e8;
+  background:#f7f8ff;
+}
+
+.inventory-drop strong{
+  display:block;
+  font-size:14px;
+  margin-bottom:5px;
+}
+
+.inventory-drop span{
+  font-size:11px;
+  color:#7b8494;
+}
+
+#inventoryFile{
+  display:none;
+}
+
+.inventory-total{
+  background:#fff;
+  border:1px solid #e2e7ef;
+  border-radius:16px;
+  padding:15px;
+  margin:13px 0;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.inventory-total-label{
+  color:#7b8494;
+  font-size:11px;
+}
+
+.inventory-total-number{
+  margin-top:2px;
+  font-size:23px;
+  font-weight:800;
+}
+
+.inventory-floors{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:13px;
+}
+
+.inventory-floor{
+  background:#fff;
+  border:1px solid #e2e7ef;
+  border-radius:15px;
+  padding:13px;
+  cursor:pointer;
+}
+
+.inventory-floor:hover,
+.inventory-floor.active{
+  border-color:#6875f5;
+  box-shadow:0 0 0 1px #6875f5;
+}
+
+.inventory-floor-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:11px;
+
+  font-size:13px;
+  font-weight:750;
+}
+
+.inventory-floor-values{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+
+.inventory-floor-value{
+  background:#f7f9fc;
+  border-radius:9px;
+  padding:9px;
+}
+
+.inventory-floor-value small{
+  color:#7b8494;
+  font-size:9px;
+}
+
+.inventory-floor-value strong{
+  display:block;
+  margin-top:3px;
+  font-size:17px;
+}
+
+.inventory-toolbar{
   display:flex;
   gap:8px;
-  margin-bottom:10px;
+  margin-bottom:9px;
 }
 
-.sheet-url{
+.inventory-search{
   flex:1;
 
   border:1px solid #d8dee8;
-
   border-radius:10px;
 
   padding:10px 12px;
 
   font-size:12px;
-
+  background:#fff;
   outline:none;
 }
 
-.sheet-open{
-  border:0;
-
+.inventory-select,
+.inventory-btn{
+  border:1px solid #d8dee8;
   border-radius:10px;
 
-  background:#287c52;
-
-  color:white;
-
-  padding:0 16px;
-
-  cursor:pointer;
-
-  font-weight:700;
-}
-
-.sheet-frame{
-  flex:1;
-
-  border:1px solid #dfe4ec;
-
-  border-radius:14px;
-
-  overflow:hidden;
+  padding:9px 11px;
 
   background:#fff;
+
+  font-size:11px;
+  color:#344054;
 }
 
-.sheet-frame iframe{
+.inventory-btn{
+  cursor:pointer;
+}
+
+.inventory-tablebox{
+  background:#fff;
+  border:1px solid #e1e6ee;
+  border-radius:15px;
+  overflow:auto;
+}
+
+.inventory-table{
   width:100%;
-  height:100%;
-
-  border:0;
+  border-collapse:collapse;
+  min-width:900px;
 }
 
+.inventory-table th{
+  background:#f8fafc;
+  color:#667085;
+  font-size:10px;
+  padding:11px 13px;
+  border-bottom:1px solid #e5e9f0;
+  text-align:left;
+  white-space:nowrap;
+}
+
+.inventory-table td{
+  padding:11px 13px;
+  border-bottom:1px solid #edf0f4;
+  font-size:11px;
+  white-space:nowrap;
+}
+
+.inventory-table td.num{
+  text-align:right;
+}
+
+.inventory-floor-tag{
+  display:inline-flex;
+  padding:4px 7px;
+  border-radius:7px;
+  background:#eef0ff;
+  color:#3542a5;
+  font-weight:700;
+  font-size:10px;
+}
+
+.inventory-empty{
+  padding:55px 20px;
+  text-align:center;
+  color:#8993a5;
+}
+
+.inventory-empty strong{
+  display:block;
+  color:#344054;
+  margin-bottom:6px;
+}
 
 /* =========================================================
    캘린더
@@ -874,85 +883,73 @@ body{
 
 .calendar-layout{
   display:grid;
+  grid-template-columns:1.3fr .7fr;
+  gap:18px;
 
-  grid-template-columns:1.2fr .8fr;
-
-  gap:14px;
-
-  height:calc(100% - 58px);
-
-  padding:18px;
+  height:calc(100% - 65px);
 }
 
-.calendar-box{
-  padding:15px;
+.calendar-card,
+.event-card{
+  background:#fff;
+  border:1px solid #e0e6ef;
+  border-radius:20px;
+  padding:20px;
+
+  box-shadow:0 5px 18px rgba(20,30,55,.05);
 }
 
-.calendar-head{
+.calendar-top{
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
 
-  margin-bottom:12px;
+  margin-bottom:17px;
 }
 
 .calendar-month{
-  font-size:18px;
+  font-size:21px;
   font-weight:800;
 }
 
 .calendar-nav{
   display:flex;
-  gap:5px;
+  gap:6px;
 }
 
 .calendar-nav button{
-  width:30px;
-  height:30px;
+  width:32px;
+  height:32px;
 
-  border:0;
+  border:1px solid #e0e5ec;
+  border-radius:9px;
 
-  border-radius:8px;
-
-  background:#f1f3f7;
+  background:#fff;
 
   cursor:pointer;
-}
-
-.calendar-week{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-
-  margin-bottom:5px;
-}
-
-.calendar-week div{
-  text-align:center;
-
-  padding:6px 0;
-
-  font-size:10px;
-
-  color:#98a2b3;
-
-  font-weight:700;
 }
 
 .calendar-grid{
   display:grid;
   grid-template-columns:repeat(7,1fr);
+  gap:7px;
+}
 
-  gap:5px;
+.weekday{
+  text-align:center;
+  font-size:10px;
+  color:#8b95a7;
+  padding:6px;
 }
 
 .day{
-  min-height:45px;
+  min-height:70px;
 
-  padding:7px;
+  border-radius:12px;
 
-  border-radius:10px;
+  background:#f7f9fc;
 
-  background:#f8fafc;
+  padding:8px;
 
   cursor:pointer;
 
@@ -960,768 +957,407 @@ body{
 }
 
 .day:hover{
-  background:#eef1ff;
+  background:#f0f3fa;
 }
 
-.day.selected{
-  background:#e9edff;
-
-  box-shadow:inset 0 0 0 2px #6875f5;
+.day.other{
+  opacity:.35;
 }
 
 .day.today{
-  box-shadow:inset 0 0 0 2px #7c3aed;
+  box-shadow:inset 0 0 0 2px #6472e8;
 }
 
-.day-num{
+.day.selected{
+  background:#eef0ff;
+}
+
+.day-number{
   font-size:11px;
+  font-weight:750;
+}
+
+.day-events{
+  margin-top:6px;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.day-event{
+  padding:3px 4px;
+  border-radius:5px;
+
+  background:#6472e8;
+  color:#fff;
+
+  font-size:8px;
+
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.selected-date{
+  font-size:18px;
+  font-weight:800;
+  margin-bottom:15px;
+}
+
+.event-form{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+
+.form-input,
+.form-textarea{
+  width:100%;
+
+  border:1px solid #d8dee8;
+  border-radius:10px;
+
+  padding:10px 11px;
+
+  font-size:12px;
+
+  outline:none;
+
+  background:#fff;
+}
+
+.form-textarea{
+  resize:none;
+  height:80px;
+}
+
+.primary-btn{
+  border:0;
+  border-radius:10px;
+
+  padding:11px;
+
+  background:#6472e8;
+  color:#fff;
+
   font-weight:700;
+
+  cursor:pointer;
 }
 
-.day-event-dot{
-  width:5px;
-  height:5px;
-
-  border-radius:50%;
-
-  background:#6875f5;
-
-  margin-top:5px;
+.primary-btn:hover{
+  background:#5664da;
 }
 
-.calendar-editor{
-  padding:18px;
+.event-list{
+  margin-top:20px;
 
   display:flex;
   flex-direction:column;
-}
+  gap:8px;
 
-.editor-date{
-  font-size:14px;
-  font-weight:800;
-
-  margin-bottom:12px;
-}
-
-.schedule-input-row{
-  display:flex;
-  gap:7px;
-  margin-bottom:8px;
-}
-
-.schedule-input-row input{
-  border:1px solid #d8dee8;
-
-  border-radius:9px;
-
-  padding:9px;
-
-  font-size:11px;
-
-  outline:none;
-}
-
-.schedule-input-row input:first-child{
-  width:80px;
-}
-
-.schedule-input-row input:nth-child(2){
-  flex:1;
-}
-
-.add-schedule{
-  border:0;
-
-  border-radius:9px;
-
-  background:#5968df;
-
-  color:#fff;
-
-  padding:9px 12px;
-
-  cursor:pointer;
-
-  font-weight:700;
-}
-
-.editor-list{
-  margin-top:12px;
-
+  max-height:350px;
   overflow:auto;
 }
 
-.editor-schedule{
+.event-row{
   display:flex;
   justify-content:space-between;
   align-items:center;
 
   padding:10px;
 
+  background:#f7f9fc;
+
   border-radius:10px;
+}
 
-  background:#f7f8fb;
+.event-info{
+  min-width:0;
+}
 
-  margin-bottom:6px;
-
+.event-info strong{
+  display:block;
   font-size:11px;
 }
 
-.editor-schedule button{
-  border:0;
-
-  background:none;
-
-  color:#b42318;
-
-  cursor:pointer;
+.event-info span{
+  color:#8993a5;
+  font-size:10px;
 }
 
+.delete-event{
+  border:0;
+  background:transparent;
+  color:#c14949;
+  cursor:pointer;
+  font-size:11px;
+}
 
 /* =========================================================
    메모장
 ========================================================= */
 
-.memo-wrap{
-  height:calc(100% - 58px);
+.memo-layout{
+  height:calc(100% - 65px);
 
-  padding:18px;
+  display:flex;
+  flex-direction:column;
+
+  background:#fff;
+
+  border:1px solid #e0e6ef;
+  border-radius:20px;
+
+  overflow:hidden;
+
+  box-shadow:0 5px 18px rgba(20,30,55,.05);
 }
 
-.memo{
-  width:100%;
-  height:100%;
+.memo-toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 
-  resize:none;
+  padding:12px 16px;
 
-  border:1px solid #e2e7ef;
+  border-bottom:1px solid #edf0f4;
 
-  border-radius:18px;
-
-  padding:22px;
-
-  outline:none;
-
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      #fff 0,
-      #fff 28px,
-      #edf1f5 29px
-    );
-
-  font-family:
-    "Noto Sans KR",
-    sans-serif;
-
-  font-size:13px;
-
-  line-height:29px;
+  background:#fafbfd;
 }
 
-.memo-save{
-  position:absolute;
+.memo-status{
+  color:#929bad;
+  font-size:10px;
+}
 
-  right:28px;
-  bottom:28px;
+.memo-clear{
+  border:1px solid #e0e5ec;
+  border-radius:8px;
 
-  border:0;
+  background:#fff;
 
-  border-radius:12px;
+  padding:6px 9px;
 
-  padding:10px 16px;
-
-  background:#5265dc;
-
-  color:#fff;
-
-  font-weight:700;
+  font-size:10px;
 
   cursor:pointer;
 }
 
+.memo-area{
+  flex:1;
+
+  width:100%;
+
+  border:0;
+  outline:none;
+
+  resize:none;
+
+  padding:20px;
+
+  font-size:14px;
+  line-height:1.8;
+
+  color:#344054;
+}
 
 /* =========================================================
-   층별 작업인원
+   층별 인원
 ========================================================= */
 
-.worker-layout{
-  padding:18px;
-
+.staff-grid{
   display:grid;
-
   grid-template-columns:repeat(3,1fr);
-
-  gap:12px;
+  gap:14px;
 }
 
-.worker-card{
-  padding:18px;
-
+.staff-card{
   background:#fff;
+  border:1px solid #e0e6ef;
+  border-radius:18px;
+  padding:17px;
 
-  border:1px solid #e2e7ef;
-
-  border-radius:16px;
+  box-shadow:0 5px 18px rgba(20,30,55,.05);
 }
 
-.worker-floor{
+.staff-floor{
   font-size:15px;
   font-weight:800;
 }
 
-.worker-desc{
+.staff-sub{
   margin-top:3px;
-
-  color:#98a2b3;
-
+  color:#8993a5;
   font-size:10px;
 }
 
-.worker-input{
-  margin-top:14px;
+.staff-input{
+  width:100%;
 
-  display:flex;
-  align-items:center;
-
-  gap:8px;
-}
-
-.worker-input input{
-  width:80px;
+  margin-top:13px;
 
   border:1px solid #d8dee8;
-
   border-radius:10px;
 
-  padding:10px;
+  padding:11px;
 
-  font-size:15px;
-
-  font-weight:800;
+  font-size:14px;
 
   text-align:center;
 
   outline:none;
 }
 
-.worker-input span{
-  font-size:11px;
-  color:#667085;
-}
+.staff-save{
+  margin-top:8px;
 
-.save-workers{
-  grid-column:1/-1;
-
-  padding:12px;
+  width:100%;
 
   border:0;
+  border-radius:9px;
 
-  border-radius:12px;
+  padding:9px;
 
-  background:#5265dc;
+  background:#eef1ff;
+  color:#4e5bc8;
 
-  color:#fff;
+  font-weight:700;
 
   cursor:pointer;
-
-  font-weight:800;
 }
 
+.staff-save:hover{
+  background:#e3e7ff;
+}
+
+.staff-total{
+  margin-top:15px;
+
+  background:#fff;
+
+  border:1px solid #e0e6ef;
+  border-radius:18px;
+
+  padding:18px;
+
+  text-align:center;
+}
+
+.staff-total small{
+  color:#8993a5;
+  font-size:10px;
+}
+
+.staff-total strong{
+  display:block;
+
+  margin-top:3px;
+
+  font-size:27px;
+}
 
 /* =========================================================
-   미정 앱
+   Google Sheet
 ========================================================= */
 
-.more-app{
-  height:calc(100% - 58px);
+.sheet-screen{
+  height:calc(100% - 65px);
+
+  background:#fff;
+
+  border:1px solid #e0e6ef;
+  border-radius:20px;
+
+  overflow:hidden;
+}
+
+.sheet-screen iframe{
+  width:100%;
+  height:100%;
+  border:0;
+}
+
+.sheet-placeholder{
+  height:100%;
 
   display:flex;
-
+  flex-direction:column;
   align-items:center;
   justify-content:center;
 
   text-align:center;
 }
 
-.more-app .big{
-  font-size:60px;
+.sheet-placeholder .big{
+  font-size:50px;
 }
 
-.more-app h2{
-  margin:10px 0 5px;
+.sheet-placeholder strong{
+  margin-top:12px;
+  font-size:18px;
+}
+
+.sheet-placeholder p{
+  color:#8993a5;
+  font-size:12px;
+}
+
+.sheet-link-btn{
+  border:0;
+  border-radius:10px;
+
+  background:#35a86f;
+  color:#fff;
+
+  padding:11px 18px;
+
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+/* =========================================================
+   미정 앱
+========================================================= */
+
+.coming{
+  height:calc(100% - 65px);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  color:#8993a5;
+}
+
+.coming-icon{
+  font-size:70px;
+}
+
+.coming strong{
+  margin-top:15px;
+
+  color:#344054;
 
   font-size:20px;
 }
 
-.more-app p{
-  color:#98a2b3;
-  font-size:11px;
-}
-
-
 /* =========================================================
-   재고 앱
+   반응형
 ========================================================= */
 
-.inventory-content{
-  padding:18px;
-}
-
-.inventory-header{
-  display:flex;
-
-  justify-content:space-between;
-  align-items:flex-end;
-
-  margin-bottom:14px;
-}
-
-.inventory-header h1{
-  margin:0;
-
-  font-size:22px;
-
-  letter-spacing:-1px;
-}
-
-.inventory-sub{
-  margin-top:4px;
-
-  color:#667085;
-
-  font-size:10px;
-}
-
-.inventory-status{
-  font-size:10px;
-  color:#667085;
-}
-
-
-/* 업로드 */
-
-.upload{
-  background:#fff;
-
-  border:1px solid #dfe4ec;
-
-  border-radius:16px;
-
-  padding:14px;
-
-  box-shadow:0 5px 18px rgba(20,30,55,.05);
-}
-
-.drop{
-  display:block;
-
-  border:2px dashed #b9c2d0;
-
-  border-radius:14px;
-
-  padding:18px;
-
-  text-align:center;
-
-  cursor:pointer;
-
-  transition:.15s;
-}
-
-.drop:hover,
-.drop.drag{
-  border-color:#5b67e8;
-  background:#f7f8ff;
-}
-
-.drop strong{
-  display:block;
-
-  font-size:13px;
-
-  margin-bottom:4px;
-}
-
-.drop span{
-  font-size:10px;
-
-  color:#7b8494;
-}
-
-input[type=file]{
-  display:none;
-}
-
-
-/* 전체 SKU */
-
-.total-card{
-  background:#fff;
-
-  border:1px solid #e2e7ef;
-
-  border-radius:14px;
-
-  padding:14px;
-
-  margin:12px 0;
-}
-
-.label{
-  font-size:10px;
-
-  color:#7b8494;
-
-  margin-bottom:5px;
-}
-
-.value{
-  font-size:22px;
-
-  font-weight:800;
-}
-
-
-/* 층 카드 */
-
-.floor-cards{
-  display:grid;
-
-  grid-template-columns:repeat(4,1fr);
-
-  gap:9px;
-
-  margin-bottom:12px;
-}
-
-.floor-card{
-  background:#fff;
-
-  border:1px solid #e2e7ef;
-
-  border-radius:14px;
-
-  padding:12px;
-
-  cursor:pointer;
-
-  transition:.15s;
-}
-
-.floor-card:hover{
-  border-color:#9da8ff;
-
-  box-shadow:0 5px 18px rgba(20,30,55,.06);
-}
-
-.floor-card.active{
-  border-color:#6875f5;
-
-  box-shadow:0 0 0 1px #6875f5;
-
-  background:#fbfbff;
-}
-
-.floor-head{
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:center;
-
-  margin-bottom:10px;
-}
-
-.floor-title{
-  font-size:12px;
-  font-weight:800;
-}
-
-.arrow{
-  font-size:15px;
-
-  color:#667085;
-}
-
-.floor-values{
-  display:grid;
-
-  grid-template-columns:1fr 1fr;
-
-  gap:7px;
-}
-
-.floor-value{
-  background:#f7f9fc;
-
-  border-radius:9px;
-
-  padding:9px;
-}
-
-.floor-value .label{
-  margin-bottom:3px;
-}
-
-.floor-value .number{
-  font-size:17px;
-
-  font-weight:800;
-}
-
-
-/* 검색 */
-
-.toolbar{
-  display:flex;
-
-  gap:7px;
-
-  align-items:center;
-
-  flex-wrap:wrap;
-
-  margin:12px 0 8px;
-}
-
-.search{
-  flex:1;
-
-  min-width:200px;
-
-  border:1px solid #d8dee8;
-
-  border-radius:9px;
-
-  padding:9px 11px;
-
-  font-size:11px;
-
-  background:#fff;
-
-  outline:none;
-}
-
-.search:focus{
-  border-color:#6875f5;
-}
-
-.select,
-.btn{
-  border:1px solid #d8dee8;
-
-  border-radius:9px;
-
-  padding:8px 10px;
-
-  background:#fff;
-
-  font-size:10px;
-
-  color:#344054;
-}
-
-.btn{
-  cursor:pointer;
-}
-
-
-/* 테이블 */
-
-.tablebox{
-  background:#fff;
-
-  border:1px solid #e1e6ee;
-
-  border-radius:14px;
-
-  overflow:auto;
-
-  max-height:250px;
-
-  box-shadow:0 5px 18px rgba(20,30,55,.04);
-}
-
-table{
-  width:100%;
-
-  border-collapse:collapse;
-
-  min-width:800px;
-}
-
-th{
-  position:sticky;
-
-  top:0;
-
-  background:#f8fafc;
-
-  color:#667085;
-
-  font-size:9px;
-
-  font-weight:700;
-
-  text-align:left;
-
-  padding:9px 11px;
-
-  border-bottom:1px solid #e5e9f0;
-
-  cursor:pointer;
-
-  white-space:nowrap;
-
-  z-index:2;
-}
-
-td{
-  padding:9px 11px;
-
-  border-bottom:1px solid #edf0f4;
-
-  font-size:9px;
-
-  white-space:nowrap;
-}
-
-tbody tr:hover{
-  background:#fafbff;
-}
-
-td.num{
-  text-align:right;
-
-  font-variant-numeric:tabular-nums;
-}
-
-.floor{
-  display:inline-flex;
-
-  padding:4px 7px;
-
-  border-radius:7px;
-
-  background:#eef0ff;
-
-  color:#3542a5;
-
-  font-weight:700;
-
-  font-size:9px;
-}
-
-.box-num{
-  font-weight:700;
-}
-
-.empty{
-  padding:40px 20px;
-
-  text-align:center;
-
-  color:#7b8494;
-}
-
-.empty strong{
-  display:block;
-
-  color:#344054;
-
-  margin-bottom:5px;
-}
-
-
-/* 규칙 */
-
-.rule{
-  margin-top:10px;
-
-  background:#fff;
-
-  border:1px solid #e1e6ee;
-
-  border-radius:12px;
-
-  padding:10px 12px;
-}
-
-.rule summary{
-  cursor:pointer;
-
-  font-weight:700;
-
-  font-size:10px;
-}
-
-.rulegrid{
-  display:grid;
-
-  grid-template-columns:repeat(2,1fr);
-
-  gap:6px;
-
-  margin-top:8px;
-
-  font-size:9px;
-
-  color:#596273;
-}
-
-.rulegrid div{
-  padding:7px 9px;
-
-  background:#f8fafc;
-
-  border-radius:7px;
-}
-
-
-/* 오류 */
-
-.error-box{
-  margin-top:8px;
-
-  padding:9px 10px;
-
-  border-radius:9px;
-
-  background:#fff1f1;
-
-  color:#b42318;
-
-  font-size:10px;
-
-  display:none;
-
-  white-space:pre-wrap;
-}
-
-
-/* =========================================================
-   작은 화면
-========================================================= */
-
-@media(max-width:900px){
-
-  body{
-    overflow:auto;
-  }
-
-  .ipad-wrap{
-    width:96vw;
-    aspect-ratio:4/3;
-
-    top:20px;
-    transform:none;
-
-    margin:0 auto 30px;
-  }
+@media(max-width:1000px){
 
   .ipad{
-    padding:14px;
+    width:96vw;
+    height:94vh;
+
+    margin-top:3vh;
+
+    padding:12px;
+
     border-radius:38px;
   }
 
@@ -1729,79 +1365,66 @@ td.num{
     border-radius:28px;
   }
 
-  .home-widget{
-    width:230px;
+  .home{
+    grid-template-columns:210px 1fr;
+    gap:20px;
+    padding:25px 22px 100px;
   }
 
-  .home-center{
-    left:270px;
-  }
-
-  .dock{
-    gap:6px;
-  }
-
-  .app-icon{
-    width:53px;
-    height:53px;
+  .inventory-floors{
+    grid-template-columns:repeat(2,1fr);
   }
 
   .calendar-layout{
     grid-template-columns:1fr;
   }
 
-  .worker-layout{
-    grid-template-columns:1fr 1fr;
+  .staff-grid{
+    grid-template-columns:repeat(2,1fr);
   }
+
 }
 
+@media(max-width:700px){
 
-/* =========================================================
-   아주 작은 화면
-========================================================= */
+  .ipad{
+    width:100vw;
+    height:100vh;
 
-@media(max-width:650px){
+    margin:0;
 
-  .ipad-wrap{
-    width:98vw;
+    border-radius:0;
+    padding:0;
   }
 
-  .home-widget{
-    left:15px;
-    top:70px;
-
-    width:200px;
+  .screen{
+    border-radius:0;
   }
 
-  .home-center{
+  .home{
+    grid-template-columns:1fr;
+    overflow:auto;
+  }
+
+  .home-sidebar{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .home-main{
     display:none;
   }
 
   .dock{
-    bottom:12px;
-    padding:8px;
+    bottom:10px;
   }
 
   .app-icon{
-    width:43px;
-    height:43px;
-
-    border-radius:12px;
+    width:52px;
+    height:52px;
   }
 
-  .app-icon .icon{
-    font-size:20px;
-  }
-
-  .app-icon .name{
-    display:none;
-  }
-
-  .floor-cards{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .worker-layout{
+  .staff-grid{
     grid-template-columns:1fr;
   }
 }
@@ -1811,97 +1434,72 @@ td.num{
 
 <body>
 
-<!-- =========================================================
-     IPAD 본체
-========================================================= -->
+<div class="ipad">
 
-<div class="ipad-wrap">
+  <div class="camera"></div>
 
-  <div class="ipad">
+  <div class="screen">
 
-    <!-- 물리 버튼 -->
-    <div class="side-buttons">
-      <div class="side-button volume-up"></div>
-      <div class="side-button volume-down"></div>
-      <div class="side-button power"></div>
-    </div>
+    <!-- =====================================================
+         HOME
+    ====================================================== -->
 
-    <!-- 화면 -->
-    <div class="screen">
+    <section id="homeView" class="view active">
 
-      <div class="camera"></div>
+      <div class="wallpaper"></div>
 
+      <div class="home">
 
-      <!-- ===================================================
-           HOME
-      ==================================================== -->
+        <!-- 좌측 -->
+        <aside class="home-sidebar">
 
-      <section class="home app active" id="home">
+          <div class="brand">
+            <div class="brand-icon">📦</div>
 
-        <!-- 상단 -->
-        <div class="home-top">
+            <div>
+              <div class="brand-title">
+                입고팀 업무현황
+              </div>
 
-          <div class="home-title">
-            <strong>📦 입고팀 업무현황</strong>
-            <span>INBOUND TEAM</span>
-          </div>
-
-          <div class="home-top-right">
-
-            <div class="time" id="miniTime">
-              15:37
+              <div class="brand-sub">
+                INBOUND TEAM
+              </div>
             </div>
-
-            <div class="weather-mini" id="miniWeather">
-              경기도 광주시 · 날씨 확인 중
-            </div>
-
           </div>
-
-        </div>
-
-
-        <!-- 좌측 위젯 -->
-
-        <div class="home-widget">
 
 
           <!-- 날짜 / 시간 -->
 
-          <div class="clock-widget">
+          <div class="widget">
 
-            <div class="date-text" id="homeDate">
+            <div class="clock-date" id="homeDate">
               2026년 8월 24일 월요일
             </div>
 
-            <div class="big-time" id="homeTime">
+            <div class="clock-time" id="homeTime">
               15:37:29
             </div>
 
-            <div class="current-dot">
+            <div class="live">
+              <span class="live-dot"></span>
               현재 시간 기준
             </div>
 
           </div>
 
 
-          <!-- 일정 -->
+          <!-- 오늘 일정 -->
 
-          <div class="schedule-widget">
+          <div class="widget">
 
             <div class="widget-title">
-
-              <span>📅 금일 일정</span>
-
-              <button onclick="openApp('calendarApp')">
-                일정관리
-              </button>
-
+              <span>📅 오늘 일정</span>
+              <span>일정관리</span>
             </div>
 
             <div
+              id="homeSchedule"
               class="schedule-list"
-              id="todayScheduleList"
             ></div>
 
           </div>
@@ -1909,35 +1507,35 @@ td.num{
 
           <!-- 날씨 -->
 
-          <div class="weather-widget">
+          <div class="widget">
 
             <div class="widget-title">
-              <span>☀️ 오늘 날씨</span>
+              <span>🌤️ 오늘 날씨</span>
             </div>
 
             <div class="weather-main">
 
               <div
-                class="weather-icon"
                 id="weatherIcon"
+                class="weather-icon"
               >
-                ☀️
+                🌤️
               </div>
 
               <div>
 
                 <div
-                  class="weather-temp"
                   id="weatherTemp"
+                  class="weather-temp"
                 >
                   --°
                 </div>
 
                 <div
-                  class="weather-info"
-                  id="weatherInfo"
+                  id="weatherDesc"
+                  class="weather-desc"
                 >
-                  날씨 확인 중
+                  날씨 정보를 불러오는 중
                 </div>
 
               </div>
@@ -1953,1141 +1551,784 @@ td.num{
 
           <!-- 근태 -->
 
-          <div class="attendance-widget">
+          <div class="widget">
 
             <div class="widget-title">
-
               <span>👥 입고팀 근태현황</span>
-
-              <button onclick="openAttendancePrompt()">
-                수기 입력
-              </button>
-
+              <span>수기 입력</span>
             </div>
 
-            <div id="attendanceList"></div>
-
             <div
-              style="
-                display:flex;
-                gap:6px;
-                margin-top:8px;
-              "
-            >
+              id="attendanceList"
+              class="attendance-list"
+            ></div>
 
-              <div
-                style="
-                  flex:1;
-                  padding:8px;
-                  background:#f5f7fa;
-                  border-radius:9px;
-                  text-align:center;
-                "
-              >
-                <div
-                  style="
-                    font-size:9px;
-                    color:#98a2b3;
-                  "
-                >
-                  오늘 근무
-                </div>
+            <div class="attendance-summary">
 
-                <strong
-                  id="workCount"
-                  style="font-size:14px;"
-                >
-                  0명
-                </strong>
+              <div class="summary-box">
+                <div class="small">오늘 근무</div>
+                <strong id="workCount">0명</strong>
               </div>
 
-              <div
-                style="
-                  flex:1;
-                  padding:8px;
-                  background:#f5f7fa;
-                  border-radius:9px;
-                  text-align:center;
-                "
-              >
-                <div
-                  style="
-                    font-size:9px;
-                    color:#98a2b3;
-                  "
-                >
-                  부재
-                </div>
-
-                <strong
-                  id="absentCount"
-                  style="font-size:14px;"
-                >
-                  0명
-                </strong>
-
+              <div class="summary-box">
+                <div class="small">부재</div>
+                <strong id="absentCount">0명</strong>
               </div>
 
             </div>
 
           </div>
 
-        </div>
+        </aside>
 
 
         <!-- 중앙 -->
 
-        <div class="home-center">
+        <main class="home-main">
 
-          <div class="center-message">
+          <div class="home-main-top">
 
-            <div class="emoji">
-              📦
+            <div>
+              <div class="home-title">
+                입고팀 업무현황
+              </div>
+
+              <div class="home-subtitle">
+                하단 앱을 선택하여 업무를 시작하세요.
+              </div>
             </div>
-
-            <h2>
-              입고팀 업무현황
-            </h2>
-
-            <p>
-              아래 앱을 눌러 업무를 시작하세요
-            </p>
 
           </div>
 
-        </div>
+        </main>
+
+      </div>
 
 
-        <!-- Dock -->
+      <!-- Dock -->
 
-        <div class="dock">
-
-
-          <button
-            class="app-icon icon-inventory"
-            onclick="openApp('inventoryApp')"
-          >
-
-            <div class="icon">📦</div>
-
-            <div class="name">
-              DRY입하존 잔류재고
-            </div>
-
-          </button>
-
-
-          <button
-            class="app-icon icon-sheet"
-            onclick="openApp('sheetApp')"
-          >
-
-            <div class="icon">📊</div>
-
-            <div class="name">
-              입고 구글시트
-            </div>
-
-          </button>
-
-
-          <button
-            class="app-icon icon-calendar"
-            onclick="openApp('calendarApp')"
-          >
-
-            <div class="icon">📅</div>
-
-            <div class="name">
-              일정
-            </div>
-
-          </button>
-
-
-          <button
-            class="app-icon icon-memo"
-            onclick="openApp('memoApp')"
-          >
-
-            <div class="icon">📝</div>
-
-            <div class="name">
-              메모장
-            </div>
-
-          </button>
-
-
-          <button
-            class="app-icon icon-workers"
-            onclick="openApp('workerApp')"
-          >
-
-            <div class="icon">👷</div>
-
-            <div class="name">
-              층별 작업인원
-            </div>
-
-          </button>
-
-
-          <button
-            class="app-icon icon-more"
-            onclick="openApp('moreApp')"
-          >
-
-            <div class="icon">＋</div>
-
-            <div class="name">
-              미정
-            </div>
-
-          </button>
-
-
-        </div>
-
-      </section>
-
-
-      <!-- ===================================================
-           GOOGLE SHEET
-      ==================================================== -->
-
-      <section
-        class="app"
-        id="sheetApp"
+      <div
+        id="dock"
+        class="dock"
       >
+
+        <button
+          class="app-icon app-inventory"
+          onclick="openApp('inventoryView')"
+        >
+          <span class="emoji">📦</span>
+          <span class="label">
+            DRY입하존<br>잔류재고
+          </span>
+        </button>
+
+
+        <button
+          class="app-icon app-sheet"
+          onclick="openApp('sheetView')"
+        >
+          <span class="emoji">📊</span>
+          <span class="label">
+            입고<br>구글시트
+          </span>
+        </button>
+
+
+        <button
+          class="app-icon app-calendar"
+          onclick="openApp('calendarView')"
+        >
+          <span class="emoji">📅</span>
+          <span class="label">
+            일정
+          </span>
+        </button>
+
+
+        <button
+          class="app-icon app-memo"
+          onclick="openApp('memoView')"
+        >
+          <span class="emoji">📝</span>
+          <span class="label">
+            메모장
+          </span>
+        </button>
+
+
+        <button
+          class="app-icon app-staff"
+          onclick="openApp('staffView')"
+        >
+          <span class="emoji">👷</span>
+          <span class="label">
+            층별 작업인원
+          </span>
+        </button>
+
+
+        <button
+          class="app-icon app-unknown"
+          onclick="openApp('comingView')"
+        >
+          <span class="emoji">＋</span>
+          <span class="label">
+            미정
+          </span>
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         INVENTORY APP
+    ====================================================== -->
+
+    <section
+      id="inventoryView"
+      class="view app-view"
+    >
+
+      <div class="inventory-wrap">
 
         <div class="app-header">
 
-          <div class="app-header-left">
-
-            <button
-              class="home-btn"
-              onclick="goHome()"
-            >
-              ⌂
-            </button>
-
-            <div>
-
-              <div class="app-header-title">
-                📊 입고 구글시트
-              </div>
-
-              <div class="app-header-sub">
-                기존 업무용 Google Sheet
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="sheet-wrap">
-
-          <div class="sheet-top">
-
-            <input
-              class="sheet-url"
-              id="sheetUrl"
-              placeholder="Google Sheet URL"
-            >
-
-            <button
-              class="sheet-open"
-              onclick="openGoogleSheet()"
-            >
-              시트 열기
-            </button>
-
-          </div>
-
-
-          <div class="sheet-frame">
-
-            <iframe
-              id="sheetFrame"
-              src=""
-            ></iframe>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- ===================================================
-           CALENDAR
-      ==================================================== -->
-
-      <section
-        class="app"
-        id="calendarApp"
-      >
-
-        <div class="app-header">
-
-          <div class="app-header-left">
-
-            <button
-              class="home-btn"
-              onclick="goHome()"
-            >
-              ⌂
-            </button>
-
-            <div>
-
-              <div class="app-header-title">
-                📅 일정 캘린더
-              </div>
-
-              <div class="app-header-sub">
-                날짜별 업무 일정 수기 입력
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="calendar-layout">
-
-
-          <div class="calendar-box card">
-
-            <div class="calendar-head">
-
-              <div
-                class="calendar-month"
-                id="calendarMonth"
-              ></div>
-
-              <div class="calendar-nav">
-
-                <button onclick="changeMonth(-1)">
-                  ‹
-                </button>
-
-                <button onclick="changeMonth(1)">
-                  ›
-                </button>
-
-              </div>
-
-            </div>
-
-
-            <div class="calendar-week">
-
-              <div>일</div>
-              <div>월</div>
-              <div>화</div>
-              <div>수</div>
-              <div>목</div>
-              <div>금</div>
-              <div>토</div>
-
-            </div>
-
-
-            <div
-              class="calendar-grid"
-              id="calendarGrid"
-            ></div>
-
-          </div>
-
-
-          <div class="calendar-editor card">
-
-            <div
-              class="editor-date"
-              id="editorDate"
-            >
-              일정 입력
-            </div>
-
-
-            <div class="schedule-input-row">
-
-              <input
-                type="time"
-                id="scheduleTime"
-              >
-
-              <input
-                type="text"
-                id="scheduleText"
-                placeholder="예: 업체 입고 / 미팅 / 작업"
-              >
-
-            </div>
-
-
-            <button
-              class="add-schedule"
-              onclick="addSchedule()"
-            >
-              ＋ 일정 추가
-            </button>
-
-
-            <div
-              class="editor-list"
-              id="editorScheduleList"
-            ></div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- ===================================================
-           MEMO
-      ==================================================== -->
-
-      <section
-        class="app"
-        id="memoApp"
-      >
-
-        <div class="app-header">
-
-          <div class="app-header-left">
-
-            <button
-              class="home-btn"
-              onclick="goHome()"
-            >
-              ⌂
-            </button>
-
-            <div>
-
-              <div class="app-header-title">
-                📝 메모장
-              </div>
-
-              <div class="app-header-sub">
-                자유 메모 · 자동 저장
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="memo-wrap">
-
-          <textarea
-            class="memo"
-            id="memo"
-            placeholder="여기에 자유롭게 메모하세요..."
-          ></textarea>
-
           <button
-            class="memo-save"
-            onclick="saveMemo()"
+            class="home-btn"
+            onclick="goHome()"
           >
-            저장
+            ⌂
           </button>
-
-        </div>
-
-      </section>
-
-
-      <!-- ===================================================
-           층별 작업인원
-      ==================================================== -->
-
-      <section
-        class="app"
-        id="workerApp"
-      >
-
-        <div class="app-header">
-
-          <div class="app-header-left">
-
-            <button
-              class="home-btn"
-              onclick="goHome()"
-            >
-              ⌂
-            </button>
-
-            <div>
-
-              <div class="app-header-title">
-                👷 층별 작업인원
-              </div>
-
-              <div class="app-header-sub">
-                금일 층별 작업 인원 수기 입력
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          class="worker-layout"
-          id="workerLayout"
-        ></div>
-
-      </section>
-
-
-      <!-- ===================================================
-           미정
-      ==================================================== -->
-
-      <section
-        class="app"
-        id="moreApp"
-      >
-
-        <div class="app-header">
-
-          <div class="app-header-left">
-
-            <button
-              class="home-btn"
-              onclick="goHome()"
-            >
-              ⌂
-            </button>
-
-            <div>
-
-              <div class="app-header-title">
-                ＋ 미정
-              </div>
-
-              <div class="app-header-sub">
-                추후 업무 기능 추가
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="more-app">
 
           <div>
-
-            <div class="big">
-              ＋
+            <div class="app-header-title">
+              📦 DRY입하존 잔류재고
             </div>
 
-            <h2>
-              새로운 업무 앱
-            </h2>
-
-            <p>
-              추후 필요한 기능을 추가할 수 있습니다.
-            </p>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- ===================================================
-           재고현황
-      ==================================================== -->
-
-      <section
-        class="app"
-        id="inventoryApp"
-      >
-
-        <div class="app-header">
-
-          <div class="app-header-left">
-
-            <button
-              class="home-btn"
-              onclick="goHome()"
-            >
-              ⌂
-            </button>
-
-            <div>
-
-              <div class="app-header-title">
-                📦 DRY입하존 잔류재고
-              </div>
-
-              <div class="app-header-sub">
-                RAW 업로드 → 적치층 및 재고 자동 계산
-              </div>
-
+            <div class="app-header-sub">
+              미적치 상품 RAW를 업로드하면 적치층과 재고현황을 자동 계산합니다.
             </div>
-
           </div>
 
         </div>
 
 
-        <div class="inventory-content">
+        <div class="inventory-upload">
 
+          <label
+            class="inventory-drop"
+            id="inventoryDrop"
+          >
 
-          <div class="inventory-header">
-
-            <div>
-
-              <h1>
-                DRY입하존 잔류재고
-              </h1>
-
-              <div class="inventory-sub">
-                미적치 상품 RAW를 업로드하면 적치층과 재고현황을 자동 계산합니다.
-              </div>
-
-            </div>
-
-            <div
-              class="inventory-status"
-              id="status"
-            >
-              RAW 파일을 업로드해주세요.
-            </div>
-
-          </div>
-
-
-          <!-- 업로드 -->
-
-          <div class="upload">
-
-            <label
-              class="drop"
-              id="drop"
+            <input
+              id="inventoryFile"
+              type="file"
+              accept=".xlsx,.xls,.csv"
             >
 
-              <input
-                id="file"
-                type="file"
-                accept=".xlsx,.xls,.csv"
-              >
+            <strong>
+              📄 RAW 파일 업로드
+            </strong>
 
-              <strong>
-                📄 RAW 파일 업로드
-              </strong>
+            <span>
+              엑셀 파일을 클릭하거나 이 영역으로 드래그하세요.
+            </span>
 
-              <span>
-                엑셀 파일을 클릭하거나 이 영역으로 드래그하세요.
-              </span>
+          </label>
 
-            </label>
-
-            <div
-              class="error-box"
-              id="errorBox"
-            ></div>
-
-          </div>
+        </div>
 
 
-          <!-- 전체 SKU -->
+        <div class="inventory-total">
 
-          <div class="total-card">
-
-            <div class="label">
+          <div>
+            <div class="inventory-total-label">
               전체 SKU 수
             </div>
 
             <div
-              class="value"
-              id="count"
+              id="inventoryCount"
+              class="inventory-total-number"
             >
               0
             </div>
+          </div>
+
+          <div
+            id="inventoryStatus"
+            style="font-size:10px;color:#8993a5;"
+          >
+            RAW 파일을 업로드해주세요.
+          </div>
+
+        </div>
+
+
+        <div class="inventory-floors">
+
+          <div
+            class="inventory-floor"
+            data-floor="4층"
+          >
+
+            <div class="inventory-floor-head">
+              <span>🏢 4층</span>
+              <span>▼</span>
+            </div>
+
+            <div class="inventory-floor-values">
+
+              <div class="inventory-floor-value">
+                <small>SKU</small>
+                <strong id="sku4">0</strong>
+              </div>
+
+              <div class="inventory-floor-value">
+                <small>PCS</small>
+                <strong id="pcs4">0</strong>
+              </div>
+
+            </div>
 
           </div>
 
 
-          <!-- 층별 -->
+          <div
+            class="inventory-floor"
+            data-floor="3-2층"
+          >
 
-          <div class="floor-cards">
+            <div class="inventory-floor-head">
+              <span>🏢 3-2층</span>
+              <span>▼</span>
+            </div>
 
+            <div class="inventory-floor-values">
 
-            <div
-              class="floor-card"
-              data-floor="4층"
-            >
-
-              <div class="floor-head">
-
-                <div class="floor-title">
-                  🏢 4층
-                </div>
-
-                <div class="arrow">
-                  ▼
-                </div>
-
+              <div class="inventory-floor-value">
+                <small>SKU</small>
+                <strong id="sku32">0</strong>
               </div>
 
-              <div class="floor-values">
-
-                <div class="floor-value">
-
-                  <div class="label">
-                    SKU
-                  </div>
-
-                  <div
-                    class="number"
-                    id="sku4"
-                  >
-                    0
-                  </div>
-
-                </div>
-
-                <div class="floor-value">
-
-                  <div class="label">
-                    PCS
-                  </div>
-
-                  <div
-                    class="number"
-                    id="pcs4"
-                  >
-                    0
-                  </div>
-
-                </div>
-
+              <div class="inventory-floor-value">
+                <small>PCS</small>
+                <strong id="pcs32">0</strong>
               </div>
 
             </div>
-
-
-            <div
-              class="floor-card"
-              data-floor="3-2층"
-            >
-
-              <div class="floor-head">
-
-                <div class="floor-title">
-                  🏢 3-2층
-                </div>
-
-                <div class="arrow">
-                  ▼
-                </div>
-
-              </div>
-
-              <div class="floor-values">
-
-                <div class="floor-value">
-
-                  <div class="label">
-                    SKU
-                  </div>
-
-                  <div
-                    class="number"
-                    id="sku32"
-                  >
-                    0
-                  </div>
-
-                </div>
-
-                <div class="floor-value">
-
-                  <div class="label">
-                    PCS
-                  </div>
-
-                  <div
-                    class="number"
-                    id="pcs32"
-                  >
-                    0
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <div
-              class="floor-card"
-              data-floor="3-1층"
-            >
-
-              <div class="floor-head">
-
-                <div class="floor-title">
-                  🏢 3-1층
-                </div>
-
-                <div class="arrow">
-                  ▼
-                </div>
-
-              </div>
-
-              <div class="floor-values">
-
-                <div class="floor-value">
-
-                  <div class="label">
-                    SKU
-                  </div>
-
-                  <div
-                    class="number"
-                    id="sku31"
-                  >
-                    0
-                  </div>
-
-                </div>
-
-                <div class="floor-value">
-
-                  <div class="label">
-                    PCS
-                  </div>
-
-                  <div
-                    class="number"
-                    id="pcs31"
-                  >
-                    0
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <div
-              class="floor-card"
-              data-floor="1-2층"
-            >
-
-              <div class="floor-head">
-
-                <div class="floor-title">
-                  🏢 1-2층
-                </div>
-
-                <div class="arrow">
-                  ▼
-                </div>
-
-              </div>
-
-              <div class="floor-values">
-
-                <div class="floor-value">
-
-                  <div class="label">
-                    SKU
-                  </div>
-
-                  <div
-                    class="number"
-                    id="sku12"
-                  >
-                    0
-                  </div>
-
-                </div>
-
-                <div class="floor-value">
-
-                  <div class="label">
-                    PCS
-                  </div>
-
-                  <div
-                    class="number"
-                    id="pcs12"
-                  >
-                    0
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
 
           </div>
 
 
-          <!-- 검색 -->
+          <div
+            class="inventory-floor"
+            data-floor="3-1층"
+          >
 
-          <div class="toolbar">
+            <div class="inventory-floor-head">
+              <span>🏢 3-1층</span>
+              <span>▼</span>
+            </div>
+
+            <div class="inventory-floor-values">
+
+              <div class="inventory-floor-value">
+                <small>SKU</small>
+                <strong id="sku31">0</strong>
+              </div>
+
+              <div class="inventory-floor-value">
+                <small>PCS</small>
+                <strong id="pcs31">0</strong>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="inventory-floor"
+            data-floor="1-2층"
+          >
+
+            <div class="inventory-floor-head">
+              <span>🏢 1-2층</span>
+              <span>▼</span>
+            </div>
+
+            <div class="inventory-floor-values">
+
+              <div class="inventory-floor-value">
+                <small>SKU</small>
+                <strong id="sku12">0</strong>
+              </div>
+
+              <div class="inventory-floor-value">
+                <small>PCS</small>
+                <strong id="pcs12">0</strong>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="inventory-toolbar">
+
+          <input
+            id="inventorySearch"
+            class="inventory-search"
+            placeholder="상품명 / 상품코드 / 바코드 검색"
+          >
+
+          <select
+            id="inventoryFloorFilter"
+            class="inventory-select"
+          >
+            <option value="">전체 적치층</option>
+            <option value="4층">4층</option>
+            <option value="3-2층">3-2층</option>
+            <option value="3-1층">3-1층</option>
+            <option value="1-2층">1-2층</option>
+          </select>
+
+          <button
+            id="inventoryDownload"
+            class="inventory-btn"
+          >
+            현재 결과 다운로드
+          </button>
+
+        </div>
+
+
+        <div class="inventory-tablebox">
+
+          <table class="inventory-table">
+
+            <thead>
+              <tr>
+                <th>적치층</th>
+                <th>상품명</th>
+                <th>상품코드</th>
+                <th>바코드</th>
+                <th>입수</th>
+                <th>PCS</th>
+                <th>BOX수</th>
+              </tr>
+            </thead>
+
+            <tbody id="inventoryTbody">
+
+              <tr>
+                <td colspan="7">
+
+                  <div class="inventory-empty">
+                    <strong>
+                      아직 데이터가 없습니다.
+                    </strong>
+
+                    RAW 엑셀 파일을 업로드해주세요.
+                  </div>
+
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         GOOGLE SHEET
+    ====================================================== -->
+
+    <section
+      id="sheetView"
+      class="view app-view"
+    >
+
+      <div class="app-header">
+
+        <button
+          class="home-btn"
+          onclick="goHome()"
+        >
+          ⌂
+        </button>
+
+        <div>
+          <div class="app-header-title">
+            📊 입고 구글시트
+          </div>
+
+          <div class="app-header-sub">
+            기존에 사용하던 Google Sheet 연결
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="sheet-screen">
+
+        <div
+          id="sheetPlaceholder"
+          class="sheet-placeholder"
+        >
+
+          <div class="big">📊</div>
+
+          <strong>
+            입고팀 Google Sheet
+          </strong>
+
+          <p>
+            아래 버튼을 누르면 기존 구글시트로 이동합니다.
+          </p>
+
+          <button
+            class="sheet-link-btn"
+            onclick="openGoogleSheet()"
+          >
+            Google Sheet 열기
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CALENDAR
+    ====================================================== -->
+
+    <section
+      id="calendarView"
+      class="view app-view"
+    >
+
+      <div class="app-header">
+
+        <button
+          class="home-btn"
+          onclick="goHome()"
+        >
+          ⌂
+        </button>
+
+        <div>
+          <div class="app-header-title">
+            📅 일정 캘린더
+          </div>
+
+          <div class="app-header-sub">
+            날짜별 입고팀 업무 일정을 수기로 등록합니다.
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="calendar-layout">
+
+        <div class="calendar-card">
+
+          <div class="calendar-top">
+
+            <div
+              id="calendarMonth"
+              class="calendar-month"
+            ></div>
+
+            <div class="calendar-nav">
+
+              <button onclick="changeMonth(-1)">
+                ‹
+              </button>
+
+              <button onclick="changeMonth(1)">
+                ›
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="calendarGrid"
+            class="calendar-grid"
+          ></div>
+
+        </div>
+
+
+        <div class="event-card">
+
+          <div
+            id="selectedDateText"
+            class="selected-date"
+          >
+            일정 추가
+          </div>
+
+
+          <div class="event-form">
 
             <input
-              class="search"
-              id="search"
-              placeholder="상품명 / 상품코드 / 바코드 검색"
+              id="eventTime"
+              class="form-input"
+              type="time"
             >
 
-
-            <select
-              class="select"
-              id="floorFilter"
+            <input
+              id="eventTitle"
+              class="form-input"
+              placeholder="예: 업체 입고 / 미팅 / 작업"
             >
 
-              <option value="">
-                전체 적치층
-              </option>
-
-              <option value="4층">
-                4층
-              </option>
-
-              <option value="3-2층">
-                3-2층
-              </option>
-
-              <option value="3-1층">
-                3-1층
-              </option>
-
-              <option value="1-2층">
-                1-2층
-              </option>
-
-            </select>
-
+            <textarea
+              id="eventMemo"
+              class="form-textarea"
+              placeholder="상세 내용을 입력하세요."
+            ></textarea>
 
             <button
-              class="btn"
-              id="download"
+              class="primary-btn"
+              onclick="addEvent()"
             >
-              현재 결과 CSV 다운로드
+              ＋ 일정 추가
             </button>
 
           </div>
 
 
-          <!-- 테이블 -->
-
-          <div class="tablebox">
-
-            <table>
-
-              <thead>
-
-                <tr>
-
-                  <th data-key="적치층">
-                    적치층 ↕
-                  </th>
-
-                  <th data-key="상품명">
-                    상품명 ↕
-                  </th>
-
-                  <th data-key="상품코드">
-                    상품코드 ↕
-                  </th>
-
-                  <th data-key="바코드">
-                    바코드 ↕
-                  </th>
-
-                  <th data-key="입수">
-                    입수 ↕
-                  </th>
-
-                  <th data-key="PCS">
-                    PCS ↕
-                  </th>
-
-                  <th data-key="BOX수">
-                    BOX수 ↕
-                  </th>
-
-                </tr>
-
-              </thead>
-
-
-              <tbody id="tbody">
-
-                <tr>
-
-                  <td colspan="7">
-
-                    <div class="empty">
-
-                      <strong>
-                        아직 데이터가 없습니다.
-                      </strong>
-
-                      RAW 엑셀 파일을 업로드해주세요.
-
-                    </div>
-
-                  </td>
-
-                </tr>
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-
-          <!-- 규칙 -->
-
-          <details class="rule">
-
-            <summary>
-              적치층 계산 규칙 보기
-            </summary>
-
-            <div class="rulegrid">
-
-              <div>
-                DRY 일반 + A/B/C/D → <b>4층</b>
-              </div>
-
-              <div>
-                DRY 일반 + SA/SSA → <b>3-2층</b>
-              </div>
-
-              <div>
-                DRY WCS/WMS Bypass + A/SA/SSA → <b>3-1층</b>
-              </div>
-
-              <div>
-                B/C/D + 휴지·화장지·키친타월 → <b>3-1층</b>
-              </div>
-
-              <div>
-                B/C/D + 식품 + 음료 → <b>3-1층</b>
-              </div>
-
-              <div>
-                B/C/D + 특정상품 → <b>3-1층</b>
-              </div>
-
-              <div>
-                B/C/D + 그 외 → <b>1-2층</b>
-              </div>
-
-            </div>
-
-          </details>
-
+          <div
+            id="eventList"
+            class="event-list"
+          ></div>
 
         </div>
 
-      </section>
+      </div>
 
-    </div>
+    </section>
+
+
+    <!-- =====================================================
+         MEMO
+    ====================================================== -->
+
+    <section
+      id="memoView"
+      class="view app-view"
+    >
+
+      <div class="app-header">
+
+        <button
+          class="home-btn"
+          onclick="goHome()"
+        >
+          ⌂
+        </button>
+
+        <div>
+          <div class="app-header-title">
+            📝 메모장
+          </div>
+
+          <div class="app-header-sub">
+            자유롭게 끄적이고 자동 저장됩니다.
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="memo-layout">
+
+        <div class="memo-toolbar">
+
+          <div
+            id="memoStatus"
+            class="memo-status"
+          >
+            자동 저장 준비
+          </div>
+
+          <button
+            class="memo-clear"
+            onclick="clearMemo()"
+          >
+            전체 지우기
+          </button>
+
+        </div>
+
+
+        <textarea
+          id="memoArea"
+          class="memo-area"
+          placeholder="여기에 자유롭게 메모하세요..."
+        ></textarea>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STAFF
+    ====================================================== -->
+
+    <section
+      id="staffView"
+      class="view app-view"
+    >
+
+      <div class="app-header">
+
+        <button
+          class="home-btn"
+          onclick="goHome()"
+        >
+          ⌂
+        </button>
+
+        <div>
+          <div class="app-header-title">
+            👷 층별 작업인원
+          </div>
+
+          <div class="app-header-sub">
+            각 층의 작업 인원을 수기로 입력하고 저장합니다.
+          </div>
+        </div>
+
+      </div>
+
+
+      <div
+        id="staffGrid"
+        class="staff-grid"
+      ></div>
+
+
+      <div class="staff-total">
+
+        <small>
+          전체 작업 인원
+        </small>
+
+        <strong id="staffTotal">
+          0명
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         COMING SOON
+    ====================================================== -->
+
+    <section
+      id="comingView"
+      class="view app-view"
+    >
+
+      <div class="app-header">
+
+        <button
+          class="home-btn"
+          onclick="goHome()"
+        >
+          ⌂
+        </button>
+
+        <div>
+          <div class="app-header-title">
+            ＋ 새로운 업무
+          </div>
+
+          <div class="app-header-sub">
+            추후 추가 예정
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="coming">
+
+        <div class="coming-icon">
+          ＋
+        </div>
+
+        <strong>
+          아직 준비 중입니다.
+        </strong>
+
+        <div>
+          추후 필요한 업무 기능을 추가할 수 있습니다.
+        </div>
+
+      </div>
+
+    </section>
+
   </div>
+
 </div>
 
 
 <script>
 
 /* =========================================================
-   ★ 여기만 수정하면 되는 설정
+   기본 설정
 ========================================================= */
 
-
 /*
-  네가 사용하는 Google Sheet 주소를 여기에 넣어줘.
-
-  예:
-  https://docs.google.com/spreadsheets/d/xxxxxxxxxxxx/edit
-
-  지금은 빈칸으로 두면
-  앱에서 직접 URL을 입력할 수 있음.
+  ★ 여기에 기존 Google Sheet 주소 입력
 */
 
-const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1Xyunolv5TWlgZsd7Y-MpWaMzqRS5yx9aGQ-LxMS89vE/edit?gid=534377963#gid=534377963";
-
-
-/*
-  입고팀 기본 인원
-*/
-
-const DEFAULT_TEAM = [
-  "김혜린",
-  "김종진",
-  "함준규"
-];
-
-
-/*
-  층별 작업인원
-*/
-
-const WORKER_FLOORS = [
-  "B3F",
-  "1-2F",
-  "2F",
-  "3-1F",
-  "3-2F",
-  "4-1F"
-];
+const GOOGLE_SHEET_URL =
+  "https://docs.google.com/spreadsheets/d/1Xyunolv5TWlgZsd7Y-MpWaMzqRS5yx9aGQ-LxMS89vE/edit?gid=534377963#gid=534377963";
 
 
 /* =========================================================
-   공통 앱 이동
+   앱 화면 전환
 ========================================================= */
 
-function openApp(appId){
+function openApp(id){
 
   document
-    .querySelectorAll(".app")
-    .forEach(app => {
+    .querySelectorAll(".view")
+    .forEach(view => {
 
-      app.classList.remove("active");
+      view.classList.remove("active");
 
     });
 
 
   const target =
-    document.getElementById(appId);
+    document.getElementById(id);
 
 
   if(target){
@@ -3097,43 +2338,76 @@ function openApp(appId){
   }
 
 
-  if(appId === "calendarApp"){
+  /*
+    앱 실행 시 홈 화면의 Dock까지 완전히 숨김
+  */
+
+  document
+    .getElementById("dock")
+    .classList.add("hidden");
+
+
+  /*
+    앱 화면 진입 시 스크롤 상단
+  */
+
+  if(target){
+
+    target.scrollTop = 0;
+
+  }
+
+
+  /*
+    캘린더 진입 시 다시 렌더링
+  */
+
+  if(id === "calendarView"){
 
     renderCalendar();
 
   }
 
 
-  if(appId === "workerApp"){
+  if(id === "staffView"){
 
-    renderWorkers();
+    renderStaff();
 
   }
 
 
-  if(appId === "sheetApp"){
+  if(id === "memoView"){
 
-    loadGoogleSheet();
+    loadMemo();
 
   }
 
 }
 
 
+/* =========================================================
+   홈으로
+========================================================= */
+
 function goHome(){
 
   document
-    .querySelectorAll(".app")
-    .forEach(app => {
+    .querySelectorAll(".view")
+    .forEach(view => {
 
-      app.classList.remove("active");
+      view.classList.remove("active");
 
     });
 
 
   document
-    .getElementById("home")
+    .getElementById("homeView")
     .classList.add("active");
+
+
+  document
+    .getElementById("dock")
+    .classList.remove("hidden");
 
 
   updateHomeSchedule();
@@ -3142,7 +2416,7 @@ function goHome(){
 
 
 /* =========================================================
-   날짜 / 시간
+   시계
 ========================================================= */
 
 function updateClock(){
@@ -3151,760 +2425,312 @@ function updateClock(){
     new Date();
 
 
-  const days = [
-    "일요일",
-    "월요일",
-    "화요일",
-    "수요일",
-    "목요일",
-    "금요일",
-    "토요일"
-  ];
-
-
   const year =
     now.getFullYear();
-
 
   const month =
     now.getMonth() + 1;
 
-
   const date =
     now.getDate();
 
+  const dayNames =
+    [
+      "일요일",
+      "월요일",
+      "화요일",
+      "수요일",
+      "목요일",
+      "금요일",
+      "토요일"
+    ];
+
 
   const day =
-    days[now.getDay()];
+    dayNames[now.getDay()];
 
 
-  const h =
-    String(now.getHours()).padStart(2,"0");
+  const time =
+    [
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds()
+    ]
+    .map(v =>
+      String(v).padStart(2,"0")
+    )
+    .join(":");
 
 
-  const m =
-    String(now.getMinutes()).padStart(2,"0");
-
-
-  const s =
-    String(now.getSeconds()).padStart(2,"0");
-
-
-  document.getElementById("homeDate")
+  document
+    .getElementById("homeDate")
     .textContent =
     `${year}년 ${month}월 ${date}일 ${day}`;
 
 
-  document.getElementById("homeTime")
+  document
+    .getElementById("homeTime")
     .textContent =
-    `${h}:${m}:${s}`;
-
-
-  document.getElementById("miniTime")
-    .textContent =
-    `${h}:${m}`;
-
-
-  /*
-    날짜가 바뀌었으면 일정도 갱신
-  */
-
-  updateHomeSchedule();
+    time;
 
 }
 
-
-setInterval(updateClock,1000);
 
 updateClock();
 
-
-/* =========================================================
-   localStorage 공통
-========================================================= */
-
-function getStorage(key, fallback){
-
-  try{
-
-    const value =
-      localStorage.getItem(key);
-
-
-    if(value === null){
-
-      return fallback;
-
-    }
-
-
-    return JSON.parse(value);
-
-  }catch(e){
-
-    return fallback;
-
-  }
-
-}
-
-
-function setStorage(key,value){
-
-  localStorage.setItem(
-    key,
-    JSON.stringify(value)
-  );
-
-}
-
-
-/* =========================================================
-   일정
-========================================================= */
-
-let calendarDate =
-  new Date();
-
-
-let selectedDate =
-  new Date();
-
-
-function dateKey(date){
-
-  const y =
-    date.getFullYear();
-
-
-  const m =
-    String(date.getMonth()+1)
-      .padStart(2,"0");
-
-
-  const d =
-    String(date.getDate())
-      .padStart(2,"0");
-
-
-  return `${y}-${m}-${d}`;
-
-}
-
-
-function getSchedules(){
-
-  return getStorage(
-    "inbound_schedules",
-    {}
-  );
-
-}
-
-
-function saveSchedules(data){
-
-  setStorage(
-    "inbound_schedules",
-    data
-  );
-
-}
-
-
-/* 캘린더 렌더 */
-
-function renderCalendar(){
-
-  const year =
-    calendarDate.getFullYear();
-
-
-  const month =
-    calendarDate.getMonth();
-
-
-  const first =
-    new Date(
-      year,
-      month,
-      1
-    );
-
-
-  const last =
-    new Date(
-      year,
-      month + 1,
-      0
-    );
-
-
-  document.getElementById("calendarMonth")
-    .textContent =
-    `${year}년 ${month+1}월`;
-
-
-  const grid =
-    document.getElementById("calendarGrid");
-
-
-  grid.innerHTML = "";
-
-
-  const schedules =
-    getSchedules();
-
-
-  const startDay =
-    first.getDay();
-
-
-  for(let i=0;i<startDay;i++){
-
-    const blank =
-      document.createElement("div");
-
-    grid.appendChild(blank);
-
-  }
-
-
-  const today =
-    new Date();
-
-
-  for(let d=1;d<=last.getDate();d++){
-
-    const date =
-      new Date(
-        year,
-        month,
-        d
-      );
-
-
-    const key =
-      dateKey(date);
-
-
-    const cell =
-      document.createElement("div");
-
-
-    cell.className =
-      "day";
-
-
-    if(
-      dateKey(selectedDate) === key
-    ){
-
-      cell.classList.add("selected");
-
-    }
-
-
-    if(
-      dateKey(today) === key
-    ){
-
-      cell.classList.add("today");
-
-    }
-
-
-    const num =
-      document.createElement("div");
-
-
-    num.className =
-      "day-num";
-
-
-    num.textContent =
-      d;
-
-
-    cell.appendChild(num);
-
-
-    if(
-      schedules[key] &&
-      schedules[key].length
-    ){
-
-      const dot =
-        document.createElement("div");
-
-
-      dot.className =
-        "day-event-dot";
-
-
-      cell.appendChild(dot);
-
-    }
-
-
-    cell.addEventListener(
-      "click",
-      () => {
-
-        selectedDate =
-          new Date(
-            year,
-            month,
-            d
-          );
-
-
-        renderCalendar();
-
-        renderEditor();
-
-      }
-    );
-
-
-    grid.appendChild(cell);
-
-  }
-
-
-  renderEditor();
-
-}
-
-
-/* 이전 / 다음 달 */
-
-function changeMonth(delta){
-
-  calendarDate.setMonth(
-    calendarDate.getMonth() + delta
-  );
-
-
-  renderCalendar();
-
-}
-
-
-/* 선택 날짜 에디터 */
-
-function renderEditor(){
-
-  const key =
-    dateKey(selectedDate);
-
-
-  const schedules =
-    getSchedules();
-
-
-  const y =
-    selectedDate.getFullYear();
-
-
-  const m =
-    selectedDate.getMonth()+1;
-
-
-  const d =
-    selectedDate.getDate();
-
-
-  document.getElementById("editorDate")
-    .textContent =
-    `${y}년 ${m}월 ${d}일 일정`;
-
-
-  const list =
-    document.getElementById("editorScheduleList");
-
-
-  list.innerHTML = "";
-
-
-  const items =
-    schedules[key] || [];
-
-
-  if(!items.length){
-
-    list.innerHTML = `
-      <div
-        style="
-          padding:20px;
-          text-align:center;
-          color:#98a2b3;
-          font-size:11px;
-        "
-      >
-        등록된 일정이 없습니다.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  items.forEach(
-    (item,index) => {
-
-      const row =
-        document.createElement("div");
-
-
-      row.className =
-        "editor-schedule";
-
-
-      row.innerHTML = `
-
-        <div>
-
-          <strong>
-            ${esc(item.time)}
-          </strong>
-
-          &nbsp;
-
-          ${esc(item.text)}
-
-        </div>
-
-        <button>
-          삭제
-        </button>
-
-      `;
-
-
-      row
-        .querySelector("button")
-        .addEventListener(
-          "click",
-          () => {
-
-            removeSchedule(
-              index
-            );
-
-          }
-        );
-
-
-      list.appendChild(row);
-
-    }
-  );
-
-}
-
-
-/* 일정 추가 */
-
-function addSchedule(){
-
-  const time =
-    document
-      .getElementById("scheduleTime")
-      .value;
-
-
-  const text =
-    document
-      .getElementById("scheduleText")
-      .value
-      .trim();
-
-
-  if(!text){
-
-    alert("일정 내용을 입력해주세요.");
-
-    return;
-
-  }
-
-
-  const key =
-    dateKey(selectedDate);
-
-
-  const schedules =
-    getSchedules();
-
-
-  if(!schedules[key]){
-
-    schedules[key] = [];
-
-  }
-
-
-  schedules[key].push({
-
-    time:
-      time || "종일",
-
-    text
-
-  });
-
-
-  schedules[key].sort(
-    (a,b) =>
-      String(a.time)
-        .localeCompare(
-          String(b.time)
-        )
-  );
-
-
-  saveSchedules(schedules);
-
-
-  document
-    .getElementById("scheduleTime")
-    .value = "";
-
-
-  document
-    .getElementById("scheduleText")
-    .value = "";
-
-
-  renderCalendar();
-
-  updateHomeSchedule();
-
-}
-
-
-/* 일정 삭제 */
-
-function removeSchedule(index){
-
-  const key =
-    dateKey(selectedDate);
-
-
-  const schedules =
-    getSchedules();
-
-
-  schedules[key].splice(
-    index,
-    1
-  );
-
-
-  if(
-    schedules[key].length === 0
-  ){
-
-    delete schedules[key];
-
-  }
-
-
-  saveSchedules(schedules);
-
-
-  renderCalendar();
-
-  updateHomeSchedule();
-
-}
-
-
-/* 홈 일정 */
-
-function updateHomeSchedule(){
-
-  const today =
-    new Date();
-
-
-  const key =
-    dateKey(today);
-
-
-  const schedules =
-    getSchedules();
-
-
-  const items =
-    schedules[key] || [];
-
-
-  const box =
-    document.getElementById(
-      "todayScheduleList"
-    );
-
-
-  if(!box){
-
-    return;
-
-  }
-
-
-  box.innerHTML = "";
-
-
-  if(!items.length){
-
-    box.innerHTML = `
-      <div class="no-schedule">
-        오늘 등록된 일정이 없습니다.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  items
-    .slice()
-    .sort(
-      (a,b) =>
-        String(a.time)
-          .localeCompare(
-            String(b.time)
-          )
-    )
-    .forEach(
-      item => {
-
-        const div =
-          document.createElement("div");
-
-
-        div.className =
-          "schedule-item";
-
-
-        div.innerHTML = `
-
-          <div class="schedule-time">
-            ${esc(item.time)}
-          </div>
-
-          <div class="schedule-text">
-            ${esc(item.text)}
-          </div>
-
-        `;
-
-
-        box.appendChild(div);
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-   메모장
-========================================================= */
-
-const memo =
-  document.getElementById("memo");
-
-
-memo.value =
-  localStorage.getItem(
-    "inbound_memo"
-  ) || "";
-
-
-memo.addEventListener(
-  "input",
-  () => {
-
-    localStorage.setItem(
-      "inbound_memo",
-      memo.value
-    );
-
-  }
+setInterval(
+  updateClock,
+  1000
 );
 
 
-function saveMemo(){
+/* =========================================================
+   날씨
+   경기도 광주시
+========================================================= */
 
-  localStorage.setItem(
-    "inbound_memo",
-    memo.value
-  );
+async function loadWeather(){
+
+  /*
+    광주시청 인근 기준
+  */
+
+  const lat = 37.429;
+  const lon = 127.255;
 
 
-  alert("메모가 저장되었습니다.");
+  try{
+
+    const url =
+      "https://api.open-meteo.com/v1/forecast" +
+      `?latitude=${lat}` +
+      `&longitude=${lon}` +
+      "&current=temperature_2m,weather_code" +
+      "&timezone=Asia%2FSeoul";
+
+
+    const response =
+      await fetch(url);
+
+
+    const data =
+      await response.json();
+
+
+    const temp =
+      Math.round(
+        data.current.temperature_2m
+      );
+
+
+    const code =
+      data.current.weather_code;
+
+
+    const weather =
+      getWeatherInfo(code);
+
+
+    document
+      .getElementById("weatherTemp")
+      .textContent =
+      `${temp}°`;
+
+
+    document
+      .getElementById("weatherIcon")
+      .textContent =
+      weather.icon;
+
+
+    document
+      .getElementById("weatherDesc")
+      .textContent =
+      weather.text;
+
+  }catch(e){
+
+    document
+      .getElementById("weatherTemp")
+      .textContent =
+      "--°";
+
+
+    document
+      .getElementById("weatherDesc")
+      .textContent =
+      "날씨 정보를 불러올 수 없습니다.";
+
+  }
 
 }
 
 
+function getWeatherInfo(code){
+
+  if(code === 0){
+
+    return {
+      icon:"☀️",
+      text:"맑음"
+    };
+
+  }
+
+  if([1,2].includes(code)){
+
+    return {
+      icon:"🌤️",
+      text:"대체로 맑음"
+    };
+
+  }
+
+  if(code === 3){
+
+    return {
+      icon:"☁️",
+      text:"흐림"
+    };
+
+  }
+
+  if([45,48].includes(code)){
+
+    return {
+      icon:"🌫️",
+      text:"안개"
+    };
+
+  }
+
+  if(
+    [51,53,55,56,57].includes(code)
+  ){
+
+    return {
+      icon:"🌦️",
+      text:"이슬비"
+    };
+
+  }
+
+  if(
+    [61,63,65,66,67].includes(code)
+  ){
+
+    return {
+      icon:"🌧️",
+      text:"비"
+    };
+
+  }
+
+  if(
+    [71,73,75,77].includes(code)
+  ){
+
+    return {
+      icon:"❄️",
+      text:"눈"
+    };
+
+  }
+
+  if(
+    [80,81,82].includes(code)
+  ){
+
+    return {
+      icon:"🌧️",
+      text:"소나기"
+    };
+
+  }
+
+  if(
+    [95,96,99].includes(code)
+  ){
+
+    return {
+      icon:"⛈️",
+      text:"뇌우"
+    };
+
+  }
+
+  return {
+    icon:"🌤️",
+    text:"날씨"
+  };
+
+}
+
+
+loadWeather();
+
+
 /* =========================================================
-   근태
+   근태현황
 ========================================================= */
 
-const ATTENDANCE_STATUSES = [
-  "근무",
-  "연차",
-  "반차",
-  "외근",
-  "교육",
-  "기타"
+const ATTENDANCE_KEY =
+  "inbound_attendance_v1";
+
+
+const defaultAttendance = [
+
+  {
+    name:"김혜린",
+    status:"근무"
+  },
+
+  {
+    name:"김종진",
+    status:"근무"
+  },
+
+  {
+    name:"함준규",
+    status:"근무"
+  }
+
 ];
 
 
 function getAttendance(){
 
   const saved =
-    getStorage(
-      "inbound_attendance",
-      null
+    localStorage.getItem(
+      ATTENDANCE_KEY
     );
 
 
-  if(saved){
+  if(!saved){
 
-    return saved;
+    return [...defaultAttendance];
 
   }
 
 
-  const result = {};
+  try{
 
+    return JSON.parse(saved);
 
-  DEFAULT_TEAM.forEach(
-    name => {
+  }catch(e){
 
-      result[name] =
-        "근무";
+    return [...defaultAttendance];
 
-    }
-  );
-
-
-  return result;
+  }
 
 }
 
 
 function saveAttendance(data){
 
-  setStorage(
-    "inbound_attendance",
-    data
+  localStorage.setItem(
+    ATTENDANCE_KEY,
+    JSON.stringify(data)
   );
 
 }
@@ -3916,116 +2742,99 @@ function renderAttendance(){
     getAttendance();
 
 
-  const box =
+  const list =
     document.getElementById(
       "attendanceList"
     );
 
 
-  box.innerHTML = "";
+  list.innerHTML =
+    data.map((person,index) => `
 
+      <div class="attendance-row">
 
-  Object.keys(data)
-    .forEach(
-      name => {
+        <div class="person">
 
-        const row =
-          document.createElement("div");
-
-
-        row.className =
-          "attendance-row";
-
-
-        const person =
-          document.createElement("div");
-
-
-        person.className =
-          "person";
-
-
-        person.innerHTML = `
           <div class="person-icon">
             👤
           </div>
 
-          <span>
-            ${esc(name)}
-          </span>
-        `;
+          ${escapeHtml(person.name)}
 
+        </div>
 
-        const select =
-          document.createElement("select");
+        <select
+          class="attendance-select"
+          onchange="changeAttendance(${index},this.value)"
+        >
 
+          <option
+            value="근무"
+            ${person.status==="근무" ? "selected":""}
+          >
+            근무
+          </option>
 
-        select.className =
-          "status-select";
+          <option
+            value="외근"
+            ${person.status==="외근" ? "selected":""}
+          >
+            외근
+          </option>
 
+          <option
+            value="휴무"
+            ${person.status==="휴무" ? "selected":""}
+          >
+            휴무
+          </option>
 
-        ATTENDANCE_STATUSES
-          .forEach(
-            status => {
+          <option
+            value="연차"
+            ${person.status==="연차" ? "selected":""}
+          >
+            연차
+          </option>
 
-              const option =
-                document.createElement("option");
+          <option
+            value="반차"
+            ${person.status==="반차" ? "selected":""}
+          >
+            반차
+          </option>
 
+          <option
+            value="교육"
+            ${person.status==="교육" ? "selected":""}
+          >
+            교육
+          </option>
 
-              option.value =
-                status;
+        </select>
 
+      </div>
 
-              option.textContent =
-                status;
-
-
-              if(
-                data[name] === status
-              ){
-
-                option.selected =
-                  true;
-
-              }
-
-
-              select.appendChild(
-                option
-              );
-
-            }
-          );
-
-
-        select.addEventListener(
-          "change",
-          () => {
-
-            data[name] =
-              select.value;
-
-
-            saveAttendance(data);
-
-            updateAttendanceSummary();
-
-          }
-        );
-
-
-        row.appendChild(person);
-
-        row.appendChild(select);
-
-
-        box.appendChild(row);
-
-      }
-    );
+    `).join("");
 
 
   updateAttendanceSummary();
+
+}
+
+
+function changeAttendance(index,status){
+
+  const data =
+    getAttendance();
+
+
+  data[index].status =
+    status;
+
+
+  saveAttendance(data);
+
+  renderAttendance();
 
 }
 
@@ -4036,60 +2845,474 @@ function updateAttendanceSummary(){
     getAttendance();
 
 
-  const values =
-    Object.values(data);
-
-
   const work =
-    values.filter(
-      x =>
-        x === "근무" ||
-        x === "반차"
+    data.filter(
+      x => x.status === "근무"
     ).length;
 
 
   const absent =
-    values.length - work;
+    data.length - work;
 
 
-  document.getElementById(
-    "workCount"
-  ).textContent =
+  document
+    .getElementById("workCount")
+    .textContent =
     `${work}명`;
 
 
-  document.getElementById(
-    "absentCount"
-  ).textContent =
+  document
+    .getElementById("absentCount")
+    .textContent =
     `${absent}명`;
 
 }
 
 
-function openAttendancePrompt(){
+renderAttendance();
 
-  const name =
-    prompt(
-      "근태를 수정할 팀원 이름을 입력하세요.\n\n" +
-      DEFAULT_TEAM.join(", ")
+
+/* =========================================================
+   일정
+========================================================= */
+
+const EVENT_KEY =
+  "inbound_calendar_events_v1";
+
+
+let calendarDate =
+  new Date();
+
+
+let selectedDate =
+  formatDate(new Date());
+
+
+function formatDate(date){
+
+  const y =
+    date.getFullYear();
+
+
+  const m =
+    String(
+      date.getMonth()+1
+    ).padStart(2,"0");
+
+
+  const d =
+    String(
+      date.getDate()
+    ).padStart(2,"0");
+
+
+  return `${y}-${m}-${d}`;
+
+}
+
+
+function getEvents(){
+
+  const saved =
+    localStorage.getItem(
+      EVENT_KEY
     );
 
 
-  if(!name){
+  if(!saved){
+
+    return [];
+
+  }
+
+
+  try{
+
+    return JSON.parse(saved);
+
+  }catch(e){
+
+    return [];
+
+  }
+
+}
+
+
+function saveEvents(events){
+
+  localStorage.setItem(
+    EVENT_KEY,
+    JSON.stringify(events)
+  );
+
+}
+
+
+function changeMonth(amount){
+
+  calendarDate.setMonth(
+    calendarDate.getMonth() + amount
+  );
+
+
+  renderCalendar();
+
+}
+
+
+function selectDate(dateString){
+
+  selectedDate =
+    dateString;
+
+
+  renderCalendar();
+
+}
+
+
+function renderCalendar(){
+
+  const year =
+    calendarDate.getFullYear();
+
+
+  const month =
+    calendarDate.getMonth();
+
+
+  const firstDay =
+    new Date(
+      year,
+      month,
+      1
+    );
+
+
+  const lastDay =
+    new Date(
+      year,
+      month + 1,
+      0
+    );
+
+
+  const start =
+    firstDay.getDay();
+
+
+  const totalDays =
+    lastDay.getDate();
+
+
+  const monthText =
+    `${year}년 ${month+1}월`;
+
+
+  document
+    .getElementById("calendarMonth")
+    .textContent =
+    monthText;
+
+
+  const grid =
+    document.getElementById(
+      "calendarGrid"
+    );
+
+
+  const weekdays =
+    [
+      "일",
+      "월",
+      "화",
+      "수",
+      "목",
+      "금",
+      "토"
+    ];
+
+
+  let html =
+    weekdays.map(day => `
+
+      <div class="weekday">
+        ${day}
+      </div>
+
+    `).join("");
+
+
+  const prevLast =
+    new Date(
+      year,
+      month,
+      0
+    ).getDate();
+
+
+  for(let i=start-1; i>=0; i--){
+
+    const date =
+      prevLast - i;
+
+
+    const dateObj =
+      new Date(
+        year,
+        month-1,
+        date
+      );
+
+
+    html +=
+      renderDay(
+        dateObj,
+        true
+      );
+
+  }
+
+
+  for(let date=1; date<=totalDays; date++){
+
+    const dateObj =
+      new Date(
+        year,
+        month,
+        date
+      );
+
+
+    html +=
+      renderDay(
+        dateObj,
+        false
+      );
+
+  }
+
+
+  const cells =
+    start + totalDays;
+
+
+  const remain =
+    Math.ceil(cells / 7) * 7 - cells;
+
+
+  for(let i=1; i<=remain; i++){
+
+    const dateObj =
+      new Date(
+        year,
+        month+1,
+        i
+      );
+
+
+    html +=
+      renderDay(
+        dateObj,
+        true
+      );
+
+  }
+
+
+  grid.innerHTML =
+    html;
+
+
+  updateSelectedDatePanel();
+
+}
+
+
+function renderDay(dateObj,isOther){
+
+  const dateString =
+    formatDate(dateObj);
+
+
+  const today =
+    formatDate(new Date());
+
+
+  const events =
+    getEvents()
+      .filter(
+        x => x.date === dateString
+      )
+      .sort(
+        (a,b) =>
+          String(a.time)
+            .localeCompare(
+              String(b.time)
+            )
+      );
+
+
+  const classes =
+    [
+      "day",
+      isOther ? "other" : "",
+      dateString === today ? "today" : "",
+      dateString === selectedDate ? "selected" : ""
+    ]
+    .join(" ");
+
+
+  const eventHtml =
+    events
+      .slice(0,3)
+      .map(
+        event => `
+          <div class="day-event">
+            ${escapeHtml(event.time || "")}
+            ${escapeHtml(event.title)}
+          </div>
+        `
+      )
+      .join("");
+
+
+  return `
+
+    <div
+      class="${classes}"
+      onclick="selectDate('${dateString}')"
+    >
+
+      <div class="day-number">
+        ${dateObj.getDate()}
+      </div>
+
+      <div class="day-events">
+        ${eventHtml}
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+function updateSelectedDatePanel(){
+
+  const dateObj =
+    new Date(
+      selectedDate + "T00:00:00"
+    );
+
+
+  const text =
+    `${dateObj.getFullYear()}년 ` +
+    `${dateObj.getMonth()+1}월 ` +
+    `${dateObj.getDate()}일 일정`;
+
+
+  document
+    .getElementById("selectedDateText")
+    .textContent =
+    text;
+
+
+  const events =
+    getEvents()
+      .filter(
+        x => x.date === selectedDate
+      )
+      .sort(
+        (a,b) =>
+          String(a.time)
+            .localeCompare(
+              String(b.time)
+            )
+      );
+
+
+  const list =
+    document.getElementById(
+      "eventList"
+    );
+
+
+  if(!events.length){
+
+    list.innerHTML = `
+      <div class="schedule-empty">
+        등록된 일정이 없습니다.
+      </div>
+    `;
 
     return;
 
   }
 
 
-  const data =
-    getAttendance();
+  list.innerHTML =
+    events.map(event => `
+
+      <div class="event-row">
+
+        <div class="event-info">
+
+          <strong>
+            ${escapeHtml(event.title)}
+          </strong>
+
+          <span>
+            ${escapeHtml(event.time || "시간 미정")}
+            ${event.memo
+              ? " · " + escapeHtml(event.memo)
+              : ""}
+          </span>
+
+        </div>
+
+        <button
+          class="delete-event"
+          onclick="deleteEvent('${event.id}')"
+        >
+          삭제
+        </button>
+
+      </div>
+
+    `).join("");
+
+}
 
 
-  if(!data[name]){
+function addEvent(){
+
+  const time =
+    document
+      .getElementById("eventTime")
+      .value;
+
+
+  const title =
+    document
+      .getElementById("eventTitle")
+      .value
+      .trim();
+
+
+  const memo =
+    document
+      .getElementById("eventMemo")
+      .value
+      .trim();
+
+
+  if(!title){
 
     alert(
-      "등록된 팀원이 아닙니다."
+      "일정 제목을 입력해주세요."
     );
 
     return;
@@ -4097,184 +3320,407 @@ function openAttendancePrompt(){
   }
 
 
-  const status =
-    prompt(
-      `${name}님의 근태를 입력하세요.\n\n` +
-      ATTENDANCE_STATUSES.join(" / "),
-      data[name]
-    );
+  const events =
+    getEvents();
 
+
+  events.push({
+
+    id:
+      Date.now().toString(),
+
+    date:
+      selectedDate,
+
+    time:
+      time,
+
+    title:
+      title,
+
+    memo:
+      memo
+
+  });
+
+
+  saveEvents(events);
+
+
+  document
+    .getElementById("eventTime")
+    .value = "";
+
+
+  document
+    .getElementById("eventTitle")
+    .value = "";
+
+
+  document
+    .getElementById("eventMemo")
+    .value = "";
+
+
+  renderCalendar();
+
+
+  updateHomeSchedule();
+
+
+  alert(
+    "일정이 추가되었습니다."
+  );
+
+}
+
+
+function deleteEvent(id){
 
   if(
-    status &&
-    ATTENDANCE_STATUSES.includes(status)
+    !confirm(
+      "이 일정을 삭제할까요?"
+    )
   ){
 
-    data[name] =
-      status;
-
-
-    saveAttendance(data);
-
-    renderAttendance();
-
-  }else if(status){
-
-    alert(
-      "근태 항목이 올바르지 않습니다."
-    );
+    return;
 
   }
+
+
+  const events =
+    getEvents()
+      .filter(
+        x => x.id !== id
+      );
+
+
+  saveEvents(events);
+
+
+  renderCalendar();
+
+  updateHomeSchedule();
 
 }
 
 
 /* =========================================================
-   층별 작업인원
+   홈 화면 오늘 일정
 ========================================================= */
 
-function getWorkers(){
+function updateHomeSchedule(){
 
-  const saved =
-    getStorage(
-      "inbound_workers",
-      {}
-    );
+  const today =
+    formatDate(new Date());
 
 
-  WORKER_FLOORS.forEach(
-    floor => {
-
-      if(
-        saved[floor] === undefined
-      ){
-
-        saved[floor] = 0;
-
-      }
-
-    }
-  );
-
-
-  return saved;
-
-}
+  const events =
+    getEvents()
+      .filter(
+        x => x.date === today
+      )
+      .sort(
+        (a,b) =>
+          String(a.time)
+            .localeCompare(
+              String(b.time)
+            )
+      );
 
 
-function renderWorkers(){
-
-  const data =
-    getWorkers();
-
-
-  const layout =
+  const box =
     document.getElementById(
-      "workerLayout"
+      "homeSchedule"
     );
 
 
-  layout.innerHTML = "";
+  if(!events.length){
+
+    box.innerHTML = `
+      <div class="schedule-empty">
+        오늘 등록된 일정이 없습니다.
+      </div>
+    `;
+
+    return;
+
+  }
 
 
-  WORKER_FLOORS.forEach(
-    floor => {
+  box.innerHTML =
+    events
+      .slice(0,5)
+      .map(event => `
 
-      const card =
-        document.createElement("div");
+        <div class="schedule-item-small">
 
-
-      card.className =
-        "worker-card";
-
-
-      card.innerHTML = `
-
-        <div class="worker-floor">
-          ${floor}
-        </div>
-
-        <div class="worker-desc">
-          금일 작업인원
-        </div>
-
-        <div class="worker-input">
-
-          <input
-            type="number"
-            min="0"
-            value="${Number(data[floor] || 0)}"
-            data-floor="${esc(floor)}"
-          >
+          <span class="schedule-time-small">
+            ${escapeHtml(event.time || "--:--")}
+          </span>
 
           <span>
-            명
+            ${escapeHtml(event.title)}
           </span>
 
         </div>
 
-      `;
+      `)
+      .join("");
+
+}
 
 
-      layout.appendChild(card);
+updateHomeSchedule();
+
+
+/* =========================================================
+   메모장
+========================================================= */
+
+const MEMO_KEY =
+  "inbound_memo_v1";
+
+
+function loadMemo(){
+
+  const memo =
+    localStorage.getItem(
+      MEMO_KEY
+    ) || "";
+
+
+  const area =
+    document.getElementById(
+      "memoArea"
+    );
+
+
+  area.value =
+    memo;
+
+
+  document
+    .getElementById("memoStatus")
+    .textContent =
+    memo
+      ? "저장된 메모"
+      : "자동 저장 준비";
+
+}
+
+
+document
+  .getElementById("memoArea")
+  .addEventListener(
+    "input",
+    function(){
+
+      localStorage.setItem(
+        MEMO_KEY,
+        this.value
+      );
+
+
+      document
+        .getElementById("memoStatus")
+        .textContent =
+        "✓ 자동 저장됨";
 
     }
   );
 
 
-  const button =
-    document.createElement("button");
+function clearMemo(){
+
+  if(
+    !confirm(
+      "메모를 모두 삭제할까요?"
+    )
+  ){
+
+    return;
+
+  }
 
 
-  button.className =
-    "save-workers";
-
-
-  button.textContent =
-    "💾 작업인원 저장";
-
-
-  button.addEventListener(
-    "click",
-    saveWorkers
+  localStorage.removeItem(
+    MEMO_KEY
   );
 
 
-  layout.appendChild(button);
+  loadMemo();
 
 }
 
 
-function saveWorkers(){
-
-  const data = {};
+loadMemo();
 
 
-  document
-    .querySelectorAll(
-      "#workerLayout input[data-floor]"
-    )
-    .forEach(
-      input => {
+/* =========================================================
+   층별 작업 인원
+========================================================= */
 
-        data[
-          input.dataset.floor
-        ] =
-          Number(input.value || 0);
+const STAFF_KEY =
+  "inbound_staff_v1";
 
-      }
+
+const STAFF_FLOORS =
+  [
+    "B3F",
+    "1-2F",
+    "2F",
+    "3-1F",
+    "3-2F",
+    "4-1F"
+  ];
+
+
+function getStaff(){
+
+  const saved =
+    localStorage.getItem(
+      STAFF_KEY
     );
 
 
-  setStorage(
-    "inbound_workers",
-    data
+  if(!saved){
+
+    return {};
+
+  }
+
+
+  try{
+
+    return JSON.parse(saved);
+
+  }catch(e){
+
+    return {};
+
+  }
+
+}
+
+
+function saveStaff(data){
+
+  localStorage.setItem(
+    STAFF_KEY,
+    JSON.stringify(data)
   );
+
+}
+
+
+function renderStaff(){
+
+  const data =
+    getStaff();
+
+
+  const grid =
+    document.getElementById(
+      "staffGrid"
+    );
+
+
+  grid.innerHTML =
+    STAFF_FLOORS
+      .map((floor,index) => `
+
+        <div class="staff-card">
+
+          <div class="staff-floor">
+            🏢 ${floor}
+          </div>
+
+          <div class="staff-sub">
+            현재 작업 인원
+          </div>
+
+          <input
+            id="staff-${index}"
+            class="staff-input"
+            type="number"
+            min="0"
+            value="${Number(data[floor] || 0)}"
+            placeholder="인원수"
+          >
+
+          <button
+            class="staff-save"
+            onclick="saveStaffFloor('${floor}',${index})"
+          >
+            저장
+          </button>
+
+        </div>
+
+      `)
+      .join("");
+
+
+  updateStaffTotal();
+
+}
+
+
+function saveStaffFloor(floor,index){
+
+  const input =
+    document.getElementById(
+      `staff-${index}`
+    );
+
+
+  const value =
+    Math.max(
+      0,
+      Number(input.value || 0)
+    );
+
+
+  const data =
+    getStaff();
+
+
+  data[floor] =
+    value;
+
+
+  saveStaff(data);
+
+
+  updateStaffTotal();
 
 
   alert(
-    "층별 작업인원이 저장되었습니다."
+    `${floor} 작업 인원이 ${value}명으로 저장되었습니다.`
   );
+
+}
+
+
+function updateStaffTotal(){
+
+  const data =
+    getStaff();
+
+
+  const total =
+    STAFF_FLOORS.reduce(
+      (sum,floor) =>
+        sum + Number(data[floor] || 0),
+      0
+    );
+
+
+  document
+    .getElementById("staffTotal")
+    .textContent =
+    `${total}명`;
 
 }
 
@@ -4283,54 +3729,16 @@ function saveWorkers(){
    Google Sheet
 ========================================================= */
 
-function loadGoogleSheet(){
-
-  const input =
-    document.getElementById(
-      "sheetUrl"
-    );
-
-
-  if(
-    GOOGLE_SHEET_URL &&
-    !input.value
-  ){
-
-    input.value =
-      GOOGLE_SHEET_URL;
-
-  }
-
-
-  const url =
-    input.value.trim();
-
-
-  if(url){
-
-    document.getElementById(
-      "sheetFrame"
-    ).src =
-      url;
-
-  }
-
-}
-
-
 function openGoogleSheet(){
 
-  const url =
-    document
-      .getElementById("sheetUrl")
-      .value
-      .trim();
-
-
-  if(!url){
+  if(
+    GOOGLE_SHEET_URL.includes(
+      "여기에_구글시트_ID"
+    )
+  ){
 
     alert(
-      "Google Sheet URL을 입력해주세요."
+      "코드 상단 GOOGLE_SHEET_URL에 기존 Google Sheet 주소를 입력해주세요."
     );
 
     return;
@@ -4338,271 +3746,56 @@ function openGoogleSheet(){
   }
 
 
-  localStorage.setItem(
-    "google_sheet_url",
-    url
-  );
-
-
   window.open(
-    url,
+    GOOGLE_SHEET_URL,
     "_blank"
   );
 
 }
 
 
-document
-  .getElementById("sheetUrl")
-  .value =
-  localStorage.getItem(
-    "google_sheet_url"
-  ) ||
-  GOOGLE_SHEET_URL;
-
-
 /* =========================================================
-   날씨
-   경기도 광주시
-   Open-Meteo
+   HTML Escape
 ========================================================= */
 
-async function loadWeather(){
+function escapeHtml(value){
 
-  /*
-    경기도 광주시 대략 좌표
-  */
+  return String(value ?? "")
+    .replace(
+      /[&<>"']/g,
+      function(m){
 
-  const latitude =
-    37.4294;
+        return {
 
+          "&":"&amp;",
+          "<":"&lt;",
+          ">":"&gt;",
+          '"':"&quot;",
+          "'":"&#039;"
 
-  const longitude =
-    127.2550;
+        }[m];
 
-
-  try{
-
-    const url =
-      `https://api.open-meteo.com/v1/forecast` +
-      `?latitude=${latitude}` +
-      `&longitude=${longitude}` +
-      `&current=temperature_2m,weather_code,wind_speed_10m` +
-      `&timezone=Asia%2FTokyo`;
-
-
-    const response =
-      await fetch(url);
-
-
-    if(!response.ok){
-
-      throw new Error(
-        "Weather API Error"
-      );
-
-    }
-
-
-    const data =
-      await response.json();
-
-
-    const current =
-      data.current;
-
-
-    const temp =
-      Math.round(
-        current.temperature_2m
-      );
-
-
-    const code =
-      Number(
-        current.weather_code
-      );
-
-
-    const weather =
-      weatherText(code);
-
-
-    document.getElementById(
-      "weatherTemp"
-    ).textContent =
-      `${temp}°`;
-
-
-    document.getElementById(
-      "weatherInfo"
-    ).textContent =
-      weather.text;
-
-
-    document.getElementById(
-      "weatherIcon"
-    ).textContent =
-      weather.icon;
-
-
-    document.getElementById(
-      "miniWeather"
-    ).textContent =
-      `경기도 광주시 · ${weather.text}`;
-
-  }catch(error){
-
-    console.error(error);
-
-
-    document.getElementById(
-      "weatherTemp"
-    ).textContent =
-      "--°";
-
-
-    document.getElementById(
-      "weatherInfo"
-    ).textContent =
-      "날씨 정보를 불러오지 못했습니다.";
-
-  }
+      }
+    );
 
 }
 
 
-function weatherText(code){
-
-  if(code === 0){
-
-    return {
-      icon:"☀️",
-      text:"맑음"
-    };
-
-  }
-
-
-  if(
-    code === 1 ||
-    code === 2
-  ){
-
-    return {
-      icon:"🌤️",
-      text:"대체로 맑음"
-    };
-
-  }
-
-
-  if(code === 3){
-
-    return {
-      icon:"☁️",
-      text:"흐림"
-    };
-
-  }
-
-
-  if(
-    code >= 45 &&
-    code <= 48
-  ){
-
-    return {
-      icon:"🌫️",
-      text:"안개"
-    };
-
-  }
-
-
-  if(
-    code >= 51 &&
-    code <= 67
-  ){
-
-    return {
-      icon:"🌧️",
-      text:"비"
-    };
-
-  }
-
-
-  if(
-    code >= 71 &&
-    code <= 77
-  ){
-
-    return {
-      icon:"❄️",
-      text:"눈"
-    };
-
-  }
-
-
-  if(
-    code >= 80 &&
-    code <= 82
-  ){
-
-    return {
-      icon:"🌦️",
-      text:"소나기"
-    };
-
-  }
-
-
-  if(
-    code >= 95
-  ){
-
-    return {
-      icon:"⛈️",
-      text:"뇌우"
-    };
-
-  }
-
-
-  return {
-    icon:"🌤️",
-    text:"날씨 확인"
-  };
-
-}
-
-
-loadWeather();
-
-
-setInterval(
-  loadWeather,
-  30 * 60 * 1000
-);
-
-
 /* =========================================================
-   재고현황
+   INVENTORY
 ========================================================= */
 
-const state = {
+const inventoryState = {
 
   rows:[],
 
   filtered:[],
 
+  selectedFloor:"",
+
   sortKey:"적치층",
 
-  asc:true,
-
-  selectedFloor:""
+  asc:true
 
 };
 
@@ -4613,6 +3806,7 @@ const KEYWORDS_31 = [
   "화장지",
   "키친타월",
   "키친타올",
+
   "크리넥스",
   "코디",
   "다우니",
@@ -4703,29 +3897,26 @@ function findColumn(headers,candidates){
   const normalized = {};
 
 
-  headers.forEach(
-    h => {
+  headers.forEach(h => {
 
-      normalized[
-        normalizeHeader(h)
-      ] = h;
+    normalized[
+      normalizeHeader(h)
+    ] = h;
 
-    }
-  );
+  });
 
 
   for(
-    const candidate
-    of candidates
+    const candidate of candidates
   ){
 
     const key =
-      normalizeHeader(candidate);
+      normalizeHeader(
+        candidate
+      );
 
 
-    if(
-      normalized[key]
-    ){
+    if(normalized[key]){
 
       return normalized[key];
 
@@ -4735,8 +3926,7 @@ function findColumn(headers,candidates){
 
 
   for(
-    const h
-    of headers
+    const h of headers
   ){
 
     const nh =
@@ -4744,12 +3934,13 @@ function findColumn(headers,candidates){
 
 
     for(
-      const candidate
-      of candidates
+      const candidate of candidates
     ){
 
       const nc =
-        normalizeHeader(candidate);
+        normalizeHeader(
+          candidate
+        );
 
 
       if(
@@ -4977,52 +4168,6 @@ function calcFloor(row,col){
 }
 
 
-function fmt(v){
-
-  return Number(v || 0)
-    .toLocaleString("ko-KR");
-
-}
-
-
-function formatBox(v){
-
-  const n =
-    Number(v || 0);
-
-
-  if(
-    !Number.isFinite(n)
-  ){
-
-    return "0";
-
-  }
-
-
-  if(
-    Math.abs(
-      n - Math.round(n)
-    ) < 0.000001
-  ){
-
-    return Math.round(n)
-      .toLocaleString("ko-KR");
-
-  }
-
-
-  return n.toLocaleString(
-    "ko-KR",
-    {
-      minimumFractionDigits:1,
-      maximumFractionDigits:1
-    }
-  );
-
-}
-
-
 function aggregate(raw,col){
 
   const map =
@@ -5030,8 +4175,7 @@ function aggregate(raw,col){
 
 
   for(
-    const r
-    of raw
+    const r of raw
   ){
 
     const id =
@@ -5077,11 +4221,15 @@ function aggregate(raw,col){
 
 
     const pcs =
-      num(r[col.PCS]);
+      num(
+        r[col.PCS]
+      );
 
 
     const input =
-      num(r[col.입수]);
+      num(
+        r[col.입수]
+      );
 
 
     if(
@@ -5119,8 +4267,7 @@ function aggregate(raw,col){
 
 
       if(
-        (!x.입수 ||
-        x.입수 === 0) &&
+        (!x.입수 || x.입수 === 0) &&
         input > 0
       ){
 
@@ -5139,8 +4286,7 @@ function aggregate(raw,col){
 
 
   for(
-    const x
-    of result
+    const x of result
   ){
 
     x.BOX수 =
@@ -5156,16 +4302,61 @@ function aggregate(raw,col){
 }
 
 
-function updateCards(){
+function fmt(v){
+
+  return Number(v || 0)
+    .toLocaleString("ko-KR");
+
+}
+
+
+function formatBox(v){
+
+  const n =
+    Number(v || 0);
+
+
+  if(
+    !Number.isFinite(n)
+  ){
+
+    return "0";
+
+  }
+
+
+  if(
+    Math.abs(
+      n -
+      Math.round(n)
+    ) < 0.000001
+  ){
+
+    return Math
+      .round(n)
+      .toLocaleString("ko-KR");
+
+  }
+
+
+  return n.toLocaleString(
+    "ko-KR",
+    {
+      minimumFractionDigits:1,
+      maximumFractionDigits:1
+    }
+  );
+
+}
+
+
+function updateInventoryCards(){
 
   const floors = [
 
     ["4층","sku4","pcs4"],
-
     ["3-2층","sku32","pcs32"],
-
     ["3-1층","sku31","pcs31"],
-
     ["1-2층","sku12","pcs12"]
 
   ];
@@ -5177,72 +4368,69 @@ function updateCards(){
   ){
 
     const rows =
-      state.rows.filter(
-        x =>
-          x.적치층 === floor
+      inventoryState.rows
+        .filter(
+          x =>
+            x.적치층 === floor
+        );
+
+
+    document
+      .getElementById(skuId)
+      .textContent =
+      fmt(rows.length);
+
+
+    document
+      .getElementById(pcsId)
+      .textContent =
+      fmt(
+        rows.reduce(
+          (sum,x) =>
+            sum + x.PCS,
+          0
+        )
       );
-
-
-    const skuCount =
-      rows.length;
-
-
-    const pcsTotal =
-      rows.reduce(
-        (sum,x) =>
-          sum + x.PCS,
-        0
-      );
-
-
-    document.getElementById(
-      skuId
-    ).textContent =
-      fmt(skuCount);
-
-
-    document.getElementById(
-      pcsId
-    ).textContent =
-      fmt(pcsTotal);
 
   }
 
 
-  document.getElementById(
-    "count"
-  ).textContent =
-    fmt(state.rows.length);
+  document
+    .getElementById(
+      "inventoryCount"
+    )
+    .textContent =
+    fmt(
+      inventoryState.rows.length
+    );
 
 }
 
 
-function render(){
-
-  const searchInput =
-    document.getElementById(
-      "search"
-    );
-
-
-  const floorFilter =
-    document.getElementById(
-      "floorFilter"
-    );
-
+function renderInventory(){
 
   const q =
-    norm(searchInput.value)
-      .toLowerCase();
+    norm(
+      document
+        .getElementById(
+          "inventorySearch"
+        )
+        .value
+    )
+    .toLowerCase();
 
 
   const floor =
-    floorFilter.value;
+    document
+      .getElementById(
+        "inventoryFloorFilter"
+      )
+      .value;
 
 
   let rows =
-    state.rows.filter(
-      r => {
+    inventoryState.rows
+      .filter(r => {
 
         const text = [
 
@@ -5265,67 +4453,63 @@ function render(){
 
         );
 
-      }
-    );
+      });
 
 
   const key =
-    state.sortKey;
+    inventoryState.sortKey;
 
 
-  rows.sort(
-    (a,b) => {
+  rows.sort((a,b) => {
 
-      const av =
-        a[key];
+    const av =
+      a[key];
 
-
-      const bv =
-        b[key];
+    const bv =
+      b[key];
 
 
-      let c;
+    let c;
 
 
-      if(
-        typeof av === "number" &&
-        typeof bv === "number"
-      ){
+    if(
+      typeof av === "number" &&
+      typeof bv === "number"
+    ){
 
-        c =
-          av - bv;
+      c =
+        av - bv;
 
-      }else{
+    }else{
 
-        c =
-          String(av ?? "")
-            .localeCompare(
-              String(bv ?? ""),
-              "ko",
-              {
-                numeric:true,
-                sensitivity:"base"
-              }
-            );
-
-      }
-
-
-      return state.asc
-        ? c
-        : -c;
+      c =
+        String(av ?? "")
+          .localeCompare(
+            String(bv ?? ""),
+            "ko",
+            {
+              numeric:true,
+              sensitivity:"base"
+            }
+          );
 
     }
-  );
 
 
-  state.filtered =
+    return inventoryState.asc
+      ? c
+      : -c;
+
+  });
+
+
+  inventoryState.filtered =
     rows;
 
 
   const tb =
     document.getElementById(
-      "tbody"
+      "inventoryTbody"
     );
 
 
@@ -5337,7 +4521,7 @@ function render(){
 
         <td colspan="7">
 
-          <div class="empty">
+          <div class="inventory-empty">
 
             <strong>
               검색 결과가 없습니다.
@@ -5359,118 +4543,54 @@ function render(){
 
 
   tb.innerHTML =
-    rows
-      .map(
-        r => `
+    rows.map(r => `
 
-          <tr>
+      <tr>
 
-            <td>
+        <td>
+          <span class="inventory-floor-tag">
+            ${escapeHtml(r.적치층)}
+          </span>
+        </td>
 
-              <span class="floor">
+        <td>
+          ${escapeHtml(r.상품명)}
+        </td>
 
-                ${esc(r.적치층)}
+        <td>
+          ${escapeHtml(r.상품코드)}
+        </td>
 
-              </span>
+        <td>
+          ${escapeHtml(r.바코드)}
+        </td>
 
-            </td>
+        <td class="num">
+          ${fmt(r.입수)}
+        </td>
 
-            <td>
-              ${esc(r.상품명)}
-            </td>
+        <td class="num">
+          ${fmt(r.PCS)}
+        </td>
 
-            <td>
-              ${esc(r.상품코드)}
-            </td>
+        <td class="num">
+          ${formatBox(r.BOX수)}
+        </td>
 
-            <td>
-              ${esc(r.바코드)}
-            </td>
+      </tr>
 
-            <td class="num">
-              ${fmt(r.입수)}
-            </td>
-
-            <td class="num">
-              ${fmt(r.PCS)}
-            </td>
-
-            <td class="num box-num">
-              ${formatBox(r.BOX수)}
-            </td>
-
-          </tr>
-
-        `
-      )
-      .join("");
+    `).join("");
 
 }
 
 
-function esc(v){
+async function readInventoryFile(file){
 
-  return String(v ?? "")
-    .replace(
-      /[&<>"']/g,
-      m => ({
-
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#039;"
-
-      }[m])
-    );
-
-}
-
-
-function showError(message){
-
-  const box =
-    document.getElementById(
-      "errorBox"
-    );
-
-
-  box.style.display =
-    "block";
-
-
-  box.textContent =
-    message;
-
-}
-
-
-function hideError(){
-
-  const box =
-    document.getElementById(
-      "errorBox"
-    );
-
-
-  box.style.display =
-    "none";
-
-
-  box.textContent =
-    "";
-
-}
-
-
-async function readFile(file){
-
-  hideError();
-
-
-  document.getElementById(
-    "status"
-  ).textContent =
+  document
+    .getElementById(
+      "inventoryStatus"
+    )
+    .textContent =
     "파일을 읽는 중입니다...";
 
 
@@ -5556,69 +4676,49 @@ async function readFile(file){
 
     if(missing.length){
 
-      const headers =
-        Object.keys(
-          raw[0] || {}
-        );
-
-
       throw new Error(
-
         "필수 컬럼을 찾을 수 없습니다.\n\n" +
-
         "필요한 컬럼:\n" +
-
         missing.join(", ") +
-
         "\n\n" +
-
         "현재 RAW에서 인식된 컬럼:\n" +
-
-        headers.join(", ") +
-
-        "\n\n" +
-
-        "※ 컬럼명에 공백이 있어도 자동으로 인식합니다."
-
+        Object.keys(raw[0] || {}).join(", ")
       );
 
     }
 
 
-    state.rows =
+    inventoryState.rows =
       aggregate(
         raw,
         col
       );
 
 
-    updateCards();
+    updateInventoryCards();
 
 
-    document.getElementById(
-      "status"
-    ).textContent =
-      `${file.name} · 원본 ${fmt(raw.length)}행 → SKU ${fmt(state.rows.length)}개`;
+    document
+      .getElementById(
+        "inventoryStatus"
+      )
+      .textContent =
+      `${file.name} · 원본 ${fmt(raw.length)}행 → SKU ${fmt(inventoryState.rows.length)}개`;
 
 
-    render();
-
+    renderInventory();
 
   }catch(err){
 
     console.error(err);
 
 
-    document.getElementById(
-      "status"
-    ).textContent =
+    document
+      .getElementById(
+        "inventoryStatus"
+      )
+      .textContent =
       "파일 읽기 오류";
-
-
-    showError(
-      err.message ||
-      "파일을 읽는 중 오류가 발생했습니다."
-    );
 
 
     alert(
@@ -5634,7 +4734,9 @@ async function readFile(file){
 /* 파일 선택 */
 
 document
-  .getElementById("file")
+  .getElementById(
+    "inventoryFile"
+  )
   .addEventListener(
     "change",
     e => {
@@ -5645,7 +4747,9 @@ document
 
       if(file){
 
-        readFile(file);
+        readInventoryFile(
+          file
+        );
 
       }
 
@@ -5653,49 +4757,56 @@ document
   );
 
 
-/* 드래그앤드롭 */
+/* 드래그 앤 드롭 */
 
-const drop =
+const inventoryDrop =
   document.getElementById(
-    "drop"
+    "inventoryDrop"
   );
 
 
-drop.addEventListener(
+inventoryDrop.addEventListener(
   "dragover",
   e => {
 
     e.preventDefault();
 
-    drop.classList.add(
-      "drag"
-    );
+    inventoryDrop.style.borderColor =
+      "#5b67e8";
+
+    inventoryDrop.style.background =
+      "#f7f8ff";
 
   }
 );
 
 
-drop.addEventListener(
+inventoryDrop.addEventListener(
   "dragleave",
   () => {
 
-    drop.classList.remove(
-      "drag"
-    );
+    inventoryDrop.style.borderColor =
+      "";
+
+    inventoryDrop.style.background =
+      "";
 
   }
 );
 
 
-drop.addEventListener(
+inventoryDrop.addEventListener(
   "drop",
   e => {
 
     e.preventDefault();
 
-    drop.classList.remove(
-      "drag"
-    );
+
+    inventoryDrop.style.borderColor =
+      "";
+
+    inventoryDrop.style.background =
+      "";
 
 
     const file =
@@ -5704,7 +4815,9 @@ drop.addEventListener(
 
     if(file){
 
-      readFile(file);
+      readInventoryFile(
+        file
+      );
 
     }
 
@@ -5715,52 +4828,24 @@ drop.addEventListener(
 /* 검색 */
 
 document
-  .getElementById("search")
+  .getElementById(
+    "inventorySearch"
+  )
   .addEventListener(
     "input",
-    render
+    renderInventory
   );
 
 
 /* 층 필터 */
 
 document
-  .getElementById("floorFilter")
+  .getElementById(
+    "inventoryFloorFilter"
+  )
   .addEventListener(
     "change",
-    () => {
-
-      const floor =
-        document
-          .getElementById(
-            "floorFilter"
-          )
-          .value;
-
-
-      state.selectedFloor =
-        floor;
-
-
-      document
-        .querySelectorAll(
-          ".floor-card"
-        )
-        .forEach(
-          card => {
-
-            card.classList.toggle(
-              "active",
-              card.dataset.floor === floor
-            );
-
-          }
-        );
-
-
-      render();
-
-    }
+    renderInventory
   );
 
 
@@ -5768,130 +4853,87 @@ document
 
 document
   .querySelectorAll(
-    ".floor-card"
+    ".inventory-floor"
   )
-  .forEach(
-    card => {
+  .forEach(card => {
 
-      card.addEventListener(
-        "click",
-        () => {
+    card.addEventListener(
+      "click",
+      () => {
 
-          const floor =
-            card.dataset.floor;
+        const floor =
+          card.dataset.floor;
 
 
-          const select =
-            document.getElementById(
-              "floorFilter"
+        const select =
+          document.getElementById(
+            "inventoryFloorFilter"
+          );
+
+
+        if(
+          inventoryState.selectedFloor ===
+          floor
+        ){
+
+          inventoryState.selectedFloor =
+            "";
+
+          select.value =
+            "";
+
+          card.classList.remove(
+            "active"
+          );
+
+        }else{
+
+          inventoryState.selectedFloor =
+            floor;
+
+          select.value =
+            floor;
+
+
+          document
+            .querySelectorAll(
+              ".inventory-floor"
+            )
+            .forEach(
+              c =>
+                c.classList.remove(
+                  "active"
+                )
             );
 
 
-          if(
-            state.selectedFloor === floor
-          ){
-
-            state.selectedFloor =
-              "";
-
-            select.value =
-              "";
-
-            card.classList.remove(
-              "active"
-            );
-
-          }else{
-
-            state.selectedFloor =
-              floor;
-
-            select.value =
-              floor;
-
-
-            document
-              .querySelectorAll(
-                ".floor-card"
-              )
-              .forEach(
-                c =>
-                  c.classList.remove(
-                    "active"
-                  )
-              );
-
-
-            card.classList.add(
-              "active"
-            );
-
-          }
-
-
-          render();
+          card.classList.add(
+            "active"
+          );
 
         }
-      );
-
-    }
-  );
 
 
-/* 테이블 정렬 */
+        renderInventory();
+
+      }
+    );
+
+  });
+
+
+/* CSV 다운로드 */
 
 document
-  .querySelectorAll(
-    "th[data-key]"
+  .getElementById(
+    "inventoryDownload"
   )
-  .forEach(
-    th => {
-
-      th.addEventListener(
-        "click",
-        () => {
-
-          const key =
-            th.dataset.key;
-
-
-          if(
-            state.sortKey === key
-          ){
-
-            state.asc =
-              !state.asc;
-
-          }else{
-
-            state.sortKey =
-              key;
-
-            state.asc =
-              true;
-
-          }
-
-
-          render();
-
-        }
-      );
-
-    }
-  );
-
-
-/* CSV */
-
-document
-  .getElementById("download")
   .addEventListener(
     "click",
     () => {
 
       if(
-        !state.filtered.length
+        !inventoryState.filtered.length
       ){
 
         alert(
@@ -5904,7 +4946,7 @@ document
 
 
       const data =
-        state.filtered.map(
+        inventoryState.filtered.map(
           r => ({
 
             "적치층":
@@ -5959,16 +5001,14 @@ document
 
 
 /* =========================================================
-   초기화
+   초기 실행
 ========================================================= */
-
-renderAttendance();
 
 renderCalendar();
 
-updateHomeSchedule();
+renderStaff();
 
-renderWorkers();
+updateHomeSchedule();
 
 </script>
 

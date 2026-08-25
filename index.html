@@ -535,7 +535,7 @@ body{
   display:grid;
 
   grid-template-columns:
-    repeat(7,88px);
+    repeat(8,88px);
 
   gap:25px 26px;
 }
@@ -1728,6 +1728,7 @@ td{
  .app-mango{background:linear-gradient(135deg,#ffb84a,#f28b22);}
 .app-pizza{background:linear-gradient(135deg,#ff7a7a,#e94b4b);}
 .app-rice{background:linear-gradient(135deg,#f5d58a,#e6a83c);}
+.app-magic{background:linear-gradient(135deg,#a78bfa,#6d5dfc);}
 </style>
 </head>
 
@@ -1941,6 +1942,25 @@ td{
       <div class="desktop-apps">
 
 
+        <!-- 뾰로롱 : 기존 하단 Dock에서 바탕화면 첫 번째 아이콘으로 이동 -->
+        <a
+          class="desktop-app"
+          href="https://docs.google.com/spreadsheets/d/1Xyunolv5TWlgZsd7Y-MpWaMzqRS5yx9aGQ-LxMS89vE/edit?gid=534377963#gid=534377963"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <div class="desktop-icon app-magic">
+            🪄
+          </div>
+
+          <div class="desktop-name">
+            뾰로롱
+          </div>
+
+        </a>
+
+
         <a
           class="desktop-app"
           href="https://conf.cjlogistics.com/spaces/KFTOper3/pages/200250534/4.+%EC%9E%85%EA%B3%A0%E3%80%80"
@@ -2080,22 +2100,6 @@ td{
 
           <div class="dock-label">
             DRY입하존
-          </div>
-
-        </div>
-
-
-        <div
-          class="dock-app app-green"
-          onclick="openGoogleSheet()"
-        >
-
-          <div class="dock-icon">
-            📗
-          </div>
-
-          <div class="dock-label">
-            뾰로롱
           </div>
 
         </div>

@@ -4903,7 +4903,23 @@ document
   )
   .addEventListener(
     "change",
-    renderInventory
+    function(){
+
+      const floor = this.value;
+
+      // 드롭다운으로 층을 선택해도 선택 카드 상태를 동일하게 유지
+      selectedCaptureFloor = floor || null;
+
+      document.querySelectorAll("#inventoryApp .floor-card").forEach(card => {
+        card.classList.toggle(
+          "selected",
+          !!floor && card.dataset.floor === floor
+        );
+      });
+
+      renderInventory();
+
+    }
   );
 
 
@@ -5049,12 +5065,22 @@ function selectCaptureFloor(floor){
 
   selectedCaptureFloor = floor;
 
+  // 층 카드를 누르면 실제 리스트 필터도 해당 층으로 변경
+  const floorFilter = document.getElementById("floorFilter");
+
+  if(floorFilter){
+    floorFilter.value = floor;
+  }
+
   document.querySelectorAll("#inventoryApp .floor-card").forEach(card => {
     card.classList.toggle(
       "selected",
       card.dataset.floor === floor
     );
   });
+
+  // 검색어가 있는 경우에도 선택한 층 기준으로 즉시 다시 렌더링
+  renderInventory();
 
 }
 

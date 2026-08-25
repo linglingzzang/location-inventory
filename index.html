@@ -149,20 +149,33 @@ body{
 
 
 /* =========================================================
-   홈 화면
+   홈 화면 - 아이패드 기본 배경화면
 ========================================================= */
 
-.home-screen {
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background-color:#dfe6f3;
-    background-image:url("./ipad-wallpaper.jpg");
-    background-size:cover;
-    background-position:center center;
-    background-repeat:no-repeat;
+.screen{
+  position:relative;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  border-radius:27px;
+  background-color:#000;
+  background-image:url("/location-inventory/ipad-wallpaper.jpg");
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+}
+
+.home-screen{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background-color:transparent !important;
+  background-image:url("/location-inventory/ipad-wallpaper.jpg") !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
 }
 
 /* =========================================================
@@ -5040,6 +5053,33 @@ initMemo();
 
 initWeather();
 
+</script>
+
+<script>
+(function(){
+  function applyIPadWallpaper(){
+    var home=document.getElementById('homeScreen');
+    var screen=document.querySelector('.screen');
+    var wallpaper=new URL('ipad-wallpaper.jpg', window.location.href).href;
+    if(screen){
+      screen.style.setProperty('background-image','url("'+wallpaper+'")','important');
+      screen.style.setProperty('background-size','cover','important');
+      screen.style.setProperty('background-position','center center','important');
+      screen.style.setProperty('background-repeat','no-repeat','important');
+    }
+    if(home){
+      home.style.setProperty('background-image','url("'+wallpaper+'")','important');
+      home.style.setProperty('background-size','cover','important');
+      home.style.setProperty('background-position','center center','important');
+      home.style.setProperty('background-repeat','no-repeat','important');
+    }
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded',applyIPadWallpaper);
+  }else{
+    applyIPadWallpaper();
+  }
+})();
 </script>
 
 </body>

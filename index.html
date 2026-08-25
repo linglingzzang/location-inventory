@@ -1036,31 +1036,63 @@ body{
   margin-bottom:16px;
 }
 
-.schedule-input-row{
+ .schedule-input-row{
 
   display:flex;
 
-  gap:8px;
+  flex-direction:column;
+
+  gap:10px;
+
+  width:100%;
 
   margin-bottom:10px;
 }
 
-.schedule-time{
+.schedule-input-row .schedule-time{
 
-  width:80px;
+  width:100%;
+
+  min-width:0;
+
 }
 
 .schedule-title-input{
 
-  flex:1;
+  display:block;
+
+  width:100%;
 
   min-width:0;
+
+  min-height:58px;
+
+  height:58px;
+
+  box-sizing:border-box;
 
   direction:ltr;
 
   unicode-bidi:plaintext;
 
   text-align:left;
+
+  writing-mode:horizontal-tb;
+
+  resize:none;
+
+}
+
+@media (max-width:900px){
+
+  .calendar-layout{
+    grid-template-columns:1fr;
+  }
+
+  .schedule-editor{
+    width:100%;
+  }
+
 }
 
 .form-input{

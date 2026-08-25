@@ -5295,30 +5295,91 @@ async function captureFullScreen(){
     const html2canvas =
       await loadHtml2Canvas();
 
-    const target =
+    const source =
       document.querySelector(
-        ".screen"
+        "#inventoryApp"
       );
 
-    if(!target){
-      throw new Error("현재 화면을 찾을 수 없습니다.");
+    if(!source){
+      throw new Error("DRY입하존 화면을 찾을 수 없습니다.");
     }
+
+    /*
+      DRY입하존 '전체 화면 복사'용 캡처 화면
+      ----------------------------------------
+      보여줄 것:
+      ① 상단 DRY입하존 제목/캡처 버튼 영역
+      ② 전체 SKU / 전체 PCS
+      ③ 층별 SKU / PCS 카드
+
+      숨길 것:
+      ① RAW 파일 업로드 영역
+      ② 검색/필터 영역
+      ③ 상품 상세 리스트(table)
+    */
+    const clone = source.cloneNode(true);
+
+    const upload =
+      clone.querySelector(".upload");
+
+    if(upload){
+      upload.remove();
+    }
+
+    const toolbar =
+      clone.querySelector(".toolbar");
+
+    if(toolbar){
+      toolbar.remove();
+    }
+
+    const tablebox =
+      clone.querySelector(".tablebox");
+
+    if(tablebox){
+      tablebox.remove();
+    }
+
+    /* 캡처 버튼 자체는 캡처 이미지에 필요하지 않으므로 제거 */
+    const captureArea =
+      clone.querySelector(".capture-area");
+
+    if(captureArea){
+      captureArea.remove();
+    }
+
+    /* 복제본을 화면 밖에 임시 배치 */
+    clone.style.width = source.offsetWidth + "px";
+    clone.style.position = "fixed";
+    clone.style.left = "-100000px";
+    clone.style.top = "0";
+    clone.style.background = "#f5f7fb";
+    clone.style.zIndex = "-1";
+    clone.style.height = "auto";
+    clone.style.minHeight = "0";
+
+    document.body.appendChild(clone);
 
     const canvas =
       await html2canvas(
-        target,
+        clone,
         {
           scale:2,
-          backgroundColor:null,
+          backgroundColor:"#f5f7fb",
           useCORS:true,
-          onclone: removeRawUploadFromClone
+          windowWidth:source.scrollWidth,
+          windowHeight:source.scrollHeight
         }
       );
+
+    clone.remove();
 
     await copyCanvasToClipboard(canvas);
 
     alert(
-      "📋 전체 화면을 복사했습니다.\n카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다."
+      "📋 DRY입하존 요약 화면을 복사했습니다.\n\n" +
+      "전체 SKU / PCS와 층별 SKU / PCS까지만 포함됩니다.\n" +
+      "카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다."
     );
 
   }catch(e){
@@ -5333,7 +5394,6 @@ async function captureFullScreen(){
   }
 
 }
-
 
 /* 다운로드 방식은 사용하지 않습니다.
    캡처 이미지는 브라우저 클립보드에 바로 복사됩니다. */

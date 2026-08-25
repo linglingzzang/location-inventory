@@ -1053,6 +1053,14 @@ body{
 .schedule-title-input{
 
   flex:1;
+
+  min-width:0;
+
+  direction:ltr;
+
+  unicode-bidi:plaintext;
+
+  text-align:left;
 }
 
 .form-input{
@@ -2586,16 +2594,20 @@ td{
 
             <div class="schedule-input-row">
 
-              <input
+              <select
                 id="scheduleTime"
                 class="form-input schedule-time"
-                type="time"
               >
+                <option value="">시간 선택</option>
+              </select>
 
               <input
                 id="scheduleTitle"
                 class="form-input schedule-title-input"
-                placeholder="예: 업체 입고 / 미팅 / 작업"
+                type="text"
+                inputmode="text"
+                autocomplete="off"
+                placeholder="일정 제목을 입력하세요"
               >
 
             </div>
@@ -3105,6 +3117,37 @@ setInterval(
    일정
 ========================================================= */
 
+function buildScheduleTimeOptions(){
+
+  const select =
+    document.getElementById("scheduleTime");
+
+  if(!select || select.dataset.ready === "true"){
+    return;
+  }
+
+  const pad = n => String(n).padStart(2,"0");
+
+  for(let hour = 0; hour < 24; hour++){
+
+    for(let minute = 0; minute < 60; minute += 30){
+
+      const value = `${pad(hour)}:${pad(minute)}`;
+      const period = hour < 12 ? "오전" : "오후";
+      const displayHour = hour % 12 || 12;
+
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = `${period} ${displayHour}:${pad(minute)}`;
+      select.appendChild(option);
+    }
+  }
+
+  select.dataset.ready = "true";
+}
+
+buildScheduleTimeOptions();
+
 function addSchedule(){
 
   const time =
@@ -3121,7 +3164,7 @@ function addSchedule(){
   if(!title){
 
     alert(
-      "일정 내용을 입력해주세요."
+      "일정 제목을 입력해주세요."
     );
 
     return;

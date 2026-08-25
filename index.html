@@ -1040,27 +1040,45 @@ body{
 
   display:flex;
 
-  gap:8px;
+  flex-direction:column;
 
-  margin-bottom:10px;
+  gap:10px;
+
+  margin-bottom:12px;
 }
 
 .schedule-time{
 
-  width:80px;
+  width:100%;
+
+  height:48px;
 }
 
 .schedule-title-input{
 
-  flex:1;
+  width:100%;
 
   min-width:0;
 
-  direction:ltr;
+  min-height:58px;
 
-  unicode-bidi:plaintext;
+  height:58px;
+
+  padding:15px 14px;
+
+  direction:auto;
+
+  unicode-bidi:normal;
+
+  writing-mode:horizontal-tb;
 
   text-align:left;
+
+  font-size:16px;
+
+  line-height:1.4;
+
+  ime-mode:auto;
 }
 
 .form-input{
@@ -2597,6 +2615,7 @@ td{
               <select
                 id="scheduleTime"
                 class="form-input schedule-time"
+                aria-label="일정 시간"
               >
                 <option value="">시간 선택</option>
               </select>
@@ -2607,7 +2626,9 @@ td{
                 type="text"
                 inputmode="text"
                 autocomplete="off"
-                placeholder="일정 제목을 입력하세요"
+                spellcheck="false"
+                dir="auto"
+                placeholder="일정 제목을 입력하세요 (예: 회의, 입고, 작업)"
               >
 
             </div>

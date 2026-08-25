@@ -831,6 +831,28 @@ body{
 }
 
 
+/* 전체 SKU / PCS 요약 */
+.total-summary-card{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.total-summary-item{
+  min-width:0;
+}
+
+.total-summary-item + .total-summary-item{
+  border-left:1px solid #e6eaf0;
+  padding-left:24px;
+}
+
+@media (max-width:700px){
+  .total-summary-card{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
 /* =========================================================
    앱 내용
 ========================================================= */
@@ -2072,14 +2094,14 @@ td{
             class="capture-btn"
             onclick="captureInventory()"
           >
-            📸 층별 리스트
+            📋 층별 리스트 복사
           </button>
 
           <button
             class="capture-btn"
             onclick="captureFullScreen()"
           >
-            📷 전체 화면
+            📋 전체 화면 복사
           </button>
 
         </div>
@@ -2116,17 +2138,32 @@ td{
         </div>
 
 
-        <div class="total-card">
+        <div class="total-card total-summary-card">
 
-          <div class="label">
-            전체 SKU 수
+          <div class="total-summary-item">
+            <div class="label">
+              전체 SKU 수
+            </div>
+
+            <div
+              class="value"
+              id="count"
+            >
+              0
+            </div>
           </div>
 
-          <div
-            class="value"
-            id="count"
-          >
-            0
+          <div class="total-summary-item">
+            <div class="label">
+              전체 PCS
+            </div>
+
+            <div
+              class="value"
+              id="totalPcs"
+            >
+              0
+            </div>
           </div>
 
         </div>
@@ -4469,6 +4506,18 @@ function updateInventoryCards(){
       inventoryState.rows.length
     );
 
+
+  document.getElementById(
+    "totalPcs"
+  ).textContent =
+    fmt(
+      inventoryState.rows.reduce(
+        (sum,x) =>
+          sum + Number(x.PCS || 0),
+        0
+      )
+    );
+
 }
 
 
@@ -4950,6 +4999,63 @@ async function loadHtml2Canvas(){
 
 
 
+async function canvasToBlob(canvas){
+
+  return new Promise((resolve,reject) => {
+
+    canvas.toBlob(
+      blob => {
+        if(blob) resolve(blob);
+        else reject(new Error("이미지 변환에 실패했습니다."));
+      },
+      "image/png"
+    );
+
+  });
+
+}
+
+
+async function copyCanvasToClipboard(canvas){
+
+  if(
+    !navigator.clipboard ||
+    !window.ClipboardItem
+  ){
+
+    throw new Error(
+      "현재 브라우저에서 이미지 클립보드 복사를 지원하지 않습니다."
+    );
+
+  }
+
+  const blob =
+    await canvasToBlob(canvas);
+
+  const item =
+    new ClipboardItem({
+      "image/png": blob
+    });
+
+  await navigator.clipboard.write([item]);
+
+}
+
+
+function removeRawUploadFromClone(clonedDocument){
+
+  const upload =
+    clonedDocument.querySelector(
+      "#inventoryApp .upload"
+    );
+
+  if(upload){
+    upload.remove();
+  }
+
+}
+
+
 async function captureInventory(){
 
   try{
@@ -4957,41 +5063,44 @@ async function captureInventory(){
     const html2canvas =
       await loadHtml2Canvas();
 
-
     const target =
       document.querySelector(
         "#inventoryApp .inventory-content"
       );
 
+    if(!target){
+      throw new Error("DRY입하존 화면을 찾을 수 없습니다.");
+    }
 
     const canvas =
       await html2canvas(
         target,
         {
           scale:2,
-          backgroundColor:"#f5f7fb"
+          backgroundColor:"#f5f7fb",
+          useCORS:true,
+          onclone: removeRawUploadFromClone
         }
       );
 
+    await copyCanvasToClipboard(canvas);
 
-    downloadCanvas(
-      canvas,
-      "DRY입하존_층별리스트.png"
+    alert(
+      "📋 DRY입하존 층별 리스트를 복사했습니다.\n카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다."
     );
-
 
   }catch(e){
 
     console.error(e);
 
     alert(
-      "캡처 중 오류가 발생했습니다."
+      "사진 복사 중 오류가 발생했습니다.\n" +
+      (e.message || "브라우저의 클립보드 권한을 확인해주세요.")
     );
 
   }
 
 }
-
 
 
 async function captureFullScreen(){
@@ -5001,35 +5110,39 @@ async function captureFullScreen(){
     const html2canvas =
       await loadHtml2Canvas();
 
-
     const target =
       document.querySelector(
         ".screen"
       );
 
+    if(!target){
+      throw new Error("현재 화면을 찾을 수 없습니다.");
+    }
 
     const canvas =
       await html2canvas(
         target,
         {
           scale:2,
-          backgroundColor:null
+          backgroundColor:null,
+          useCORS:true,
+          onclone: removeRawUploadFromClone
         }
       );
 
+    await copyCanvasToClipboard(canvas);
 
-    downloadCanvas(
-      canvas,
-      "입고팀_전체화면.png"
+    alert(
+      "📋 전체 화면을 복사했습니다.\n카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다."
     );
-
 
   }catch(e){
 
     console.error(e);
 
     alert(
-      "전체 화면 캡처 중 오류가 발생했습니다."
+      "사진 복사 중 오류가 발생했습니다.\n" +
+      (e.message || "브라우저의 클립보드 권한을 확인해주세요.")
     );
 
   }
@@ -5037,33 +5150,8 @@ async function captureFullScreen(){
 }
 
 
-
-function downloadCanvas(
-  canvas,
-  filename
-){
-
-  const link =
-    document.createElement(
-      "a"
-    );
-
-
-  link.download =
-    filename;
-
-
-  link.href =
-    canvas.toDataURL(
-      "image/png"
-    );
-
-
-  link.click();
-
-}
-
-
+/* 다운로드 방식은 사용하지 않습니다.
+   캡처 이미지는 브라우저 클립보드에 바로 복사됩니다. */
 
 /* =========================================================
    초기화

@@ -1040,45 +1040,27 @@ body{
 
   display:flex;
 
-  flex-direction:column;
+  gap:8px;
 
-  gap:10px;
-
-  margin-bottom:12px;
+  margin-bottom:10px;
 }
 
 .schedule-time{
 
-  width:100%;
-
-  height:48px;
+  width:80px;
 }
 
 .schedule-title-input{
 
-  width:100%;
+  flex:1;
 
   min-width:0;
 
-  min-height:58px;
+  direction:ltr;
 
-  height:58px;
-
-  padding:15px 14px;
-
-  direction:auto;
-
-  unicode-bidi:normal;
-
-  writing-mode:horizontal-tb;
+  unicode-bidi:plaintext;
 
   text-align:left;
-
-  font-size:16px;
-
-  line-height:1.4;
-
-  ime-mode:auto;
 }
 
 .form-input{
@@ -2615,7 +2597,6 @@ td{
               <select
                 id="scheduleTime"
                 class="form-input schedule-time"
-                aria-label="일정 시간"
               >
                 <option value="">시간 선택</option>
               </select>
@@ -2626,9 +2607,7 @@ td{
                 type="text"
                 inputmode="text"
                 autocomplete="off"
-                spellcheck="false"
-                dir="auto"
-                placeholder="일정 제목을 입력하세요 (예: 회의, 입고, 작업)"
+                placeholder="일정 제목을 입력하세요"
               >
 
             </div>
@@ -5326,80 +5305,117 @@ async function captureFullScreen(){
     }
 
     /*
-      DRY입하존 '전체 화면 복사'용 캡처 화면
+      DRY입하존 '전체 화면 복사'
       ----------------------------------------
-      보여줄 것:
-      ① 상단 DRY입하존 제목/캡처 버튼 영역
-      ② 전체 SKU / 전체 PCS
-      ③ 층별 SKU / PCS 카드
+      캡처 범위는 딱 여기까지만 표시합니다.
 
-      숨길 것:
-      ① RAW 파일 업로드 영역
-      ② 검색/필터 영역
-      ③ 상품 상세 리스트(table)
+      ① 전체 SKU / PCS
+      ② 바로 아래 층별 SKU / PCS 카드
+
+      제외:
+      ① DRY입하존 상단 제목/버튼
+      ② RAW 파일 업로드 영역
+      ③ 검색/필터 영역
+      ④ 상품 상세 리스트
+      ⑤ 그 아래의 빈 여백
+
+      기존처럼 #inventoryApp 전체를 복제하면
+      앱 화면의 높이까지 함께 캡처되어 이미지가
+      불필요하게 길어지는 문제가 있었기 때문에,
+      필요한 카드 2개만 별도의 캡처용 영역으로 만듭니다.
     */
-    const clone = source.cloneNode(true);
 
-    const upload =
-      clone.querySelector(".upload");
+    const totalCard =
+      source.querySelector(
+        ".total-summary-card"
+      );
 
-    if(upload){
-      upload.remove();
+    const floorCards =
+      source.querySelector(
+        ".floor-cards"
+      );
+
+    if(!totalCard || !floorCards){
+      throw new Error(
+        "총 SKU/PCS 또는 층별 SKU/PCS 영역을 찾을 수 없습니다."
+      );
     }
 
-    const toolbar =
-      clone.querySelector(".toolbar");
+    /* 캡처 전용 임시 영역 */
+    const captureWrapper =
+      document.createElement("div");
 
-    if(toolbar){
-      toolbar.remove();
-    }
+    captureWrapper.style.position = "fixed";
+    captureWrapper.style.left = "-100000px";
+    captureWrapper.style.top = "0";
+    captureWrapper.style.width = source.offsetWidth + "px";
+    captureWrapper.style.boxSizing = "border-box";
+    captureWrapper.style.padding = "24px";
+    captureWrapper.style.background = "#f5f7fb";
+    captureWrapper.style.zIndex = "-1";
+    captureWrapper.style.display = "flex";
+    captureWrapper.style.flexDirection = "column";
+    captureWrapper.style.gap = "14px";
+    captureWrapper.style.height = "auto";
+    captureWrapper.style.minHeight = "0";
 
-    const tablebox =
-      clone.querySelector(".tablebox");
+    /* 필요한 영역만 복제 */
+    const totalClone =
+      totalCard.cloneNode(true);
 
-    if(tablebox){
-      tablebox.remove();
-    }
+    const floorClone =
+      floorCards.cloneNode(true);
 
-    /* 캡처 버튼 자체는 캡처 이미지에 필요하지 않으므로 제거 */
-    const captureArea =
-      clone.querySelector(".capture-area");
+    /* 혹시 캡처용 복제본 안에 불필요한 요소가 있으면 제거 */
+    totalClone.querySelectorAll("button, input, select").forEach(el => {
+      el.remove();
+    });
 
-    if(captureArea){
-      captureArea.remove();
-    }
+    floorClone.querySelectorAll("button, input, select").forEach(el => {
+      el.remove();
+    });
 
-    /* 복제본을 화면 밖에 임시 배치 */
-    clone.style.width = source.offsetWidth + "px";
-    clone.style.position = "fixed";
-    clone.style.left = "-100000px";
-    clone.style.top = "0";
-    clone.style.background = "#f5f7fb";
-    clone.style.zIndex = "-1";
-    clone.style.height = "auto";
-    clone.style.minHeight = "0";
+    /* 원래 화면의 폭을 그대로 사용 */
+    totalClone.style.width = "100%";
+    totalClone.style.margin = "0";
 
-    document.body.appendChild(clone);
+    floorClone.style.width = "100%";
+    floorClone.style.margin = "0";
+
+    captureWrapper.appendChild(totalClone);
+    captureWrapper.appendChild(floorClone);
+
+    document.body.appendChild(captureWrapper);
+
+    /* 실제 렌더링이 끝난 뒤 캡처 */
+    await new Promise(resolve =>
+      requestAnimationFrame(() =>
+        requestAnimationFrame(resolve)
+      )
+    );
 
     const canvas =
       await html2canvas(
-        clone,
+        captureWrapper,
         {
-          scale:2,
-          backgroundColor:"#f5f7fb",
-          useCORS:true,
-          windowWidth:source.scrollWidth,
-          windowHeight:source.scrollHeight
+          scale: 2,
+          backgroundColor: "#f5f7fb",
+          useCORS: true,
+          logging: false,
+          width: captureWrapper.scrollWidth,
+          height: captureWrapper.scrollHeight,
+          windowWidth: captureWrapper.scrollWidth,
+          windowHeight: captureWrapper.scrollHeight
         }
       );
 
-    clone.remove();
+    captureWrapper.remove();
 
     await copyCanvasToClipboard(canvas);
 
     alert(
       "📋 DRY입하존 요약 화면을 복사했습니다.\n\n" +
-      "전체 SKU / PCS와 층별 SKU / PCS까지만 포함됩니다.\n" +
+      "총 SKU / PCS와 바로 아래 층별 SKU / PCS까지만 포함됩니다.\n" +
       "카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다."
     );
 

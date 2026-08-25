@@ -1009,6 +1009,23 @@ body{
   margin-left:5px;
 }
 
+.productivity-capture-btn{
+  margin-left:auto;
+  border:1px solid #dbe1ea;
+  background:#fff;
+  border-radius:10px;
+  padding:9px 13px;
+  cursor:pointer;
+  font-size:11px;
+  font-weight:800;
+  color:#344054;
+  box-shadow:0 2px 6px rgba(20,30,55,.04);
+}
+
+.productivity-capture-btn:hover{
+  background:#f5f7fb;
+}
+
 
 /* =========================================================
    캡처 버튼
@@ -2399,8 +2416,16 @@ td{
         </div>
 
         <div class="app-sub">
-          일반입고 기준 · WET 제외 · 09:00~18:00
+          일반입고 기준 · WET 제외 · 09:00~18:00 · 4F AST / 기타층 생산성
         </div>
+
+        <button
+          class="productivity-capture-btn"
+          type="button"
+          onclick="captureProductivityFullScreen()"
+        >
+          📋 전체 화면 복사
+        </button>
 
       </div>
 
@@ -2471,13 +2496,13 @@ td{
                 <th>4F<br>AST</th>
                 <th>3-2F<br>인원</th>
                 <th>3-2F<br>PCS</th>
-                <th>3-2F<br>AST</th>
+                <th>3-2F<br>생산성</th>
                 <th>3-1F<br>인원</th>
                 <th>3-1F<br>PCS</th>
-                <th>3-1F<br>AST</th>
+                <th>3-1F<br>생산성</th>
                 <th>1-2F<br>인원</th>
                 <th>1-2F<br>PCS</th>
-                <th>1-2F<br>AST</th>
+                <th>1-2F<br>생산성</th>
               </tr>
             </thead>
 
@@ -4967,7 +4992,9 @@ function getProductivityDaily(){
 
 
       /*
-        AST = PCS / (출근인원 × 실근무 7.5시간)
+        생산성 = PCS / (출근인원 × 실근무 7.5시간)
+        4F는 AST 설비 생산성으로 표기하고,
+        나머지 층은 일반 생산성으로 표기합니다.
         단위: PCS / 인·시간
       */
 
@@ -5032,9 +5059,11 @@ function getProductivityHourly(){
 
 
           /*
-            시간대 AST:
+            시간대 생산성:
             해당 시간대 PCS /
             (해당층 출근인원 × 해당 시간대 실근무시간)
+            4F만 AST 설비 생산성으로 표기하고,
+            나머지 층은 일반 생산성으로 표기합니다.
           */
 
           const ast =
@@ -5177,7 +5206,7 @@ function renderProductivitySummary(){
             <div class="productivity-ast">
 
               <div class="label">
-                AST 생산성 · PCS/인·시간
+                ${floor === "4F" ? "AST 생산성 · PCS/인·시간" : "생산성 · PCS/인·시간"}
               </div>
 
               <div class="number">
@@ -6768,6 +6797,146 @@ function removeRawUploadFromClone(clonedDocument){
 
 }
 
+
+async function captureProductivityFullScreen(){
+
+  try{
+
+    const html2canvas =
+      await loadHtml2Canvas();
+
+    const source =
+      document.querySelector("#productivityApp");
+
+    if(!source){
+      throw new Error("층별 생산성 화면을 찾을 수 없습니다.");
+    }
+
+    /*
+      카카오톡 공유용 생산성 전체 화면 캡처
+      ----------------------------------------
+      포함:
+      ① 층별 출근인원 수기 입력
+      ② 층별 SKU / PCS / 생산성 요약 카드
+      ③ 09~18시 시간대별 생산성 표
+
+      제외:
+      ① RAW 업로드 영역
+      ② RAW 업로드 상태/오류 문구
+      ③ 층별 리스트 캡처 기능
+      ④ 화면 아래의 불필요한 빈 여백
+    */
+
+    const topbar =
+      source.querySelector(".app-topbar");
+
+    const workers =
+      source.querySelector(".productivity-workers");
+
+    const summary =
+      source.querySelector(".productivity-summary");
+
+    const tablebox =
+      source.querySelector(".productivity-tablebox");
+
+    if(!workers || !summary || !tablebox){
+      throw new Error("생산성 캡처에 필요한 영역을 찾을 수 없습니다.");
+    }
+
+    const captureWrapper =
+      document.createElement("div");
+
+    captureWrapper.style.position = "fixed";
+    captureWrapper.style.left = "-100000px";
+    captureWrapper.style.top = "0";
+    captureWrapper.style.width = source.offsetWidth + "px";
+    captureWrapper.style.boxSizing = "border-box";
+    captureWrapper.style.padding = "0 25px 25px";
+    captureWrapper.style.background = "#f5f7fb";
+    captureWrapper.style.zIndex = "-1";
+    captureWrapper.style.display = "flex";
+    captureWrapper.style.flexDirection = "column";
+    captureWrapper.style.gap = "14px";
+    captureWrapper.style.height = "auto";
+    captureWrapper.style.minHeight = "0";
+
+    if(topbar){
+      const topbarClone = topbar.cloneNode(true);
+      const button = topbarClone.querySelector(".productivity-capture-btn");
+      if(button) button.remove();
+      topbarClone.style.position = "relative";
+      topbarClone.style.top = "auto";
+      topbarClone.style.margin = "0 -25px";
+      topbarClone.style.width = "calc(100% + 50px)";
+      captureWrapper.appendChild(topbarClone);
+    }
+
+    const workersClone = workers.cloneNode(true);
+    const summaryClone = summary.cloneNode(true);
+    const tableClone = tablebox.cloneNode(true);
+
+    /* 캡처 이미지에서는 입력 커서/컨트롤은 그대로 보이되 클릭 버튼은 제거 */
+    workersClone.querySelectorAll("button").forEach(el => el.remove());
+
+    workersClone.style.width = "100%";
+    workersClone.style.margin = "0";
+
+    summaryClone.style.width = "100%";
+    summaryClone.style.margin = "0";
+
+    tableClone.style.width = "100%";
+    tableClone.style.margin = "0";
+    tableClone.style.maxHeight = "none";
+    tableClone.style.overflow = "visible";
+
+    captureWrapper.appendChild(workersClone);
+    captureWrapper.appendChild(summaryClone);
+    captureWrapper.appendChild(tableClone);
+
+    document.body.appendChild(captureWrapper);
+
+    await new Promise(resolve =>
+      requestAnimationFrame(() =>
+        requestAnimationFrame(resolve)
+      )
+    );
+
+    const canvas =
+      await html2canvas(
+        captureWrapper,
+        {
+          scale: 2,
+          backgroundColor: "#f5f7fb",
+          useCORS: true,
+          logging: false,
+          width: captureWrapper.scrollWidth,
+          height: captureWrapper.scrollHeight,
+          windowWidth: captureWrapper.scrollWidth,
+          windowHeight: captureWrapper.scrollHeight
+        }
+      );
+
+    captureWrapper.remove();
+
+    await copyCanvasToClipboard(canvas);
+
+    alert(
+      "📋 층별 생산성 전체 화면을 복사했습니다.\\n\\n" +
+      "카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다."
+    );
+
+  }catch(e){
+
+    console.error(e);
+
+    alert(
+      "사진 복사 중 오류가 발생했습니다.\\n" +
+      (e.message || "브라우저의 클립보드 권한을 확인해주세요.")
+    );
+
+  }
+
+}
 
 async function captureInventory(){
 

@@ -711,6 +711,220 @@ body{
 }
 
 
+
+/* =========================================================
+   층별 생산성
+========================================================= */
+
+.productivity-content{
+  padding:22px 25px 35px;
+}
+
+.productivity-workers{
+  background:#fff;
+  border:1px solid #e1e6ee;
+  border-radius:16px;
+  padding:16px 18px;
+  margin-bottom:14px;
+  box-shadow:0 5px 18px rgba(20,30,55,.04);
+}
+
+.productivity-workers-title{
+  font-size:13px;
+  font-weight:850;
+  margin-bottom:11px;
+}
+
+.productivity-worker-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.productivity-worker-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:#f7f9fc;
+  border-radius:10px;
+  padding:9px 10px;
+}
+
+.productivity-worker-floor{
+  font-size:12px;
+  font-weight:800;
+  min-width:48px;
+}
+
+.productivity-worker-input{
+  width:100%;
+  border:1px solid #dbe1ea;
+  border-radius:8px;
+  padding:8px 9px;
+  background:#fff;
+  text-align:center;
+  font-size:13px;
+  font-weight:750;
+  outline:none;
+}
+
+.productivity-worker-input:focus{
+  border-color:#6875f5;
+}
+
+.productivity-upload{
+  background:#fff;
+  border:1px solid #e1e6ee;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.productivity-upload .drop{
+  padding:19px;
+}
+
+.productivity-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.productivity-card{
+  background:#fff;
+  border:1px solid #e1e6ee;
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 5px 18px rgba(20,30,55,.04);
+}
+
+.productivity-card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.productivity-floor{
+  font-size:15px;
+  font-weight:850;
+}
+
+.productivity-worker-count{
+  font-size:11px;
+  color:#7b8494;
+}
+
+.productivity-card-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.productivity-metric{
+  background:#f7f9fc;
+  border-radius:10px;
+  padding:10px;
+}
+
+.productivity-metric .label{
+  margin-bottom:4px;
+}
+
+.productivity-metric .number{
+  font-size:18px;
+  font-weight:850;
+}
+
+.productivity-ast{
+  margin-top:8px;
+  padding:12px;
+  border-radius:10px;
+  background:#eef0ff;
+  color:#3542a5;
+}
+
+.productivity-ast .label{
+  color:#5965bd;
+}
+
+.productivity-ast .number{
+  font-size:22px;
+  font-weight:900;
+}
+
+.productivity-tablebox{
+  background:#fff;
+  border:1px solid #e1e6ee;
+  border-radius:16px;
+  overflow:auto;
+  box-shadow:0 5px 18px rgba(20,30,55,.04);
+}
+
+.productivity-table{
+  width:100%;
+  min-width:1050px;
+  border-collapse:collapse;
+}
+
+.productivity-table th{
+  position:sticky;
+  top:0;
+  background:#f8fafc;
+  color:#667085;
+  font-size:11px;
+  font-weight:800;
+  text-align:center;
+  padding:12px 10px;
+  border-bottom:1px solid #e5e9f0;
+  white-space:nowrap;
+}
+
+.productivity-table td{
+  padding:11px 10px;
+  border-bottom:1px solid #edf0f4;
+  font-size:12px;
+  text-align:center;
+  white-space:nowrap;
+}
+
+.productivity-table tbody tr:hover{
+  background:#fafbff;
+}
+
+.productivity-hour{
+  font-weight:850;
+}
+
+.productivity-warning{
+  margin-top:10px;
+  color:#b42318;
+  font-size:12px;
+  display:none;
+}
+
+@media(max-width:900px){
+  .productivity-worker-row{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .productivity-summary{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:520px){
+  .productivity-worker-row{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .productivity-summary{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+
 /* =========================================================
    앱 화면
 ========================================================= */
@@ -2106,6 +2320,22 @@ td{
 
 
         <div
+          class="dock-app app-blue"
+          onclick="openApp('productivity')"
+        >
+
+          <div class="dock-icon">
+            📈
+          </div>
+
+          <div class="dock-label">
+            층별 생산성
+          </div>
+
+        </div>
+
+
+        <div
           class="dock-app app-red"
           onclick="openApp('calendar')"
         >
@@ -2133,6 +2363,140 @@ td{
           <div class="dock-label">
             메모장
           </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         INVENTORY APP
+    ================================================== -->
+
+    <!-- ==================================================
+         PRODUCTIVITY APP
+    ================================================== -->
+
+    <section
+      id="productivityApp"
+      class="app-view"
+    >
+
+      <div class="app-topbar">
+
+        <button
+          class="home-button"
+          onclick="goHome()"
+        >
+          ⌂
+        </button>
+
+        <div class="app-title">
+          📈 층별 생산성
+        </div>
+
+        <div class="app-sub">
+          일반입고 기준 · WET 제외 · 09:00~18:00
+        </div>
+
+      </div>
+
+
+      <div class="productivity-content">
+
+        <div class="productivity-workers">
+
+          <div class="productivity-workers-title">
+            👥 오늘 층별 출근인원 수기 입력
+          </div>
+
+          <div
+            class="productivity-worker-row"
+            id="productivityWorkers"
+          ></div>
+
+        </div>
+
+
+        <div class="productivity-upload">
+
+          <label
+            class="drop"
+            id="productivityDrop"
+          >
+
+            <input
+              id="productivityFile"
+              type="file"
+              accept=".xlsx,.xls,.csv"
+            >
+
+            <strong>
+              📄 생산성 RAW 파일 업로드
+            </strong>
+
+            <span>
+              입고현황조회 RAW 파일 1개를 업로드하세요.
+            </span>
+
+          </label>
+
+          <div
+            id="productivityError"
+            class="productivity-warning"
+          ></div>
+
+        </div>
+
+
+        <div
+          class="productivity-summary"
+          id="productivitySummary"
+        ></div>
+
+
+        <div class="productivity-tablebox">
+
+          <table class="productivity-table">
+
+            <thead>
+              <tr>
+                <th>시간</th>
+                <th>실근무시간</th>
+                <th>4F<br>인원</th>
+                <th>4F<br>PCS</th>
+                <th>4F<br>AST</th>
+                <th>3-2F<br>인원</th>
+                <th>3-2F<br>PCS</th>
+                <th>3-2F<br>AST</th>
+                <th>3-1F<br>인원</th>
+                <th>3-1F<br>PCS</th>
+                <th>3-1F<br>AST</th>
+                <th>1-2F<br>인원</th>
+                <th>1-2F<br>PCS</th>
+                <th>1-2F<br>AST</th>
+              </tr>
+            </thead>
+
+            <tbody id="productivityBody">
+
+              <tr>
+                <td colspan="14">
+                  <div class="empty">
+                    <strong>
+                      아직 데이터가 없습니다.
+                    </strong>
+                    층별 출근인원을 입력하고 RAW 파일을 업로드해주세요.
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
 
         </div>
 
@@ -2963,7 +3327,10 @@ const STORAGE = {
     "inbound_dashboard_attendance",
 
   workers:
-    "inbound_dashboard_workers"
+    "inbound_dashboard_workers",
+
+  productivityWorkers:
+    "inbound_dashboard_productivity_workers"
 
 };
 
@@ -3880,6 +4247,9 @@ function openApp(name){
     inventory:
       "inventoryApp",
 
+    productivity:
+      "productivityApp",
+
     calendar:
       "calendarApp",
 
@@ -3929,6 +4299,15 @@ function openApp(name){
   if(name === "attendance"){
 
     renderWorkers();
+
+  }
+
+
+  if(name === "productivity"){
+
+    renderProductivityWorkers();
+    renderProductivitySummary();
+    renderProductivityTable();
 
   }
 
@@ -4028,6 +4407,1167 @@ function escapeHtml(value){
 
 }
 
+
+
+
+/* =========================================================
+   층별 생산성
+========================================================= */
+
+const PRODUCTIVITY_FLOORS = [
+  "4F",
+  "3-2F",
+  "3-1F",
+  "1-2F"
+];
+
+
+/*
+  실근무시간
+  09:00~18:00 = 9시간
+  10:45~11:00 = 15분 휴식
+  12:30~13:30 = 1시간 점심
+  15:45~16:00 = 15분 휴식
+
+  시간대별 유효시간:
+  09 = 1.00
+  10 = 0.75
+  11 = 1.00
+  12 = 0.50
+  13 = 0.50
+  14 = 1.00
+  15 = 0.75
+  16 = 1.00
+  17 = 1.00
+
+  합계 = 7.50시간
+*/
+
+const PRODUCTIVITY_HOURS = [
+  {hour:9,  effective:1.00},
+  {hour:10, effective:0.75},
+  {hour:11, effective:1.00},
+  {hour:12, effective:0.50},
+  {hour:13, effective:0.50},
+  {hour:14, effective:1.00},
+  {hour:15, effective:0.75},
+  {hour:16, effective:1.00},
+  {hour:17, effective:1.00}
+];
+
+
+const productivityState = {
+
+  rows:[],
+
+  workers:{
+
+    "4F":0,
+    "3-2F":0,
+    "3-1F":0,
+    "1-2F":0
+
+  },
+
+  date:""
+
+};
+
+
+function saveProductivityWorkers(){
+
+  saveStorage(
+    STORAGE.productivityWorkers,
+    productivityState.workers
+  );
+
+}
+
+
+function loadProductivityWorkers(){
+
+  const saved =
+    localStorage.getItem(
+      STORAGE.productivityWorkers
+    );
+
+  if(saved){
+
+    try{
+
+      const parsed =
+        JSON.parse(saved);
+
+      PRODUCTIVITY_FLOORS.forEach(
+        floor => {
+
+          productivityState.workers[floor] =
+            Number(parsed[floor]) || 0;
+
+        }
+      );
+
+    }catch(e){
+
+      console.warn(
+        "생산성 인원 불러오기 실패",
+        e
+      );
+
+    }
+
+  }
+
+}
+
+
+function renderProductivityWorkers(){
+
+  loadProductivityWorkers();
+
+  const container =
+    document.getElementById(
+      "productivityWorkers"
+    );
+
+  if(!container){
+    return;
+  }
+
+  container.innerHTML =
+    PRODUCTIVITY_FLOORS.map(
+      floor => `
+
+        <div class="productivity-worker-item">
+
+          <div class="productivity-worker-floor">
+            ${floor}
+          </div>
+
+          <input
+            class="productivity-worker-input"
+            type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
+            value="${productivityState.workers[floor] || 0}"
+            onchange="changeProductivityWorker('${floor}',this.value)"
+            oninput="changeProductivityWorker('${floor}',this.value)"
+          >
+
+        </div>
+
+      `
+    ).join("");
+
+}
+
+
+function changeProductivityWorker(
+  floor,
+  value
+){
+
+  productivityState.workers[floor] =
+    Math.max(
+      0,
+      Number(value) || 0
+    );
+
+  saveProductivityWorkers();
+
+  if(productivityState.rows.length){
+
+    renderProductivitySummary();
+    renderProductivityTable();
+
+  }
+
+}
+
+
+function normalizeProductivityHeader(v){
+
+  return String(v ?? "")
+    .replace(/^\uFEFF/,"")
+    .replace(/\s+/g,"")
+    .replace(/[()（）]/g,"")
+    .trim()
+    .toLowerCase();
+
+}
+
+
+function findProductivityColumn(
+  headers,
+  candidates
+){
+
+  const normalized = {};
+
+  headers.forEach(
+    h =>
+      normalized[
+        normalizeProductivityHeader(h)
+      ] = h
+  );
+
+  for(
+    const candidate of candidates
+  ){
+
+    const key =
+      normalizeProductivityHeader(
+        candidate
+      );
+
+    if(normalized[key]){
+
+      return normalized[key];
+
+    }
+
+  }
+
+  return null;
+
+}
+
+
+function productivityFloor(
+  zone
+){
+
+  const z =
+    norm(zone);
+
+  if(
+    z.includes(
+      "1-2층 DRYBYPASS 피킹존"
+    )
+  ){
+
+    return "1-2F";
+
+  }
+
+  if(
+    z.includes(
+      "3-1층 Combi 보관존"
+    )
+  ){
+
+    return "3-1F";
+
+  }
+
+  if(
+    z.includes(
+      "3-2층 DRY APS 피킹존"
+    ) ||
+    z.includes(
+      "3-2층 평치보관존"
+    )
+  ){
+
+    return "3-2F";
+
+  }
+
+  if(
+    z.includes(
+      "4-1층 AutoStore 보관존"
+    )
+  ){
+
+    return "4F";
+
+  }
+
+  return "";
+
+}
+
+
+function parseProductivityDate(
+  value
+){
+
+  if(
+    value instanceof Date &&
+    !Number.isNaN(value.getTime())
+  ){
+
+    return value;
+
+  }
+
+  const s =
+    String(value ?? "")
+      .trim();
+
+  if(!s){
+    return null;
+  }
+
+  /*
+    YYYY-MM-DD HH:mm:ss
+    YYYY/MM/DD HH:mm:ss
+    형태를 브라우저에서 안전하게 처리
+  */
+
+  const m =
+    s.match(
+      /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?$/
+    );
+
+  if(m){
+
+    const d =
+      new Date(
+        Number(m[1]),
+        Number(m[2])-1,
+        Number(m[3]),
+        Number(m[4]),
+        Number(m[5]),
+        Number(m[6] || 0)
+      );
+
+    return Number.isNaN(d.getTime())
+      ? null
+      : d;
+
+  }
+
+  const d =
+    new Date(s);
+
+  return Number.isNaN(d.getTime())
+    ? null
+    : d;
+
+}
+
+
+function parseProductivityRaw(
+  raw
+){
+
+  if(!raw.length){
+
+    throw new Error(
+      "RAW 데이터가 없습니다."
+    );
+
+  }
+
+  const headers =
+    Object.keys(
+      raw[0] || {}
+    );
+
+
+  const col = {
+
+    입고구분:
+      findProductivityColumn(
+        headers,
+        ["입고구분"]
+      ),
+
+    물류상품ID:
+      findProductivityColumn(
+        headers,
+        ["물류상품ID"]
+      ),
+
+    물류분류명:
+      findProductivityColumn(
+        headers,
+        ["물류분류명"]
+      ),
+
+    입고완료수량:
+      findProductivityColumn(
+        headers,
+        ["입고완료수량"]
+      ),
+
+    도착존:
+      findProductivityColumn(
+        headers,
+        ["도착존"]
+      ),
+
+    입고일시:
+      findProductivityColumn(
+        headers,
+        ["입고일시"]
+      )
+
+  };
+
+
+  const missing =
+    Object.entries(col)
+      .filter(
+        ([,value]) => !value
+      )
+      .map(
+        ([key]) => key
+      );
+
+
+  if(missing.length){
+
+    throw new Error(
+      "필수 컬럼을 찾을 수 없습니다.\n\n" +
+      missing.join(", ")
+    );
+
+  }
+
+
+  const excludedWet = new Set([
+    "WET 일반",
+    "WET 냉장",
+    "WET 냉동",
+    "WET WMS Bypass"
+  ]);
+
+
+  const result = [];
+
+
+  for(const row of raw){
+
+    /*
+      1. 일반입고만
+      2. WET 4종 제외
+      3. 도착존으로 층 매핑
+      4. 09:00~18:00만 반영
+    */
+
+    if(
+      norm(row[col.입고구분]) !==
+      "일반입고"
+    ){
+
+      continue;
+
+    }
+
+
+    if(
+      excludedWet.has(
+        norm(row[col.물류분류명])
+      )
+    ){
+
+      continue;
+
+    }
+
+
+    const floor =
+      productivityFloor(
+        row[col.도착존]
+      );
+
+    if(!floor){
+
+      continue;
+
+    }
+
+
+    const dt =
+      parseProductivityDate(
+        row[col.입고일시]
+      );
+
+    if(!dt){
+
+      continue;
+
+    }
+
+
+    const hour =
+      dt.getHours();
+
+
+    if(
+      hour < 9 ||
+      hour >= 18
+    ){
+
+      continue;
+
+    }
+
+
+    result.push({
+
+      floor,
+
+      hour,
+
+      pcs:
+        num(
+          row[col.입고완료수량]
+        ),
+
+      sku:
+        norm(
+          row[col.물류상품ID]
+        )
+
+    });
+
+  }
+
+
+  return result;
+
+}
+
+
+function getProductivityDaily(){
+
+  const result = {};
+
+  PRODUCTIVITY_FLOORS.forEach(
+    floor => {
+
+      const rows =
+        productivityState.rows.filter(
+          r =>
+            r.floor === floor
+        );
+
+      const pcs =
+        rows.reduce(
+          (sum,r) =>
+            sum + r.pcs,
+          0
+        );
+
+      const skuSet =
+        new Set(
+          rows
+            .map(r => r.sku)
+            .filter(Boolean)
+        );
+
+      const workers =
+        Number(
+          productivityState.workers[floor]
+        ) || 0;
+
+
+      /*
+        AST = PCS / (출근인원 × 실근무 7.5시간)
+        단위: PCS / 인·시간
+      */
+
+      const ast =
+        workers > 0
+          ? pcs / (workers * 7.5)
+          : 0;
+
+
+      result[floor] = {
+
+        pcs,
+
+        sku:
+          skuSet.size,
+
+        workers,
+
+        ast
+
+      };
+
+    }
+  );
+
+
+  return result;
+
+}
+
+
+function getProductivityHourly(){
+
+  const result = {};
+
+  PRODUCTIVITY_HOURS.forEach(
+    slot => {
+
+      result[slot.hour] = {};
+
+      PRODUCTIVITY_FLOORS.forEach(
+        floor => {
+
+          const rows =
+            productivityState.rows.filter(
+              r =>
+                r.floor === floor &&
+                r.hour === slot.hour
+            );
+
+          const pcs =
+            rows.reduce(
+              (sum,r) =>
+                sum + r.pcs,
+              0
+            );
+
+          const workers =
+            Number(
+              productivityState.workers[floor]
+            ) || 0;
+
+
+          /*
+            시간대 AST:
+            해당 시간대 PCS /
+            (해당층 출근인원 × 해당 시간대 실근무시간)
+          */
+
+          const ast =
+            workers > 0 &&
+            slot.effective > 0
+              ? pcs /
+                (
+                  workers *
+                  slot.effective
+                )
+              : 0;
+
+
+          result[slot.hour][floor] = {
+
+            pcs,
+            workers,
+            ast
+
+          };
+
+        }
+      );
+
+    }
+  );
+
+
+  return result;
+
+}
+
+
+function formatProductivityNumber(
+  value,
+  digits=1
+){
+
+  const n =
+    Number(value) || 0;
+
+  return n.toLocaleString(
+    "ko-KR",
+    {
+      maximumFractionDigits:digits,
+      minimumFractionDigits:digits
+    }
+  );
+
+}
+
+
+function formatEffectiveTime(
+  value
+){
+
+  return Number(value)
+    .toLocaleString(
+      "ko-KR",
+      {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      }
+    );
+
+}
+
+
+function renderProductivitySummary(){
+
+  const container =
+    document.getElementById(
+      "productivitySummary"
+    );
+
+  if(!container){
+    return;
+  }
+
+
+  const daily =
+    getProductivityDaily();
+
+
+  container.innerHTML =
+    PRODUCTIVITY_FLOORS.map(
+      floor => {
+
+        const x =
+          daily[floor];
+
+
+        return `
+
+          <div class="productivity-card">
+
+            <div class="productivity-card-head">
+
+              <div class="productivity-floor">
+                ${floor}
+              </div>
+
+              <div class="productivity-worker-count">
+                출근 ${x.workers}명
+              </div>
+
+            </div>
+
+
+            <div class="productivity-card-grid">
+
+              <div class="productivity-metric">
+
+                <div class="label">
+                  SKU
+                </div>
+
+                <div class="number">
+                  ${fmt(x.sku)}
+                </div>
+
+              </div>
+
+
+              <div class="productivity-metric">
+
+                <div class="label">
+                  PCS
+                </div>
+
+                <div class="number">
+                  ${fmt(x.pcs)}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="productivity-ast">
+
+              <div class="label">
+                AST 생산성 · PCS/인·시간
+              </div>
+
+              <div class="number">
+                ${
+                  x.workers > 0
+                    ? formatProductivityNumber(
+                        x.ast,
+                        1
+                      )
+                    : "-"
+                }
+              </div>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+function renderProductivityTable(){
+
+  const body =
+    document.getElementById(
+      "productivityBody"
+    );
+
+  if(!body){
+    return;
+  }
+
+
+  if(!productivityState.rows.length){
+
+    body.innerHTML = `
+
+      <tr>
+
+        <td colspan="14">
+
+          <div class="empty">
+
+            <strong>
+              아직 데이터가 없습니다.
+            </strong>
+
+            층별 출근인원을 입력하고 RAW 파일을 업로드해주세요.
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+
+  }
+
+
+  const hourly =
+    getProductivityHourly();
+
+
+  body.innerHTML =
+    PRODUCTIVITY_HOURS.map(
+      slot => {
+
+        const row =
+          hourly[slot.hour];
+
+
+        const cells =
+          PRODUCTIVITY_FLOORS.map(
+            floor => {
+
+              const x =
+                row[floor];
+
+              return `
+
+                <td>
+                  ${x.workers}
+                </td>
+
+                <td>
+                  ${fmt(x.pcs)}
+                </td>
+
+                <td>
+                  ${
+                    x.workers > 0
+                      ? formatProductivityNumber(
+                          x.ast,
+                          1
+                        )
+                      : "-"
+                  }
+                </td>
+
+              `;
+
+            }
+          ).join("");
+
+
+        return `
+
+          <tr>
+
+            <td class="productivity-hour">
+              ${String(slot.hour).padStart(2,"0")}:00
+            </td>
+
+            <td>
+              ${formatEffectiveTime(slot.effective)}h
+            </td>
+
+            ${cells}
+
+          </tr>
+
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+function handleProductivityFile(
+  file
+){
+
+  const error =
+    document.getElementById(
+      "productivityError"
+    );
+
+
+  if(error){
+
+    error.style.display =
+      "none";
+
+    error.textContent =
+      "";
+
+  }
+
+
+  try{
+
+    const reader =
+      new FileReader();
+
+
+    reader.onload =
+      function(e){
+
+        try{
+
+          const data =
+            new Uint8Array(
+              e.target.result
+            );
+
+          const wb =
+            XLSX.read(
+              data,
+              {
+                type:"array",
+                cellDates:false
+              }
+            );
+
+
+          const ws =
+            wb.Sheets[
+              wb.SheetNames[0]
+            ];
+
+
+          const raw =
+            XLSX.utils.sheet_to_json(
+              ws,
+              {
+                defval:"",
+                raw:false
+              }
+            );
+
+
+          productivityState.rows =
+            parseProductivityRaw(
+              raw
+            );
+
+
+          const allDates =
+            productivityState.rows
+              .map(
+                r => r
+              );
+
+
+          /*
+            RAW의 입고일시에서 실제 반영 날짜를 확인.
+            여러 날짜가 섞여 있으면 최신 날짜 기준으로 표시하지 않고
+            파일 전체를 그대로 취합한다.
+          */
+
+          productivityState.date =
+            new Date()
+              .toLocaleDateString(
+                "ko-KR"
+              );
+
+
+          renderProductivitySummary();
+          renderProductivityTable();
+
+
+          const totalPcs =
+            productivityState.rows.reduce(
+              (sum,r) =>
+                sum + r.pcs,
+              0
+            );
+
+
+          const totalSku =
+            new Set(
+              productivityState.rows
+                .map(r => r.sku)
+                .filter(Boolean)
+            ).size;
+
+
+          if(error){
+
+            error.style.display =
+              "block";
+
+            error.style.color =
+              "#596273";
+
+            error.textContent =
+              `필터 적용 완료 · 일반입고 ${fmt(productivityState.rows.length)}행 · SKU ${fmt(totalSku)} · PCS ${fmt(totalPcs)}`;
+
+          }
+
+        }catch(err){
+
+          console.error(err);
+
+          if(error){
+
+            error.style.display =
+              "block";
+
+            error.style.color =
+              "#b42318";
+
+            error.textContent =
+              err.message ||
+              "RAW 파일을 읽는 중 오류가 발생했습니다.";
+
+          }
+
+        }
+
+      };
+
+
+    reader.readAsArrayBuffer(
+      file
+    );
+
+  }catch(err){
+
+    console.error(err);
+
+  }
+
+}
+
+
+/* 생산성 RAW 업로드 */
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const input =
+      document.getElementById(
+        "productivityFile"
+      );
+
+    const drop =
+      document.getElementById(
+        "productivityDrop"
+      );
+
+
+    if(input){
+
+      input.addEventListener(
+        "change",
+        function(e){
+
+          const file =
+            e.target.files[0];
+
+          if(file){
+
+            handleProductivityFile(
+              file
+            );
+
+          }
+
+        }
+      );
+
+    }
+
+
+    if(drop){
+
+      drop.addEventListener(
+        "dragover",
+        function(e){
+
+          e.preventDefault();
+
+          drop.classList.add(
+            "drag"
+          );
+
+        }
+      );
+
+
+      drop.addEventListener(
+        "dragleave",
+        function(){
+
+          drop.classList.remove(
+            "drag"
+          );
+
+        }
+      );
+
+
+      drop.addEventListener(
+        "drop",
+        function(e){
+
+          e.preventDefault();
+
+          drop.classList.remove(
+            "drag"
+          );
+
+
+          const file =
+            e.dataTransfer.files[0];
+
+          if(file){
+
+            handleProductivityFile(
+              file
+            );
+
+          }
+
+        }
+      );
+
+    }
+
+  }
+);
 
 
 /* =========================================================
@@ -5535,6 +7075,10 @@ renderWorkers();
 renderCalendar();
 
 initMemo();
+
+renderProductivityWorkers();
+renderProductivitySummary();
+renderProductivityTable();
 
 initWeather();
 

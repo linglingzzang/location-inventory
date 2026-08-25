@@ -1492,6 +1492,19 @@ input[type=file]{
   padding:15px;
 
   cursor:pointer;
+
+  transition:0.18s ease;
+}
+
+.floor-card:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 18px rgba(32,48,80,0.08);
+}
+
+.floor-card.selected{
+  border:2px solid #667eea;
+  box-shadow:0 8px 22px rgba(102,126,234,0.18);
+  background:#f8f9ff;
 }
 
 .floor-head{
@@ -4952,6 +4965,38 @@ function downloadCSV(){
 
 
 /* =========================================================
+   층별 캡처 선택 상태
+========================================================= */
+
+let selectedCaptureFloor = null;
+
+function selectCaptureFloor(floor){
+
+  selectedCaptureFloor = floor;
+
+  document.querySelectorAll("#inventoryApp .floor-card").forEach(card => {
+    card.classList.toggle(
+      "selected",
+      card.dataset.floor === floor
+    );
+  });
+
+}
+
+function setupFloorCaptureSelection(){
+
+  document.querySelectorAll("#inventoryApp .floor-card").forEach(card => {
+
+    card.addEventListener("click", () => {
+      selectCaptureFloor(card.dataset.floor);
+    });
+
+  });
+
+}
+
+
+/* =========================================================
    캡처 기능
 ========================================================= */
 
@@ -5060,33 +5105,131 @@ async function captureInventory(){
 
   try{
 
+    if(!selectedCaptureFloor){
+
+      alert(
+        "먼저 캡처할 층의 카드를 클릭해주세요.\n\n예: 4층 카드를 클릭 → 📋 층별 리스트 복사"
+      );
+
+      return;
+
+    }
+
+
     const html2canvas =
       await loadHtml2Canvas();
 
-    const target =
+    const source =
       document.querySelector(
         "#inventoryApp .inventory-content"
       );
 
-    if(!target){
+    if(!source){
       throw new Error("DRY입하존 화면을 찾을 수 없습니다.");
     }
 
+
+    /*
+      현재 화면을 복제한 뒤
+      ① RAW 업로드 영역 제거
+      ② 전체 SKU/PCS 요약 제거
+      ③ 선택한 층 카드만 남김
+      ④ 표에서는 선택한 층의 행만 남김
+      ⑤ 검색/필터 툴바는 제거
+    */
+    const clone = source.cloneNode(true);
+
+    const upload =
+      clone.querySelector(".upload");
+
+    if(upload){
+      upload.remove();
+    }
+
+    const summary =
+      clone.querySelector(".total-summary-card");
+
+    if(summary){
+      summary.remove();
+    }
+
+    const toolbar =
+      clone.querySelector(".toolbar");
+
+    if(toolbar){
+      toolbar.remove();
+    }
+
+
+    clone.querySelectorAll(".floor-card").forEach(card => {
+      if(card.dataset.floor !== selectedCaptureFloor){
+        card.remove();
+      }
+    });
+
+
+    const tbody =
+      clone.querySelector("#tbody");
+
+    if(tbody){
+
+      const rows =
+        Array.from(tbody.querySelectorAll("tr"));
+
+      rows.forEach(row => {
+
+        const firstCell =
+          row.querySelector("td");
+
+        if(!firstCell){
+          return;
+        }
+
+        const floorText =
+          firstCell.textContent.trim();
+
+        if(
+          floorText &&
+          floorText !== selectedCaptureFloor
+        ){
+          row.remove();
+        }
+
+      });
+
+    }
+
+
+    /* 복제본을 화면 밖에 임시 배치하여 정확한 이미지 생성 */
+    clone.style.width = source.offsetWidth + "px";
+    clone.style.position = "fixed";
+    clone.style.left = "-100000px";
+    clone.style.top = "0";
+    clone.style.background = "#f5f7fb";
+    clone.style.paddingTop = "0";
+    clone.style.zIndex = "-1";
+
+    document.body.appendChild(clone);
+
+
     const canvas =
       await html2canvas(
-        target,
+        clone,
         {
           scale:2,
           backgroundColor:"#f5f7fb",
-          useCORS:true,
-          onclone: removeRawUploadFromClone
+          useCORS:true
         }
       );
+
+
+    clone.remove();
+
 
     await copyCanvasToClipboard(canvas);
 
     alert(
-      "📋 DRY입하존 층별 리스트를 복사했습니다.\n카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다."
+      "📋 " + selectedCaptureFloor + " 리스트를 복사했습니다.\n\n카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 해당 층 리스트만 사진으로 전송할 수 있습니다."
     );
 
   }catch(e){
@@ -5101,7 +5244,6 @@ async function captureInventory(){
   }
 
 }
-
 
 async function captureFullScreen(){
 
@@ -5156,6 +5298,8 @@ async function captureFullScreen(){
 /* =========================================================
    초기화
 ========================================================= */
+
+setupFloorCaptureSelection();
 
 renderTodaySchedule();
 

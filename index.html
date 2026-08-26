@@ -2202,19 +2202,21 @@ td{
 
 /* =========================================================
    우측 오늘 업무 체크리스트 · iOS 스타일
+   - 화면 가장 오른쪽에 세로 배치
+   - 오전 → 오후 → 공통 순서로 위에서 아래로 표시
 ========================================================= */
 
 .work-checklist{
   position:absolute;
-  top:250px;
-  right:34px;
-  width:min(760px, calc(100% - 390px));
-  height:calc(100% - 285px);
-  min-height:360px;
-  padding:18px 20px 16px;
-  border-radius:26px;
-  background:rgba(255,255,255,.88);
-  border:1px solid rgba(255,255,255,.78);
+  top:78px;
+  right:28px;
+  width:430px;
+  height:calc(100% - 100px);
+  min-height:0;
+  padding:15px 15px 12px;
+  border-radius:24px;
+  background:rgba(255,255,255,.90);
+  border:1px solid rgba(255,255,255,.82);
   box-shadow:0 14px 36px rgba(25,40,70,.16);
   backdrop-filter:blur(18px);
   -webkit-backdrop-filter:blur(18px);
@@ -2226,8 +2228,8 @@ td{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:12px;
-  padding:0 2px 12px;
+  gap:10px;
+  padding:0 2px 10px;
   border-bottom:1px solid rgba(148,163,184,.20);
 }
 
@@ -2235,49 +2237,53 @@ td{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
-  font-size:17px;
+  gap:7px;
+  font-size:16px;
   font-weight:850;
   color:#172033;
+  white-space:nowrap;
 }
 
 .work-checklist-sub{
-  margin-top:4px;
-  font-size:10px;
+  margin-top:3px;
+  font-size:9px;
   color:#94a3b8;
   text-align:center;
+  white-space:nowrap;
 }
 
 .work-checklist-reset{
   border:0;
-  border-radius:11px;
-  padding:7px 10px;
+  border-radius:10px;
+  padding:6px 9px;
   background:#f1f4f9;
   color:#64748b;
-  font-size:10px;
+  font-size:9px;
   font-weight:750;
   cursor:pointer;
+  white-space:nowrap;
 }
 
 .work-checklist-reset:active{ transform:scale(.97); }
 
 .work-checklist-body{
-  height:calc(100% - 64px);
+  height:calc(100% - 58px);
   overflow:auto;
-  padding:12px 2px 2px;
+  padding:8px 1px 2px;
   scrollbar-width:thin;
 }
 
+/* 반드시 세로 1열: 오전 → 오후 → 공통 */
 .work-check-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
 }
 
 .work-check-group{
   min-width:0;
-  padding:11px;
-  border-radius:17px;
+  padding:7px 8px 8px;
+  border-radius:15px;
   background:rgba(247,249,252,.82);
   border:1px solid rgba(226,232,240,.85);
 }
@@ -2287,22 +2293,22 @@ td{
   align-items:center;
   justify-content:center;
   gap:5px;
-  margin-bottom:7px;
-  font-size:11px;
+  margin-bottom:4px;
+  font-size:10px;
   font-weight:850;
   color:#4f46e5;
 }
 
 .work-check-item{
   display:grid;
-  grid-template-columns:24px minmax(0,1fr) 24px;
+  grid-template-columns:25px minmax(0,1fr) 21px;
   align-items:center;
-  gap:7px;
-  min-height:34px;
-  padding:5px 7px;
-  margin-top:4px;
-  border-radius:11px;
-  background:rgba(255,255,255,.84);
+  gap:6px;
+  min-height:27px;
+  padding:3px 6px;
+  margin-top:3px;
+  border-radius:9px;
+  background:rgba(255,255,255,.88);
   border:1px solid rgba(226,232,240,.75);
   cursor:pointer;
   transition:.15s ease;
@@ -2315,33 +2321,33 @@ td{
 }
 
 .work-check-no{
-  width:24px;
+  width:25px;
   text-align:center;
-  font-size:9px;
+  font-size:8px;
   font-weight:800;
   color:#94a3b8;
 }
 
 .work-check-text{
   text-align:center;
-  font-size:10px;
-  line-height:1.35;
+  font-size:9px;
+  line-height:1.25;
   font-weight:650;
   color:#334155;
   word-break:keep-all;
 }
 
 .work-check-box{
-  width:21px;
-  height:21px;
-  border-radius:7px;
+  width:19px;
+  height:19px;
+  border-radius:6px;
   border:1.5px solid #cbd5e1;
   background:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
   color:transparent;
-  font-size:13px;
+  font-size:12px;
   font-weight:900;
   transition:.15s ease;
 }
@@ -2363,30 +2369,31 @@ td{
 }
 
 .work-check-progress{
-  min-width:82px;
-  padding:7px 10px;
-  border-radius:12px;
+  min-width:76px;
+  padding:6px 8px;
+  border-radius:10px;
   background:#f4f6ff;
   color:#4f46e5;
   text-align:center;
-  font-size:10px;
+  font-size:9px;
   font-weight:850;
+  white-space:nowrap;
 }
 
 @media(max-width:1250px){
   .work-checklist{
-    right:22px;
-    width:calc(100% - 350px);
+    right:18px;
+    width:380px;
   }
-  .work-check-grid{ grid-template-columns:1fr; }
 }
 
 @media(max-width:900px){
   .work-checklist{
-    left:25px;
-    right:25px;
-    top:270px;
-    width:auto;
+    left:auto;
+    right:15px;
+    top:75px;
+    width:340px;
+    height:calc(100% - 90px);
   }
 }
 

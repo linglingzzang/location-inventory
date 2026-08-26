@@ -718,6 +718,7 @@ body{
 
 .productivity-content{
   padding:22px 25px 35px;
+  text-align:center;
 }
 
 .productivity-workers{
@@ -733,9 +734,10 @@ body{
   font-size:13px;
   font-weight:850;
   margin-bottom:11px;
-  white-space:nowrap;
+  white-space:normal;
   overflow:visible;
   line-height:1.4;
+  text-align:center;
 }
 
 .productivity-worker-row{
@@ -747,6 +749,7 @@ body{
 .productivity-worker-item{
   display:flex;
   align-items:center;
+  justify-content:center;
   gap:8px;
   background:#f7f9fc;
   border-radius:10px;
@@ -755,14 +758,14 @@ body{
 }
 
 .productivity-worker-floor{
-  flex:0 0 54px;
+  flex:0 0 auto;
   font-size:12px;
   font-weight:800;
   white-space:nowrap;
 }
 
 .productivity-worker-input{
-  width:100%;
+  width:90px;
   min-width:0;
   border:1px solid #dbe1ea;
   border-radius:8px;
@@ -777,6 +780,148 @@ body{
 
 .productivity-worker-input:focus{
   border-color:#6875f5;
+}
+
+.productivity-worker-unit{
+  font-size:11px;
+  color:#667085;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+/* 생산성 카카오톡 캡처 전용 */
+.productivity-capture-sheet{
+  width:900px;
+  box-sizing:border-box;
+  padding:24px;
+  background:#f5f7fb;
+  color:#172033;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif;
+  text-align:center;
+}
+.productivity-capture-title{
+  background:#fff;
+  border:1px solid #e1e6ee;
+  border-radius:16px;
+  padding:16px 18px;
+  margin-bottom:14px;
+}
+.productivity-capture-title .floor{
+  display:block;
+  background:none;
+  color:#172033;
+  padding:0;
+  font-size:25px;
+  font-weight:900;
+}
+.productivity-capture-title .sub{
+  margin-top:5px;
+  color:#7b8494;
+  font-size:12px;
+  font-weight:700;
+}
+.productivity-capture-main{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+  margin-bottom:12px;
+}
+.productivity-capture-metric{
+  background:#fff;
+  border:1px solid #e1e6ee;
+  border-radius:12px;
+  padding:11px 8px;
+}
+.productivity-capture-metric .label{
+  margin-bottom:4px;
+  font-size:10px;
+  color:#7b8494;
+}
+.productivity-capture-metric .value{
+  font-size:19px;
+  font-weight:900;
+}
+.productivity-capture-rate{
+  color:#3542a5;
+  background:#eef0ff;
+}
+.productivity-capture-workers{
+  background:#fff;
+  border:1px solid #e1e6ee;
+  border-radius:14px;
+  padding:13px;
+  margin-bottom:12px;
+}
+.productivity-capture-workers-title{
+  font-size:12px;
+  font-weight:900;
+  margin-bottom:9px;
+}
+.productivity-capture-worker-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+}
+.productivity-capture-worker{
+  background:#f7f9fc;
+  border-radius:10px;
+  padding:9px 6px;
+}
+.productivity-capture-worker .id{
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:6px;
+}
+.productivity-capture-worker .line{
+  font-size:10px;
+  color:#667085;
+  line-height:1.55;
+}
+.productivity-capture-worker .rate{
+  margin-top:4px;
+  font-size:15px;
+  color:#3542a5;
+  font-weight:900;
+}
+.productivity-capture-hourly{
+  background:#fff;
+  border:1px solid #e1e6ee;
+  border-radius:14px;
+  overflow:hidden;
+}
+.productivity-capture-hourly-head,
+.productivity-capture-hourly-row{
+  display:grid;
+  grid-template-columns:1fr 1.2fr 1.2fr;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  text-align:center;
+}
+.productivity-capture-hourly-head{
+  background:#f8fafc;
+  color:#667085;
+  font-size:10px;
+  font-weight:850;
+}
+.productivity-capture-hourly-row{
+  font-size:11px;
+  border-top:1px solid #edf0f4;
+}
+.productivity-capture-hourly-row .rate{
+  color:#3542a5;
+  font-weight:900;
+}
+.productivity-capture-note{
+  margin-top:8px;
+  color:#98a2b3;
+  font-size:9px;
+  font-weight:700;
+}
+.productivity-capture-all-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
 }
 
 .productivity-upload{
@@ -2527,7 +2672,7 @@ td{
         <div class="productivity-workers">
 
           <div class="productivity-workers-title">
-            👥 오늘 층별 작업자 자동 집계 · 4F AS / 기타층 PDA
+            👥 오늘 층별 출근인원 수기 입력 · 저장됨
           </div>
 
           <div
@@ -4642,14 +4787,32 @@ function getUniqueWorkerCounts(rows=productivityState.rows){
   return result;
 }
 
+function getManualProductivityWorkers(){
+  const saved=loadStorage(STORAGE.productivityWorkers,{});
+  const result={};
+  PRODUCTIVITY_FLOORS.forEach(floor=>{
+    result[floor]=Math.max(0,Number(saved[floor]||0));
+  });
+  return result;
+}
+
+function saveProductivityWorker(floor,value){
+  const saved=getManualProductivityWorkers();
+  saved[floor]=Math.max(0,Math.floor(Number(value)||0));
+  saveStorage(STORAGE.productivityWorkers,saved);
+  renderProductivitySummary();
+  renderProductivityHourCards();
+}
+
 function getProductivityDaily(){
   const result={};
   const effectiveHours=getEffectiveMinutesUntil(productivityState.uploadAt)/60;
+  const manualWorkers=getManualProductivityWorkers();
   PRODUCTIVITY_FLOORS.forEach(floor=>{
     const rows=productivityState.rows.filter(r=>r.floor===floor);
     const pcs=rows.reduce((s,r)=>s+r.pcs,0);
     const sku=new Set(rows.map(r=>r.sku).filter(Boolean)).size;
-    const workers=new Set(rows.map(r=>r.worker).filter(Boolean)).size;
+    const workers=manualWorkers[floor]||0;
     const productivity=workers>0 && effectiveHours>0 ? pcs/(workers*effectiveHours) : 0;
     result[floor]={pcs,sku,workers,productivity,effectiveHours};
   });
@@ -4658,6 +4821,7 @@ function getProductivityDaily(){
 
 function getProductivityHourly(){
   const result={};
+  const manualWorkers=getManualProductivityWorkers();
   PRODUCTIVITY_HOURS.forEach(slot=>{
     result[slot.hour]={};
     const effectiveMinutes=getEffectiveMinutesForHour(slot.hour,productivityState.uploadAt);
@@ -4665,7 +4829,7 @@ function getProductivityHourly(){
     PRODUCTIVITY_FLOORS.forEach(floor=>{
       const rows=productivityState.rows.filter(r=>r.floor===floor && r.hour===slot.hour);
       const pcs=rows.reduce((s,r)=>s+r.pcs,0);
-      const workers=new Set(rows.map(r=>r.worker).filter(Boolean)).size;
+      const workers=manualWorkers[floor]||0;
       const productivity=workers>0 && effectiveHours>0 ? pcs/(workers*effectiveHours) : 0;
       result[slot.hour][floor]={pcs,workers,productivity,effectiveHours};
     });
@@ -4696,10 +4860,15 @@ function formatUploadTime(){
 
 function renderProductivityWorkers(){
   const container=document.getElementById("productivityWorkers"); if(!container) return;
+  const saved=getManualProductivityWorkers();
   container.innerHTML=PRODUCTIVITY_FLOORS.map(floor=>{
-    const count=getUniqueWorkerCounts()[floor]||0;
+    const value=saved[floor]||0;
     const type=getWorkerType(floor);
-    return `<div class="productivity-worker-item"><div class="productivity-worker-floor">${floor}</div><div class="productivity-worker-auto">${type} ${count}명</div></div>`;
+    return `<div class="productivity-worker-item">
+      <div class="productivity-worker-floor">${floor}</div>
+      <input class="productivity-worker-input" type="number" min="0" step="1" value="${value}" aria-label="${floor} 출근인원" onchange="saveProductivityWorker('${floor}',this.value)">
+      <div class="productivity-worker-unit">${type} 명</div>
+    </div>`;
   }).join("");
 }
 function renderProductivitySummary(){
@@ -4715,8 +4884,8 @@ function renderProductivityHourCards(){
   if(!productivityState.rows.length){ container.innerHTML=PRODUCTIVITY_FLOORS.map(floor=>`<div class="productivity-hour-card"><div class="productivity-hour-card-head"><div class="productivity-hour-card-title">${floor}</div><div class="productivity-hour-card-sub">${getWorkerType(floor)} · 시간대별</div></div><div class="empty" style="padding:28px 16px;">RAW 파일을 업로드해주세요.</div></div>`).join(""); return; }
   const hourly=getProductivityHourly();
   container.innerHTML=PRODUCTIVITY_FLOORS.map(floor=>{
-    const label=getWorkerLabel(floor), type=getWorkerType(floor), workers=getProductivityWorkers(floor);
-    const rows=PRODUCTIVITY_HOURS.map(slot=>{ const x=hourly[slot.hour][floor]; return `<div class="productivity-hour-row"><div class="hour">${String(slot.hour).padStart(2,"0")}:00</div><div class="worker">${x.workers}명</div><div class="pcs">${fmt(x.pcs)}</div><div class="rate">${x.workers>0&&x.effectiveHours>0?formatProductivityNumber(x.productivity,1):"-"}</div></div>`; }).join("");
+    const label=getWorkerLabel(floor), type=getWorkerType(floor), workers=getProductivityWorkers(floor), manualWorkers=getManualProductivityWorkers()[floor]||0;
+    const rows=PRODUCTIVITY_HOURS.map(slot=>{ const x=hourly[slot.hour][floor]; return `<div class="productivity-hour-row"><div class="hour">${String(slot.hour).padStart(2,"0")}:00</div><div class="worker">${manualWorkers}명</div><div class="pcs">${fmt(x.pcs)}</div><div class="rate">${x.workers>0&&x.effectiveHours>0?formatProductivityNumber(x.productivity,1):"-"}</div></div>`; }).join("");
     const workerRows=workers.map(w=>`<div class="productivity-person-row"><div class="person-id">${w.worker}</div><div>${fmt(w.sku)}</div><div>${fmt(w.pcs)}</div><div class="person-rate">${formatProductivityNumber(w.productivity,1)}</div></div>`).join("");
     return `<div class="productivity-hour-card" data-productivity-floor="${floor}"><div class="productivity-hour-card-head"><div class="productivity-hour-card-title">${floor}</div><div style="display:flex;align-items:center;gap:7px;"><div class="productivity-hour-card-sub">${type} · ${label}</div><button type="button" class="productivity-floor-capture-btn" onclick="captureProductivityFloor('${floor}')">📋 ${floor} 캡처</button></div></div><div class="productivity-person-head"><div>작업자</div><div>SKU</div><div>PCS</div><div>${label}</div></div>${workerRows||'<div class="empty" style="padding:18px;">작업자 데이터 없음</div>'}<div class="productivity-hour-divider"></div><div class="productivity-hour-row header"><div>시간</div><div>인원</div><div>PCS</div><div>${label}</div></div>${rows}</div>`;
   }).join("");
@@ -6046,36 +6215,75 @@ function removeRawUploadFromClone(clonedDocument){
 }
 
 
+function buildProductivityCaptureCard(floor){
+  const daily=getProductivityDaily()[floor] || {pcs:0,sku:0,workers:0,productivity:0,effectiveHours:0};
+  const hourly=getProductivityHourly();
+  const label=getWorkerLabel(floor);
+  const type=getWorkerType(floor);
+  const workers=getProductivityWorkers(floor);
+
+  const workerHtml=workers.length
+    ? workers.map(w=>`<div class="productivity-capture-worker">
+        <div class="id">${escapeHtml(w.worker)}</div>
+        <div class="line">SKU ${fmt(w.sku)} · PCS ${fmt(w.pcs)}</div>
+        <div class="rate">${formatProductivityNumber(w.productivity,1)} ${label==="AST"?"AST":"PCS/인·시간"}</div>
+      </div>`).join("")
+    : `<div style="grid-column:1/-1;padding:12px;color:#98a2b3;font-size:11px;">작업자 데이터 없음</div>`;
+
+  const hourlyHtml=PRODUCTIVITY_HOURS.map(slot=>{
+    const x=hourly[slot.hour][floor];
+    return `<div class="productivity-capture-hourly-row">
+      <div><strong>${String(slot.hour).padStart(2,"0")}:00</strong></div>
+      <div>${fmt(x.pcs)} PCS</div>
+      <div class="rate">${x.workers>0&&x.effectiveHours>0?formatProductivityNumber(x.productivity,1):"-"}</div>
+    </div>`;
+  }).join("");
+
+  const card=document.createElement("div");
+  card.className="productivity-capture-sheet-card";
+  card.innerHTML=`<div class="productivity-capture-sheet">
+    <div class="productivity-capture-title">
+      <span class="floor">${floor}</span>
+      <div class="sub">${type} · ${label} · ${formatUploadTime()}</div>
+    </div>
+    <div class="productivity-capture-main">
+      <div class="productivity-capture-metric"><div class="label">수기 출근인원</div><div class="value">${daily.workers}명</div></div>
+      <div class="productivity-capture-metric"><div class="label">SKU</div><div class="value">${fmt(daily.sku)}</div></div>
+      <div class="productivity-capture-metric"><div class="label">PCS</div><div class="value">${fmt(daily.pcs)}</div></div>
+      <div class="productivity-capture-metric productivity-capture-rate"><div class="label">${label} · PCS/인·시간</div><div class="value">${daily.workers>0&&daily.effectiveHours>0?formatProductivityNumber(daily.productivity,1):"-"}</div></div>
+    </div>
+    <div class="productivity-capture-workers">
+      <div class="productivity-capture-workers-title">작업자별 ${label} · 4F는 AS / 기타층은 PDA</div>
+      <div class="productivity-capture-worker-grid">${workerHtml}</div>
+    </div>
+    <div class="productivity-capture-hourly">
+      <div class="productivity-capture-hourly-head"><div>시간</div><div>PCS</div><div>${label}</div></div>
+      ${hourlyHtml}
+    </div>
+    <div class="productivity-capture-note">RAW 업로드 시각 기준 · 10:45~11:00 / 12:30~13:30 / 15:45~16:00 휴게시간 제외</div>
+  </div>`;
+  return card;
+}
+
 async function captureProductivityFloor(floor){
   try{
     const html2canvas=await loadHtml2Canvas();
-    const source=document.querySelector(`#productivityApp .productivity-hour-card[data-productivity-floor="${floor}"]`);
-    if(!source) throw new Error(`${floor} 생산성 카드가 없습니다.`);
-
+    const sheet=buildProductivityCaptureCard(floor);
     const wrapper=document.createElement("div");
     wrapper.style.position="fixed";
     wrapper.style.left="-100000px";
     wrapper.style.top="0";
-    wrapper.style.width=Math.max(1100, document.querySelector("#productivityApp")?.offsetWidth || 1100)+"px";
+    wrapper.style.width="900px";
     wrapper.style.boxSizing="border-box";
-    wrapper.style.padding="28px";
     wrapper.style.background="#f5f7fb";
     wrapper.style.zIndex="-1";
-
-    const clone=source.cloneNode(true);
-    clone.querySelectorAll("button").forEach(b=>b.remove());
-    clone.style.width="100%";
-    clone.style.maxWidth="none";
-    clone.style.margin="0";
-    clone.style.boxShadow="0 8px 24px rgba(20,30,55,.08)";
-    wrapper.appendChild(clone);
+    wrapper.appendChild(sheet);
     document.body.appendChild(wrapper);
     await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-
-    const canvas=await html2canvas(wrapper,{scale:2,backgroundColor:"#f5f7fb",useCORS:true,logging:false,width:wrapper.scrollWidth,height:wrapper.scrollHeight,windowWidth:wrapper.scrollWidth,windowHeight:wrapper.scrollHeight});
+    const canvas=await html2canvas(wrapper,{scale:2,backgroundColor:"#f5f7fb",useCORS:true,logging:false,width:900,height:wrapper.scrollHeight,windowWidth:900,windowHeight:wrapper.scrollHeight});
     wrapper.remove();
     await copyCanvasToClipboard(canvas);
-    alert(`📋 ${floor} 생산성 화면을 복사했습니다.\n\n카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다.`);
+    alert(`📋 ${floor} 생산성 요약을 복사했습니다.\n\n카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 한 화면에 보기 좋은 요약 이미지로 전송할 수 있습니다.`);
   }catch(e){
     console.error(e);
     alert("사진 복사 중 오류가 발생했습니다.\n"+(e.message||"브라우저의 클립보드 권한을 확인해주세요."));
@@ -6085,51 +6293,42 @@ async function captureProductivityFloor(floor){
 async function captureProductivityFullScreen(){
   try{
     const html2canvas=await loadHtml2Canvas();
-    const source=document.querySelector("#productivityApp");
-    if(!source) throw new Error("층별 생산성 화면을 찾을 수 없습니다.");
-
-    const cards=PRODUCTIVITY_FLOORS.map(floor=>source.querySelector(`.productivity-hour-card[data-productivity-floor="${floor}"]`)).filter(Boolean);
-    if(cards.length!==4) throw new Error("4개 층 생산성 카드가 모두 준비되지 않았습니다.");
-
     const wrapper=document.createElement("div");
     wrapper.style.position="fixed";
     wrapper.style.left="-100000px";
     wrapper.style.top="0";
-    wrapper.style.width=Math.max(1100,source.offsetWidth)+"px";
+    wrapper.style.width="1828px";
     wrapper.style.boxSizing="border-box";
-    wrapper.style.padding="28px";
+    wrapper.style.padding="24px";
     wrapper.style.background="#f5f7fb";
     wrapper.style.zIndex="-1";
-    wrapper.style.display="flex";
-    wrapper.style.flexDirection="column";
-    wrapper.style.gap="20px";
+    wrapper.style.textAlign="center";
 
     const title=document.createElement("div");
     title.style.background="#fff";
     title.style.border="1px solid #e1e6ee";
     title.style.borderRadius="16px";
-    title.style.padding="18px 22px";
+    title.style.padding="13px 16px";
+    title.style.marginBottom="14px";
+    title.style.fontSize="18px";
     title.style.fontWeight="900";
-    title.style.fontSize="22px";
-    title.innerHTML=`📈 층별 생산성 <span style="font-size:12px;color:#7b8494;font-weight:700;margin-left:10px;">${formatUploadTime()} · 4F AS / 기타층 PDA</span>`;
+    title.style.textAlign="center";
+    title.innerHTML=`📈 층별 생산성 <span style="font-size:11px;color:#7b8494;font-weight:700;margin-left:8px;">${formatUploadTime()} · 4F AS / 기타층 PDA</span>`;
     wrapper.appendChild(title);
 
-    cards.forEach(card=>{
-      const clone=card.cloneNode(true);
-      clone.querySelectorAll("button").forEach(b=>b.remove());
-      clone.style.width="100%";
-      clone.style.maxWidth="none";
-      clone.style.margin="0";
-      clone.style.boxShadow="0 8px 24px rgba(20,30,55,.08)";
-      wrapper.appendChild(clone);
-    });
+    const grid=document.createElement("div");
+    grid.className="productivity-capture-all-grid";
+    grid.style.gridTemplateColumns="1fr 1fr";
+    grid.style.gap="14px";
+    PRODUCTIVITY_FLOORS.forEach(floor=>grid.appendChild(buildProductivityCaptureCard(floor)));
+    wrapper.appendChild(grid);
 
     document.body.appendChild(wrapper);
     await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    const canvas=await html2canvas(wrapper,{scale:2,backgroundColor:"#f5f7fb",useCORS:true,logging:false,width:wrapper.scrollWidth,height:wrapper.scrollHeight,windowWidth:wrapper.scrollWidth,windowHeight:wrapper.scrollHeight});
+    const canvas=await html2canvas(wrapper,{scale:1.5,backgroundColor:"#f5f7fb",useCORS:true,logging:false,width:wrapper.scrollWidth,height:wrapper.scrollHeight,windowWidth:wrapper.scrollWidth,windowHeight:wrapper.scrollHeight});
     wrapper.remove();
     await copyCanvasToClipboard(canvas);
-    alert("📋 4개 층 생산성을 층별 확대 형태로 한 장에 복사했습니다.\n\n카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다.");
+    alert("📋 4개 층 생산성 요약을 한 장으로 복사했습니다.\n\n각 층을 확대해도 작업자별 생산성과 시간대별 생산성을 한눈에 볼 수 있습니다.");
   }catch(e){
     console.error(e);
     alert("사진 복사 중 오류가 발생했습니다.\n"+(e.message||"브라우저의 클립보드 권한을 확인해주세요."));

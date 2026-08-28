@@ -6905,89 +6905,180 @@ async function captureFullScreen(){
     }
 
     /*
-      DRY입하존 '전체 화면 복사'
+      DRY입하존 '전체 층 캡처'
       ----------------------------------------
-      캡처 범위는 딱 여기까지만 표시합니다.
+      기존 전체 화면 캡처는 가로로 4개 층 카드가
+      한 줄에 배치되어 휴대폰/카카오톡에서 글씨가 작았습니다.
 
-      ① 전체 SKU / PCS
-      ② 바로 아래 층별 SKU / PCS 카드
+      캡처 전용 화면에서는
+      ① 4층 / 3-2층
+      ② 3-1층 / 1-2층
+      형태의 2 × 2 정사각형 레이아웃으로 재구성합니다.
 
-      제외:
-      ① DRY입하존 상단 제목/버튼
-      ② RAW 파일 업로드 영역
-      ③ 검색/필터 영역
-      ④ 상품 상세 리스트
-      ⑤ 그 아래의 빈 여백
-
-      기존처럼 #inventoryApp 전체를 복제하면
-      앱 화면의 높이까지 함께 캡처되어 이미지가
-      불필요하게 길어지는 문제가 있었기 때문에,
-      필요한 카드 2개만 별도의 캡처용 영역으로 만듭니다.
+      - 원본 화면은 변경하지 않음
+      - RAW / 검색 / 상품 리스트는 캡처하지 않음
+      - 층별 SKU / PCS만 크게 표시
+      - 모든 텍스트 가운데 정렬
+      - 카카오톡/휴대폰에서 한 화면에 보기 좋은 정사각형 이미지
     */
-
-    const totalCard =
-      source.querySelector(
-        ".total-summary-card"
-      );
 
     const floorCards =
       source.querySelector(
         ".floor-cards"
       );
 
-    if(!totalCard || !floorCards){
+    if(!floorCards){
       throw new Error(
-        "총 SKU/PCS 또는 층별 SKU/PCS 영역을 찾을 수 없습니다."
+        "층별 SKU / PCS 영역을 찾을 수 없습니다."
       );
     }
 
-    /* 캡처 전용 임시 영역 */
+    const originalCards =
+      Array.from(
+        floorCards.querySelectorAll(":scope > .floor-card")
+      );
+
+    if(originalCards.length !== 4){
+      throw new Error(
+        "4개 층 카드를 찾을 수 없습니다."
+      );
+    }
+
+    /* 캡처 전용 정사각형 영역 */
     const captureWrapper =
       document.createElement("div");
 
     captureWrapper.style.position = "fixed";
     captureWrapper.style.left = "-100000px";
     captureWrapper.style.top = "0";
-    captureWrapper.style.width = source.offsetWidth + "px";
+    captureWrapper.style.width = "900px";
+    captureWrapper.style.height = "900px";
     captureWrapper.style.boxSizing = "border-box";
-    captureWrapper.style.padding = "24px";
+    captureWrapper.style.padding = "26px";
     captureWrapper.style.background = "#f5f7fb";
     captureWrapper.style.zIndex = "-1";
+    captureWrapper.style.margin = "0";
+    captureWrapper.style.fontFamily =
+      "-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif";
+    captureWrapper.style.textAlign = "center";
     captureWrapper.style.display = "flex";
     captureWrapper.style.flexDirection = "column";
-    captureWrapper.style.gap = "14px";
-    captureWrapper.style.height = "auto";
-    captureWrapper.style.minHeight = "0";
+    captureWrapper.style.boxSizing = "border-box";
 
-    /* 필요한 영역만 복제 */
-    const totalClone =
-      totalCard.cloneNode(true);
+    /* 캡처 제목 */
+    const title = document.createElement("div");
+    title.textContent = "📦 DRY입하존 층별 현황";
+    title.style.height = "58px";
+    title.style.display = "flex";
+    title.style.alignItems = "center";
+    title.style.justifyContent = "center";
+    title.style.fontSize = "27px";
+    title.style.fontWeight = "900";
+    title.style.color = "#172033";
+    title.style.boxSizing = "border-box";
+    title.style.flex = "0 0 58px";
+    captureWrapper.appendChild(title);
 
-    const floorClone =
-      floorCards.cloneNode(true);
+    /* 2 × 2 층 카드 그리드 */
+    const captureGrid =
+      document.createElement("div");
 
-    /* 혹시 캡처용 복제본 안에 불필요한 요소가 있으면 제거 */
-    totalClone.querySelectorAll("button, input, select").forEach(el => {
-      el.remove();
+    captureGrid.style.display = "grid";
+    captureGrid.style.gridTemplateColumns = "1fr 1fr";
+    captureGrid.style.gridTemplateRows = "1fr 1fr";
+    captureGrid.style.gap = "16px";
+    captureGrid.style.width = "100%";
+    captureGrid.style.height = "790px";
+    captureGrid.style.flex = "0 0 790px";
+    captureGrid.style.boxSizing = "border-box";
+
+    originalCards.forEach((originalCard) => {
+
+      const card =
+        originalCard.cloneNode(true);
+
+      /* 캡처에 필요 없는 인터랙션 제거 */
+      card.querySelectorAll("button, input, select").forEach(el => {
+        el.remove();
+      });
+
+      card.style.width = "100%";
+      card.style.height = "100%";
+      card.style.boxSizing = "border-box";
+      card.style.margin = "0";
+      card.style.padding = "28px 24px";
+      card.style.borderRadius = "22px";
+      card.style.border = "1px solid #dfe5ee";
+      card.style.background = "#ffffff";
+      card.style.display = "flex";
+      card.style.flexDirection = "column";
+      card.style.justifyContent = "center";
+      card.style.alignItems = "center";
+      card.style.textAlign = "center";
+      card.style.cursor = "default";
+      card.style.transform = "none";
+      card.style.boxShadow = "0 5px 18px rgba(32,48,80,0.06)";
+
+      /* 층 제목 가운데 정렬 */
+      card.querySelectorAll(".floor-head").forEach(head => {
+        head.style.width = "100%";
+        head.style.display = "flex";
+        head.style.justifyContent = "center";
+        head.style.alignItems = "center";
+        head.style.marginBottom = "28px";
+        head.style.textAlign = "center";
+      });
+
+      card.querySelectorAll(".floor-head > div:last-child").forEach(el => {
+        /* 원본의 ▼ 인터랙션 표시는 캡처에서 제거 */
+        el.remove();
+      });
+
+      card.querySelectorAll(".floor-title").forEach(titleEl => {
+        titleEl.style.fontSize = "30px";
+        titleEl.style.fontWeight = "900";
+        titleEl.style.textAlign = "center";
+        titleEl.style.width = "100%";
+      });
+
+      /* SKU / PCS를 좌우 2칸으로 크게 */
+      card.querySelectorAll(".floor-values").forEach(values => {
+        values.style.width = "100%";
+        values.style.display = "grid";
+        values.style.gridTemplateColumns = "1fr 1fr";
+        values.style.gap = "14px";
+        values.style.margin = "0";
+      });
+
+      card.querySelectorAll(".floor-value").forEach(value => {
+        value.style.background = "#f7f9fc";
+        value.style.borderRadius = "16px";
+        value.style.padding = "24px 12px";
+        value.style.textAlign = "center";
+        value.style.boxSizing = "border-box";
+      });
+
+      card.querySelectorAll(".label").forEach(label => {
+        label.style.fontSize = "16px";
+        label.style.fontWeight = "750";
+        label.style.textAlign = "center";
+        label.style.marginBottom = "8px";
+      });
+
+      card.querySelectorAll(".number").forEach(number => {
+        number.style.fontSize = "38px";
+        number.style.fontWeight = "900";
+        number.style.lineHeight = "1.15";
+        number.style.textAlign = "center";
+      });
+
+      captureGrid.appendChild(card);
     });
 
-    floorClone.querySelectorAll("button, input, select").forEach(el => {
-      el.remove();
-    });
-
-    /* 원래 화면의 폭을 그대로 사용 */
-    totalClone.style.width = "100%";
-    totalClone.style.margin = "0";
-
-    floorClone.style.width = "100%";
-    floorClone.style.margin = "0";
-
-    captureWrapper.appendChild(totalClone);
-    captureWrapper.appendChild(floorClone);
-
+    captureWrapper.appendChild(captureGrid);
     document.body.appendChild(captureWrapper);
 
-    /* 실제 렌더링이 끝난 뒤 캡처 */
+    /* 실제 렌더링 완료 대기 */
     await new Promise(resolve =>
       requestAnimationFrame(() =>
         requestAnimationFrame(resolve)
@@ -7002,10 +7093,10 @@ async function captureFullScreen(){
           backgroundColor: "#f5f7fb",
           useCORS: true,
           logging: false,
-          width: captureWrapper.scrollWidth,
-          height: captureWrapper.scrollHeight,
-          windowWidth: captureWrapper.scrollWidth,
-          windowHeight: captureWrapper.scrollHeight
+          width: 900,
+          height: 900,
+          windowWidth: 900,
+          windowHeight: 900
         }
       );
 
@@ -7014,9 +7105,9 @@ async function captureFullScreen(){
     await copyCanvasToClipboard(canvas);
 
     alert(
-      "📋 DRY입하존 요약 화면을 복사했습니다.\n\n" +
-      "총 SKU / PCS와 바로 아래 층별 SKU / PCS까지만 포함됩니다.\n" +
-      "카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다."
+      "📋 전층 요약 화면을 복사했습니다.\n\n" +
+      "4층 / 3-2층 / 3-1층 / 1-2층을 2×2 정사각형으로 구성했습니다.\n" +
+      "휴대폰과 카카오톡에서 한눈에 보기 쉽게 글씨를 크게 표시했습니다."
     );
 
   }catch(e){

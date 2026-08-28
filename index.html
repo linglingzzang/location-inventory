@@ -5534,6 +5534,15 @@ function detectColumns(raw){
         ]
       ),
 
+    소분류:
+      findColumn(
+        headers,
+        [
+          "운영카테고리소분류명",
+          "운영 카테고리 소분류명"
+        ]
+      ),
+
     입수:
       findColumn(
         headers,
@@ -5581,6 +5590,9 @@ function calcFloor(
 
   const middle =
     norm(row[col.중분류]);
+
+  const small =
+    norm(row[col.소분류]);
 
 
   if(type === "DRY 일반"){
@@ -6862,7 +6874,7 @@ async function captureFullScreen(){
 /* =========================================================
    오늘 업무 체크리스트
 ========================================================= */
-      
+
 const WORK_CHECKLIST = [
   {no:1,  period:'오전', text:'입/재고 인력 POST 작성 후 출고팀 전달'},
   {no:2,  period:'오전', text:'오전 5S 패트롤 작성 후 출고팀 전달'},

@@ -2208,15 +2208,15 @@ td{
 
 .work-checklist{
   position:absolute;
-  top:78px;
+  top:55px;
   right:28px;
   width:430px;
-  height:calc(100% - 100px);
+  height:calc(100% - 75px);
   min-height:0;
   padding:15px 15px 12px;
   border-radius:24px;
-  background:rgba(255,255,255,.90);
-  border:1px solid rgba(255,255,255,.82);
+  background:rgba(255,255,255,.64);
+  border:1px solid rgba(255,255,255,.46);
   box-shadow:0 14px 36px rgba(25,40,70,.16);
   backdrop-filter:blur(18px);
   -webkit-backdrop-filter:blur(18px);
@@ -2391,9 +2391,9 @@ td{
   .work-checklist{
     left:auto;
     right:15px;
-    top:75px;
+    top:55px;
     width:340px;
-    height:calc(100% - 90px);
+    height:calc(100% - 70px);
   }
 }
 
@@ -5534,15 +5534,6 @@ function detectColumns(raw){
         ]
       ),
 
-    소분류:
-      findColumn(
-        headers,
-        [
-          "운영카테고리소분류명",
-          "운영 카테고리 소분류명"
-        ]
-      ),
-
     입수:
       findColumn(
         headers,
@@ -5591,9 +5582,6 @@ function calcFloor(
   const middle =
     norm(row[col.중분류]);
 
-  const small =
-    norm(row[col.소분류]);
-
 
   if(type === "DRY 일반"){
 
@@ -5625,16 +5613,6 @@ function calcFloor(
 
 
   if(bypass){
-
-    // 등급과 관계없이 아래 카테고리는 3-1층으로 강제 분류
-    if(
-      middle === "세제/세정제" ||
-      small === "유아완구" ||
-      large === "양곡" ||
-      (large === "올가닉" && small === "올가닉양곡")
-    ){
-      return "3-1층";
-    }
 
     if(
       ["A","SA","SSA"]
@@ -6917,8 +6895,8 @@ const WORK_CHECKLIST = [
   {no:5,  period:'오전', text:'재고차이존 1차 상쇄'},
   {no:6,  period:'오전', text:'과매입여부 2차 조회'},
   {no:7,  period:'오전', text:'재고차이존 2차 상쇄'},
-  {no:8,  period:'오전', text:'데일리 비가용재고정리 리스트 (메일 X)'},
-  {no:9,  period:'오전', text:'센터납입고 리스트 (메일 O)'},
+  {no:8,  period:'오전', text:'데일리 비가용재고정리 리스트'},
+  {no:9,  period:'오전', text:'센터납입고 리스트'},
   {no:10, period:'오전', text:'입/재고 인력 구인 요청'},
   {no:11, period:'오후', text:'입고 컨플 일마감 보고'},
   {no:12, period:'오후', text:'WET 보관존, 신상품입하대기존, 셀할당해제존, 셀할당변경존 조회'},

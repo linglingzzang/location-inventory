@@ -5700,6 +5700,20 @@ function calcFloor(
         .includes(grade)
     ){
 
+      // DRY WCS Bypass B/C/D 등급 중
+      // 물류상품명에 배변패드 또는 쉬야응가가 포함되면 3-1층
+      if(
+        type === "DRY WCS Bypass" &&
+        includesAny(
+          name,
+          ["배변패드", "쉬야응가"]
+        )
+      ){
+
+        return "3-1층";
+
+      }
+
       if(
         large === "식품" &&
         middle === "음료"

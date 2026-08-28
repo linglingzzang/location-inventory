@@ -4929,12 +4929,56 @@ function normalizeProductivityHeader(v){
 
 function findProductivityColumn(headers,candidates){
   const normalized={};
-  headers.forEach(h=>normalized[normalizeProductivityHeader(h)]=h);
+  headers.forEach(h=>{
+    const key=normalizeProductivityHeader(h);
+    if(key) normalized[key]=h;
+  });
   for(const candidate of candidates){
     const key=normalizeProductivityHeader(candidate);
     if(normalized[key]) return normalized[key];
   }
   return null;
+}
+
+/* 생산성 RAW의 실제 헤더 행을 자동 탐색합니다.
+   일부 RAW는 상단에 제목/조회조건 행이 있어서 1행이 헤더가 아닐 수 있습니다. */
+function findProductivityHeaderRow(worksheet){
+  const matrix=XLSX.utils.sheet_to_json(worksheet,{header:1,defval:"",raw:false});
+  const aliases={
+    입고구분:["입고구분","입고구분명","입고 구분"],
+    물류상품ID:["물류상품ID","물류 상품 ID","물류상품 ID","상품ID"],
+    물류분류명:["물류분류명","물류 분류명"],
+    입고완료수량:["입고완료수량","입고 완료 수량","입고수량","입고 완료수량"],
+    도착존:["도착존","도착 존","적치존","입고존"],
+    입고처리자:["입고처리자","입고 처리자","입고처리담당자","처리자"],
+    입고일시:["입고일시","입고 일시","입고완료일시","입고 완료 일시","처리일시"]
+  };
+  let bestIndex=-1,bestScore=0;
+  const limit=Math.min(matrix.length,80);
+  for(let i=0;i<limit;i++){
+    const row=Array.isArray(matrix[i])?matrix[i]:[];
+    const headers=row.map(v=>String(v??""));
+    let score=0;
+    for(const candidates of Object.values(aliases)){
+      if(findProductivityColumn(headers,candidates)) score++;
+    }
+    if(score>bestScore){bestScore=score;bestIndex=i;}
+  }
+  if(bestIndex<0 || bestScore<4){
+    throw new Error("RAW 헤더 행을 찾을 수 없습니다.\n\n입고구분 / 물류상품ID / 물류분류명 / 입고완료수량 / 도착존 / 입고처리자 / 입고일시 컬럼이 포함된 RAW인지 확인해주세요.");
+  }
+  return {matrix,headerRow:bestIndex,bestScore};
+}
+
+function productivitySheetToJson(worksheet){
+  const detected=findProductivityHeaderRow(worksheet);
+  const raw=XLSX.utils.sheet_to_json(worksheet,{
+    defval:"",
+    raw:false,
+    range:detected.headerRow
+  });
+  if(!raw.length) throw new Error("RAW 데이터가 없습니다.");
+  return raw;
 }
 
 function productivityFloor(zone){
@@ -5155,10 +5199,14 @@ function handleProductivityFile(file){
   const reader=new FileReader();
   reader.onload=function(e){
     try{
+      if(typeof XLSX === "undefined") throw new Error("엑셀 파일 처리 모듈(XLSX)이 로드되지 않았습니다.");
       const data=new Uint8Array(e.target.result);
+      if(!data.length) throw new Error("파일 내용이 비어 있습니다.");
       const wb=XLSX.read(data,{type:"array",cellDates:false});
+      if(!wb.SheetNames || !wb.SheetNames.length) throw new Error("엑셀 시트를 찾을 수 없습니다.");
       const ws=wb.Sheets[wb.SheetNames[0]];
-      const raw=XLSX.utils.sheet_to_json(ws,{defval:"",raw:false});
+      if(!ws) throw new Error("첫 번째 시트를 읽을 수 없습니다.");
+      const raw=productivitySheetToJson(ws);
       productivityState.rows=parseProductivityRaw(raw);
       const dates=productivityState.rows.map(r=>r.datetime).filter(Boolean);
       productivityState.date=dates.length ? new Date(Math.max(...dates.map(d=>d.getTime()))).toLocaleDateString("ko-KR") : "";

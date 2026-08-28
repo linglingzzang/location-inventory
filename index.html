@@ -5946,6 +5946,13 @@ function renderInventory(){
     );
 
 
+  /* BOX수 많은 상품부터 먼저 적치할 수 있도록 내림차순 정렬 */
+  rows.sort((a, b) => {
+    const boxA = Number(a.BOX수 || 0);
+    const boxB = Number(b.BOX수 || 0);
+    return boxB - boxA;
+  });
+
   inventoryState.filtered =
     rows;
 
@@ -6608,106 +6615,216 @@ async function captureInventory(){
 
 
     /*
-      현재 화면을 복제한 뒤
-      ① RAW 업로드 영역 제거
-      ② 전체 SKU/PCS 요약 제거
-      ③ 선택한 층 카드만 남김
-      ④ 표에서는 선택한 층의 행만 남김
-      ⑤ 검색/필터 툴바는 제거
+      카카오톡/휴대폰용 층별 리스트 캡처
+      ----------------------------------------
+      원본 화면의 넓은 1600px 레이아웃을 그대로 캡처하지 않고
+      900px 고정 폭의 캡처 전용 화면으로 다시 구성합니다.
+
+      ① 선택한 층 카드만 표시
+      ② 상품 리스트는 선택 층만 표시
+      ③ BOX수 많은 상품부터 내림차순
+      ④ 상품명/수량 글씨를 크게 확대
+      ⑤ 불필요한 검색/필터/업로드 영역 제거
+      ⑥ 모든 텍스트 가운데 정렬
     */
     const clone = source.cloneNode(true);
 
-    const upload =
-      clone.querySelector(".upload");
-
+    const upload = clone.querySelector(".upload");
     if(upload){
       upload.remove();
     }
 
-    const summary =
-      clone.querySelector(".total-summary-card");
-
+    const summary = clone.querySelector(".total-summary-card");
     if(summary){
       summary.remove();
     }
 
-    const toolbar =
-      clone.querySelector(".toolbar");
-
+    const toolbar = clone.querySelector(".toolbar");
     if(toolbar){
       toolbar.remove();
     }
 
-
+    /* 선택한 층 카드만 남김 */
     clone.querySelectorAll(".floor-card").forEach(card => {
       if(card.dataset.floor !== selectedCaptureFloor){
         card.remove();
       }
     });
 
-
-    const tbody =
-      clone.querySelector("#tbody");
-
+    /* 선택 층이 아닌 표 행 제거 */
+    const tbody = clone.querySelector("#tbody");
     if(tbody){
-
-      const rows =
-        Array.from(tbody.querySelectorAll("tr"));
+      const rows = Array.from(tbody.querySelectorAll("tr"));
 
       rows.forEach(row => {
-
-        const firstCell =
-          row.querySelector("td");
-
+        const firstCell = row.querySelector("td");
         if(!firstCell){
           return;
         }
 
-        const floorText =
-          firstCell.textContent.trim();
-
-        if(
-          floorText &&
-          floorText !== selectedCaptureFloor
-        ){
+        const floorText = firstCell.textContent.trim();
+        if(floorText && floorText !== selectedCaptureFloor){
           row.remove();
         }
-
       });
-
     }
 
-
-    /* 복제본을 화면 밖에 임시 배치하여 정확한 이미지 생성 */
-    clone.style.width = source.offsetWidth + "px";
+    /* 캡처 전용 모바일 친화 레이아웃 */
+    clone.style.width = "900px";
+    clone.style.maxWidth = "900px";
     clone.style.position = "fixed";
     clone.style.left = "-100000px";
     clone.style.top = "0";
+    clone.style.boxSizing = "border-box";
     clone.style.background = "#f5f7fb";
-    clone.style.paddingTop = "0";
+    clone.style.padding = "18px";
     clone.style.zIndex = "-1";
+    clone.style.margin = "0";
+    clone.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif";
+    clone.style.textAlign = "center";
+
+    /* 층 카드 크게 */
+    const floorCard = clone.querySelector(".floor-card");
+    if(floorCard){
+      floorCard.style.width = "100%";
+      floorCard.style.boxSizing = "border-box";
+      floorCard.style.margin = "0 0 14px 0";
+      floorCard.style.padding = "16px";
+      floorCard.style.borderRadius = "16px";
+      floorCard.style.textAlign = "center";
+
+      floorCard.querySelectorAll(".floor-title").forEach(el => {
+        el.style.fontSize = "22px";
+        el.style.fontWeight = "900";
+        el.style.textAlign = "center";
+      });
+
+      floorCard.querySelectorAll(".floor-head").forEach(el => {
+        el.style.justifyContent = "center";
+        el.style.textAlign = "center";
+      });
+
+      floorCard.querySelectorAll(".floor-values").forEach(el => {
+        el.style.gap = "12px";
+      });
+
+      floorCard.querySelectorAll(".floor-value").forEach(el => {
+        el.style.padding = "12px";
+        el.style.textAlign = "center";
+      });
+
+      floorCard.querySelectorAll(".label").forEach(el => {
+        el.style.fontSize = "13px";
+        el.style.textAlign = "center";
+      });
+
+      floorCard.querySelectorAll(".number").forEach(el => {
+        el.style.fontSize = "26px";
+        el.style.fontWeight = "900";
+        el.style.textAlign = "center";
+      });
+    }
+
+    const tablebox = clone.querySelector(".tablebox");
+    if(tablebox){
+      tablebox.style.width = "100%";
+      tablebox.style.overflow = "visible";
+      tablebox.style.borderRadius = "16px";
+    }
+
+    const table = clone.querySelector("table");
+    if(table){
+      table.style.width = "100%";
+      table.style.minWidth = "0";
+      table.style.tableLayout = "fixed";
+      table.style.borderCollapse = "collapse";
+    }
+
+    /* 열 폭: 적치층 / 상품명 / 상품코드 / 바코드 / 입수 / PCS / BOX */
+    const colWidths = ["9%","30%","16%","16%","8%","10%","11%"];
+    const rows = clone.querySelectorAll("tr");
+    rows.forEach(row => {
+      Array.from(row.children).forEach((cell, i) => {
+        cell.style.textAlign = "center";
+        cell.style.verticalAlign = "middle";
+        cell.style.boxSizing = "border-box";
+        cell.style.whiteSpace = "normal";
+        cell.style.wordBreak = "keep-all";
+        cell.style.overflowWrap = "anywhere";
+        cell.style.lineHeight = "1.35";
+
+        if(cell.tagName === "TH"){
+          cell.style.fontSize = "14px";
+          cell.style.fontWeight = "900";
+          cell.style.padding = "13px 6px";
+        }else{
+          cell.style.fontSize = "15px";
+          cell.style.fontWeight = "650";
+          cell.style.padding = "12px 6px";
+          cell.style.height = "48px";
+        }
+
+        if(colWidths[i]){
+          cell.style.width = colWidths[i];
+        }
+      });
+    });
+
+    /* 층 배지는 캡처에서 조금 더 크게 */
+    clone.querySelectorAll(".floor").forEach(el => {
+      el.style.fontSize = "13px";
+      el.style.fontWeight = "900";
+      el.style.padding = "5px 8px";
+      el.style.display = "inline-block";
+      el.style.textAlign = "center";
+    });
+
+    /* BOX수 열을 캡처에서도 강조 */
+    const headerCells = clone.querySelectorAll("th");
+    if(headerCells.length){
+      headerCells[headerCells.length - 1].style.fontSize = "15px";
+      headerCells[headerCells.length - 1].style.fontWeight = "900";
+    }
+
+    clone.querySelectorAll("tbody tr").forEach(row => {
+      const cells = row.children;
+      if(cells.length >= 7){
+        cells[6].style.fontSize = "17px";
+        cells[6].style.fontWeight = "900";
+      }
+    });
 
     document.body.appendChild(clone);
 
+    await new Promise(resolve =>
+      requestAnimationFrame(() =>
+        requestAnimationFrame(resolve)
+      )
+    );
 
     const canvas =
       await html2canvas(
         clone,
         {
-          scale:2,
-          backgroundColor:"#f5f7fb",
-          useCORS:true
+          scale: 2,
+          backgroundColor: "#f5f7fb",
+          useCORS: true,
+          logging: false,
+          width: 900,
+          height: clone.scrollHeight,
+          windowWidth: 900,
+          windowHeight: clone.scrollHeight
         }
       );
 
-
     clone.remove();
-
 
     await copyCanvasToClipboard(canvas);
 
     alert(
-      "📋 " + selectedCaptureFloor + " 리스트를 복사했습니다.\n\n카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 해당 층 리스트만 사진으로 전송할 수 있습니다."
+      "📋 " + selectedCaptureFloor + " 리스트를 복사했습니다.\n\n" +
+      "BOX수 많은 상품부터 정렬된 모바일용 큰 글씨 이미지입니다.\n" +
+      "카카오톡 채팅창에서 붙여넣기(Ctrl+V)하면 사진으로 전송할 수 있습니다."
     );
 
   }catch(e){
@@ -6884,17 +7001,17 @@ const WORK_CHECKLIST = [
   {no:6,  period:'오후', text:'과매입여부 2차 조회'},
   {no:7,  period:'오후', text:'재고차이존 2차 상쇄'},
   {no:8,  period:'오후', text:'데일리 비가용재고정리 리스트'},
-  {no:9,  period:'오후', text:'센터납입고 리스트'},
+  {no:9,  period:'오후', text:'센터납미입고 리스트'},
   {no:10, period:'오후', text:'입/재고 인력 구인 요청'},
   {no:11, period:'오후', text:'입고 컨플 일마감 보고'},
   {no:12, period:'오후', text:'WET 보관존, 신상품입하대기존, 셀할당해제존, 셀할당변경존 조회'},
   {no:13, period:'오후', text:'WET 셀할당'},
-  {no:14, period:'오후', text:'입고예정정보 P사 카톡 공유'},
+  {no:14, period:'오후', text:'입고예정정보 파트너사 카톡 공유'},
   {no:15, period:'오후', text:'불량상품 등록건수 확인'},
   {no:16, period:'오후', text:'신상품 부자재 마스터 검증 및 컨플 업로드'},
-  {no:17, period:'오후', text:'명일 신상품 물류 분류 P사 카톡 공유'},
-  {no:18, period:'공통', text:'실시간 P사 카톡 대응'},
-  {no:19, period:'공통', text:'4F AST 생산성 대시보드 P사 카톡 업로드'},
+  {no:17, period:'오후', text:'명일 신상품 물류 분류 파트너사 카톡 공유'},
+  {no:18, period:'공통', text:'실시간 파트너사 카톡 대응'},
+  {no:19, period:'공통', text:'4F AST 생산성 대시보드 파트너사 카톡 업로드'},
   {no:20, period:'공통', text:'DRY입하존 잔류 수량 체크'},
   {no:21, period:'공통', text:'출고 시작 전 2F 적치 현황 체크'},
   {no:22, period:'공통', text:'입하장 잔업 인원 관리 필요'}

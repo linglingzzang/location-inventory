@@ -5690,6 +5690,11 @@ function calcFloor(
       return "1-2층";
     }
 
+    // 물류상품명에 "종이컵" 포함 → 등급과 무관하게 3-1층
+    if(includesAny(name, ["종이컵"])){
+      return "3-1층";
+    }
+
     if(
       large === "올가닉" &&
       small === "올가닉양곡"
@@ -7178,17 +7183,17 @@ const WORK_CHECKLIST = [
   {no:6,  period:'오후', text:'과매입여부 2차 조회'},
   {no:7,  period:'오후', text:'재고차이존 2차 상쇄'},
   {no:8,  period:'오후', text:'데일리 비가용재고정리 리스트'},
-  {no:9,  period:'오후', text:'센터납입고 리스트'},
+  {no:9,  period:'오후', text:'센터납미입고 리스트'},
   {no:10, period:'오후', text:'입/재고 인력 구인 요청'},
   {no:11, period:'오후', text:'입고 컨플 일마감 보고'},
   {no:12, period:'오후', text:'WET 보관존, 신상품입하대기존, 셀할당해제존, 셀할당변경존 조회'},
   {no:13, period:'오후', text:'WET 셀할당'},
-  {no:14, period:'오후', text:'입고예정정보 P사 카톡 공유'},
+  {no:14, period:'오후', text:'입고예정정보 파트너사 카톡 공유'},
   {no:15, period:'오후', text:'불량상품 등록건수 확인'},
   {no:16, period:'오후', text:'신상품 부자재 마스터 검증 및 컨플 업로드'},
-  {no:17, period:'오후', text:'명일 신상품 물류 분류 P사 카톡 공유'},
-  {no:18, period:'공통', text:'실시간 P사 카톡 대응'},
-  {no:19, period:'공통', text:'4F AST 생산성 대시보드 P사 카톡 업로드'},
+  {no:17, period:'오후', text:'명일 신상품 물류 분류 파트너사 카톡 공유'},
+  {no:18, period:'공통', text:'실시간 파트너사 카톡 대응'},
+  {no:19, period:'공통', text:'4F AST 생산성 대시보드 파트너사 카톡 업로드'},
   {no:20, period:'공통', text:'DRY입하존 잔류 수량 체크'},
   {no:21, period:'공통', text:'출고 시작 전 2F 적치 현황 체크'},
   {no:22, period:'공통', text:'입하장 잔업 인원 관리 필요'}
